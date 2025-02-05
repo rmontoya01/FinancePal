@@ -1,10 +1,10 @@
 import React from "react";
-import { StyleSheet, Text, View , StatusBar} from 'react-native';
+import { StyleSheet, Text, View, StatusBar } from 'react-native';
 
 import Header from '../../components/Header';
 
 const index = () => {
-    return (
+  return (
     <View style={styles.container}>
       <Header />
       <Text >Welcome to FinancePal</Text>

@@ -1,9 +1,18 @@
-import { Text, View, StyleSheet } from 'react-native';
+import { Text, View, StyleSheet, KeyboardAvoidingView, TextInput } from 'react-native';
 
 export default function Login() {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Login Screen Page</Text>
+
+      <View >
+        <Text style={styles.text}>Login</Text>
+        <View>
+          <Text placeholder="Enter Email"
+          />
+        </View>
+      </View>
+
     </View>
   );
 }
