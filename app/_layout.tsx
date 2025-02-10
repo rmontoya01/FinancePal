@@ -1,10 +1,13 @@
+import { StyleSheet, Text, View } from 'react-native'
+import React from 'react'
 import { Stack } from "expo-router";
 
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-
-import index from './(tabs)/index';
-
-export default function RootLayout() {
-  return <Stack />;
+const _layout = () => {
+  return (
+    <Stack screenOptions={{ headerShown: false }}></Stack>
+  )
 }
+
+export default _layout
+
+const styles = StyleSheet.create({})
