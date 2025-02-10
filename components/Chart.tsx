@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { StyleSheet, ScrollView, Text, View } from 'react-native'
-import PieChart from 'react-native-pie-chart'
+
 
 export default class Chart extends Component {
     render() {
@@ -16,9 +16,7 @@ export default class Chart extends Component {
             <ScrollView style={{ flex: 1 }}>
                 <View style={styles.container}>
                     <Text style={styles.title}>My Income For The Month</Text>
-                    <PieChart
-                        widthAndHeight={chart_wh} series={series}
-                    />
+
                 </View>
             </ScrollView>
         )
