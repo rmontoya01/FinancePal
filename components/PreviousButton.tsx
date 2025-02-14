@@ -8,14 +8,14 @@ import { verticalScale } from '@/utils/styling';
 import { colors, radius } from '@/constants/themes';
 
 const PreviousButton = ({
-    style,
-    iconSize = 26
+  style,
+  iconSize = 26
 }: PreviousButtonProps) => {
 
-    const router = useRouter();
+  const router = useRouter();
 
   return (
-    <TouchableOpacity onPress={()=> router.back()} style={[styles.button, style]}>
+    <TouchableOpacity onPress={() => router.back()} style={[styles.button, style]}>
       <Ionicons name="caret-back-outline" size={verticalScale(iconSize)} color={colors.white} weight="bold" />
     </TouchableOpacity>
   )
@@ -24,11 +24,11 @@ const PreviousButton = ({
 export default PreviousButton
 
 const styles = StyleSheet.create({
-    button: {
-        backgroundColor: colors.neutral700,
-        alignSelf: "flex-start",
-        borderRadius: radius._30,
-        borderCurve: "continuous",
-        padding: 10,
-    },
+  button: {
+    backgroundColor: colors.neutral700,
+    alignSelf: "flex-start",
+    borderRadius: 30,
+    borderCurve: "continuous",
+    padding: 10,
+  },
 });

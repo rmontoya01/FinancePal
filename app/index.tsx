@@ -11,17 +11,17 @@ const index = () => {
         setTimeout(() => {
             router.push('/(auth)/welcome')
         }, 1150);
-    }, [] )
+    }, [])
 
-  return (
-    <View style={styles.container}>
-        <Image
-        style={styles.icon}
-        resizeMode="contain"
-        source={require("../assets/images/money01.jpeg")}
-        />
-    </View>
-  )
+    return (
+        <View style={styles.container}>
+            <Image
+                style={styles.icon}
+                resizeMode="contain"
+                source={require("../assets/images/money01.jpeg")}
+            />
+        </View>
+    )
 }
 
 export default index
@@ -36,6 +36,6 @@ const styles = StyleSheet.create({
     icon: {
         height: "35%",
         aspectRatio: 1,
-        borderRadius: "50%"
+        borderRadius: 50,
     }
 });

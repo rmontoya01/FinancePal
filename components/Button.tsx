@@ -13,18 +13,18 @@ const Button = ({
     children
 }: CustomButtonProps) => {
 
-    if(loading){
+    if (loading) {
         return (
-            <View style={[styles.button, style, {backgroundColor: "transparent"}]}>
+            <View style={[styles.button, style, { backgroundColor: "transparent" }]}>
                 <Loading />
             </View>
         )
     }
-  return (
-    <TouchableOpacity onPress={onPress} style={[styles.button, style]}>
-        {children}
-    </TouchableOpacity>
-  );
+    return (
+        <TouchableOpacity onPress={onPress} style={[styles.button, style]}>
+            {children}
+        </TouchableOpacity>
+    );
 };
 
 export default Button;
@@ -32,7 +32,7 @@ export default Button;
 const styles = StyleSheet.create({
     button: {
         backgroundColor: colors.primary,
-        borderRadius: radius._17,
+        borderRadius: 17,
         borderCurve: "continuous",
         height: verticalScale(50),
         justifyContent: "center",

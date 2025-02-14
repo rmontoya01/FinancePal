@@ -18,7 +18,7 @@ const Welcome = () => {
         <ScreenWrapper>
             <View style={styles.container}>
                 <View>
-                    <TouchableOpacity onPress={()=> router.push('/(auth)/login')} style={styles.loginButton}>
+                    <TouchableOpacity onPress={() => router.push('/(auth)/login')} style={styles.loginButton}>
                         <Typo fontWeight={"600"}>Sign In</Typo>
                     </TouchableOpacity>
 
@@ -31,21 +31,21 @@ const Welcome = () => {
                 </View>
 
                 <View style={styles.welcomeFooter}>
-                    <Animated.View 
+                    <Animated.View
                         entering={FadeInDown.duration(1100).delay(110).springify().damping(12)}
                         style={{ alignItems: "center" }}>
-                            <Typo size={28} fontWeight={"600"}>Welcome to FinancePal!</Typo>
+                        <Typo size={28} fontWeight={"600"}>Welcome to FinancePal!</Typo>
                     </Animated.View>
 
-                    <Animated.View 
+                    <Animated.View
                         entering={FadeInDown.duration(1100).delay(210).springify().damping(12)}
                         style={styles.buttonContainer}>
-                            <Button>
-                                <Typo size={18} fontWeight={"500"}>Sign In</Typo>
-                            </Button>
+                        <Button>
+                            <Typo size={18} fontWeight={"500"}>Sign In</Typo>
+                        </Button>
                     </Animated.View>
                 </View>
-                
+
             </View>
         </ScreenWrapper>
     );
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
         alignSelf: "center",
         // marginTop: verticalScale(100),
         padding: "10%",
-        borderRadius: "25%",
+        borderRadius: 25,
     },
     welcomeFooter: {
         backgroundColor: colors.neutral900,
