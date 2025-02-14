@@ -40,11 +40,12 @@ const Welcome = () => {
                     <Animated.View
                         entering={FadeInDown.duration(1100).delay(210).springify().damping(12)}
                         style={styles.buttonContainer}>
-                        <Button>
+                        <Button onPress={() => router.push('/(auth)/login')}>
                             <Typo size={18} fontWeight={"500"}>Sign In</Typo>
                         </Button>
                     </Animated.View>
                 </View>
+
 
             </View>
         </ScreenWrapper>

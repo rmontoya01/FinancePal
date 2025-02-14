@@ -21,59 +21,59 @@ const Login = () => {
     const emailRef = useRef("");
     const passwordRef = useRef("");
 
-  return (
-    <ScreenWrapper>
-        <View style={styles.container}>
-            <PreviousButton iconSize={30} />
+    return (
+        <ScreenWrapper>
+            <View style={styles.container}>
+                <PreviousButton iconSize={30} />
 
-            <View style={{gap: 10, marginTop: spacingY._20, alignItems: 'center' }}>
-                <Typo size={34} fontWeight={"700"}>
-                    FinancePal
-                </Typo>
-                <Typo size={30} fontWeight={"700"}>
-                    Sign In
-                </Typo>
-            </View>
+                <View style={{ gap: 10, marginTop: spacingY._20, alignItems: 'center' }}>
+                    <Typo size={34} fontWeight={"700"}>
+                        FinancePal
+                    </Typo>
+                    <Typo size={30} fontWeight={"700"}>
+                        Sign In
+                    </Typo>
+                </View>
 
-            <View style ={styles.formSubtitle}>
-                <Typo size={14} color={colors.textLighters}>
-                    Login here to continue: 
-                </Typo>
-                <Input 
-                    placeholder='Enter your email here' 
-                    onChangeText={(value) => (emailRef.current = value)}
-                    icon={<Ionicons name="at-outline" size={verticalScale(28)} color={colors.neutral400} weight="fill" />}
+                <View style={styles.formSubtitle}>
+                    <Typo size={14} color={colors.textLighters}>
+                        Login here to continue:
+                    </Typo>
+                    <Input
+                        placeholder='Enter your email here'
+                        onChangeText={(value) => (emailRef.current = value)}
+                        icon={<Ionicons name="at-outline" size={verticalScale(28)} color={colors.neutral400} weight="fill" />}
                     />
-                <Input 
-                    placeholder='Enter your password here' 
-                    secureTextEntry
-                    onChangeText={(value) => (passwordRef.current = value)}
-                    icon={<Ionicons name="lock-closed-sharp" size={verticalScale(28)} color={colors.neutral400} weight="fill" />}
+                    <Input
+                        placeholder='Enter your password here'
+                        secureTextEntry
+                        onChangeText={(value) => (passwordRef.current = value)}
+                        icon={<Ionicons name="lock-closed-sharp" size={verticalScale(28)} color={colors.neutral400} weight="fill" />}
                     />
-            </View> 
-            {/* email and password box */}
+                </View>
+                {/* email and password box */}
 
-            {/* sign in button code below here */}
-            <Animated.View
-                // onPress={()=> router.push('/(auth)/login') 
-                entering={FadeInDown.duration(1100).delay(210).springify().damping(12)}
-                style={styles.buttonContainer}>
-                    <Button>
+                {/* sign in button code below here */}
+                <Animated.View
+                    // onPress={()=> router.push('/(auth)/login') 
+                    entering={FadeInDown.duration(1100).delay(210).springify().damping(12)}
+                    style={styles.buttonContainer}>
+                    <Button onPress={() => router.push('/(auth)/mainMenu01')}>
                         <Typo size={18} fontWeight={"500"}>Sign In</Typo>
                     </Button>
-            </Animated.View>
+                </Animated.View>
 
-            <Animated.View 
-                entering={FadeInDown.duration(1100).delay(210).springify().damping(12)}
-                style={styles.buttonContainer}>
-                    <Button>
+                <Animated.View
+                    entering={FadeInDown.duration(1100).delay(210).springify().damping(12)}
+                    style={styles.buttonContainer}>
+                    <Button onPress={() => router.push('/(auth)/mainMenu01')}>
                         <Typo size={18} fontWeight={"500"}>Create an Account?</Typo>
                     </Button>
-            </Animated.View>
+                </Animated.View>
 
-        </View>
-    </ScreenWrapper>
-  );
+            </View>
+        </ScreenWrapper>
+    );
 };
 
 export default Login
