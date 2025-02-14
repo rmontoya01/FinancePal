@@ -66,7 +66,7 @@ const Login = () => {
                 <Animated.View
                     entering={FadeInDown.duration(1100).delay(210).springify().damping(12)}
                     style={styles.buttonContainer}>
-                    <Button onPress={() => router.push('/(auth)/mainMenu01')}>
+                    <Button onPress={() => router.push('/(auth)/accountsCreate01')}>
                         <Typo size={18} fontWeight={"500"}>Create an Account?</Typo>
                     </Button>
                 </Animated.View>

@@ -32,7 +32,6 @@ const styles = StyleSheet.create({
         fontSize: 24,
         margin: 10,
         color: '#fff',
-        fontSize: 20,
     },
 })
 

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 
 import ScreenWrapper from '@/components/ScreenWrapper';
@@ -13,9 +13,12 @@ import Button from "@/components/Button";
 
 const mainMenu01 = () => {
   return (
-    <View style={styles.container}>
-      <Typo>MAIN MENU 01</Typo>
-    </View>
+    <ScreenWrapper style={styles.container}>
+      <PreviousButton iconSize={30} />
+      <View style={{ gap: 10, marginTop: spacingY._20, alignItems: 'center' }}>
+        <Typo>Income and More Info!</Typo>
+      </View>
+    </ScreenWrapper>
   )
 }
 
@@ -28,4 +31,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.neutral900,
   },
+  card: {
+    justifyContent: "flex-start",
+    backgroundColor: colors.neutral300,
+  }
 })
