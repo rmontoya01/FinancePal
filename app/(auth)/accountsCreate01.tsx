@@ -38,50 +38,62 @@ const accountsCreate01 = () => {
                 <PreviousButton iconSize={30} />
 
                 <View style={{ gap: 10, marginTop: spacingY._20, alignItems: 'center' }}>
-                    <Typo>Create your account here</Typo>
+                    <Typo size={38} fontWeight={600}>New User Account</Typo>
                 </View>
 
                 {/* create fields */}
-                <View style={{ paddingHorizontal: spacingX._20, gap: spacingY._20, marginTop: spacingY._20 }}>
+                <View style={{ paddingHorizontal: spacingX._20, gap: spacingY._20, marginTop: spacingY._10 }}>
                     <Typo>
                         Create your account here!
                     </Typo>
                     <Input
-                        placeholder="Email"
+                        placeholder="Email Address"
                         onChangeText={(text) => emailRef.current = text}
+                        icon={<Ionicons name="at-outline" size={verticalScale(28)} color={colors.neutral400} weight="fill" />}
                     />
                 </View>
 
                 {/* Password */}
-                <View style={{ paddingHorizontal: spacingX._20, gap: spacingY._20, marginTop: spacingY._20 }}>
+                <View style={{ paddingHorizontal: spacingX._20, gap: spacingY._20, marginTop: spacingY._10 }}>
                     <Input
                         placeholder="Password"
                         onChangeText={(text) => emailRef.current = text}
                         secureTextEntry={true}
+                        icon={<Ionicons name="lock-closed-sharp" size={verticalScale(28)} color={colors.neutral400} weight="fill" />}
                     />
                 </View>
 
-                <View style={{ paddingHorizontal: spacingX._20, gap: spacingY._20, marginTop: spacingY._20 }}>
+                <View style={{ paddingHorizontal: spacingX._20, gap: spacingY._20, marginTop: spacingY._10 }}>
                     <Input
                         placeholder="Confirm Password"
                         onChangeText={(text) => emailRef.current = text}
                         secureTextEntry={true}
+                        icon={<Ionicons name="lock-closed-sharp" size={verticalScale(28)} color={colors.neutral400} weight="fill" />}
                     />
                 </View>
 
-                <View style={{ paddingHorizontal: spacingX._20, gap: spacingY._20, marginTop: spacingY._20 }}>
+                <View style={{ paddingHorizontal: spacingX._20, gap: spacingY._20, marginTop: spacingY._10 }}>
                     <Input
                         placeholder="Full Name"
                         onChangeText={(text) => emailRef.current = text}
+                        icon={<Ionicons
+                            name="person-circle-sharp"
+                            size={verticalScale(28)} color={colors.neutral400} weight="fill" />}
                     />
                 </View>
 
-                <View style={{ paddingHorizontal: spacingX._20, gap: spacingY._20, marginTop: spacingY._20 }}>
+                <View style={{ paddingHorizontal: spacingX._20, gap: spacingY._20, marginTop: spacingY._10 }}>
                     <Input
-                        placeholder="Fill In Blank"
+                        placeholder="Referral Code (Optional)"
                         onChangeText={(text) => emailRef.current = text}
+                        icon={<Ionicons name="person-add-outline"
+                            size={verticalScale(28)} color={colors.neutral400} weight="fill" />}
                     />
                 </View>
+
+                <Button onPress={() => router.push('/(auth)/login')}>
+                    <Typo size={14} fontWeight={"500"}>Create Account</Typo>
+                </Button>
 
             </View>
         </ScreenWrapper>
