@@ -95,7 +95,7 @@ const Login = () => {
                 <Animated.View
                     entering={FadeInDown.duration(1100).delay(210).springify().damping(12)}
                     style={styles.buttonContainer}>
-                    <Button onPress={() => router.push('/(auth)/accountsCreate01')}>
+                    <Button onPress={() => router.replace('/(auth)/accountsCreate01')}>
                         <Typo size={18} fontWeight={"500"} color={colors.white}>Create an Account?</Typo>
                     </Button>
                 </Animated.View>
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     },
     formSubtitle: {
         gap: spacingY._20,
-    }, // button style herer
+    }, // button style here
     buttonContainer: {
         width: "100%",
         paddingHorizontal: spacingX._40,
