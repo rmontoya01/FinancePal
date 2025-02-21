@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React, { useRef } from 'react'
+import { Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import React, { useRef, useState } from 'react'
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated'
 import { useRouter } from 'expo-router';
 
@@ -20,6 +20,27 @@ const Login = () => {
 
     const emailRef = useRef("");
     const passwordRef = useRef("");
+
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleSubmit = async () => {
+        if (!emailRef.current || !passwordRef.current) {
+            alert("Please fill in all fields");
+            return;
+        }
+
+        console.log("Email: ", emailRef.current);
+        console.log("Password: ", passwordRef.current);
+        console.log("Submitting... Info is valid!");
+
+        // setIsLoading(true);
+
+        // // Simulate a network request
+        // setTimeout(() => {
+        //     setIsLoading(false);
+        //     router.push('/(auth)/mainMenu01');
+        // }, 1500);
+    }
 
     return (
         <ScreenWrapper>
@@ -53,13 +74,21 @@ const Login = () => {
                 </View>
                 {/* email and password box */}
 
-                {/* sign in button code below here */}
+                {/* Forgot Password touchable text here */}
+
+                <TouchableOpacity>
+                    <Typo size={16} color={colors.text} style={{ alignSelf: "flex-end" }}>
+                        Forgot Password?
+                    </Typo>
+                </TouchableOpacity>
+                {/* <TouchableOpacity onPress={() => router.push('/(auth)/forgotPassword')} style={styles.forgotPassword}> */}
+
+                {/* sign in button code below here + animated view */}
                 <Animated.View
-                    // onPress={()=> router.push('/(auth)/login') 
                     entering={FadeInDown.duration(1100).delay(210).springify().damping(12)}
                     style={styles.buttonContainer}>
-                    <Button onPress={() => router.push('/(auth)/mainMenu01')}>
-                        <Typo size={18} fontWeight={"500"}>Sign In</Typo>
+                    <Button loading={isLoading} onPress={handleSubmit}>
+                        <Typo size={18} fontWeight={"500"} color={colors.white}>Sign In </Typo>
                     </Button>
                 </Animated.View>
 
@@ -67,7 +96,7 @@ const Login = () => {
                     entering={FadeInDown.duration(1100).delay(210).springify().damping(12)}
                     style={styles.buttonContainer}>
                     <Button onPress={() => router.push('/(auth)/accountsCreate01')}>
-                        <Typo size={18} fontWeight={"500"}>Create an Account?</Typo>
+                        <Typo size={18} fontWeight={"500"} color={colors.white}>Create an Account?</Typo>
                     </Button>
                 </Animated.View>
 
@@ -92,4 +121,20 @@ const styles = StyleSheet.create({
         paddingHorizontal: spacingX._40,
         // gap: 2,
     },
-})
+    forgotPassword: {
+        textAlign: "right",
+        fontWeight: "600",
+        color: colors.text,
+    },
+    // footer: {
+    //     flexDirection: "row",
+    //     justifyContent: "center",
+    //     alignItems: "center",
+    //     gap: 5,
+    // },
+    // textFooter: {
+    //     textAlign: "center",
+    //     color: colors.text,
+    //     fontSize: verticalScale(17),
+    // },
+});
