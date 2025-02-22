@@ -61,9 +61,9 @@ const Login = () => {
                         Login here to continue:
                     </Typo>
                     <Input
-                        placeholder='Enter your email here'
+                        placeholder='Enter your username here'
                         onChangeText={(value) => (emailRef.current = value)}
-                        icon={<Ionicons name="at-outline" size={verticalScale(28)} color={colors.neutral400} weight="fill" />}
+                        icon={<Ionicons name="people-sharp" size={verticalScale(28)} color={colors.neutral400} weight="fill" />}
                     />
                     <Input
                         placeholder='Enter your password here'
@@ -89,6 +89,9 @@ const Login = () => {
                     style={styles.buttonContainer}>
                     <Button loading={isLoading} onPress={handleSubmit}>
                         <Typo size={18} fontWeight={"500"} color={colors.white}>Sign In </Typo>
+                    </Button>
+                    <Button onPress={() => router.push('/(tabs)')}>
+                        <Typo> TEMP SIGN IN</Typo>
                     </Button>
                 </Animated.View>
 

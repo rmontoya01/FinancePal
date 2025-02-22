@@ -21,14 +21,14 @@ const accountsCreate01 = () => {
     const emailRef = useRef("");
     const passwordRef = useRef("");
     const fullNameRef = useRef("");
-    const confirmEmailRef = useRef("");
+    const usernameRef = useRef("");
     const confirmPasswordRef = useRef("");
     const referralCodeRef = useRef("");
 
     const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = async () => {
-        if (!emailRef.current || !passwordRef.current || !fullNameRef.current || !confirmEmailRef.current || !confirmPasswordRef.current) {
+        if (!emailRef.current || !passwordRef.current || !fullNameRef.current || !usernameRef.current || !confirmPasswordRef.current) {
             alert("Please fill in all fields");
             return;
         }
@@ -37,7 +37,7 @@ const accountsCreate01 = () => {
         console.log("Email: ", emailRef.current);
         console.log("Password: ", passwordRef.current);
         console.log("Full Name: ", fullNameRef.current);
-        console.log("Confirmed Email: ", confirmEmailRef.current);
+        console.log("Username: ", usernameRef.current);
         console.log("Confirmed Password: ", confirmPasswordRef.current);
         console.log("Submitting... Info is valid!");
 
@@ -71,22 +71,22 @@ const accountsCreate01 = () => {
                     />
                     {/* Email */}
                     <Input
-                        placeholder='Enter email of choice here'
+                        placeholder='Enter an email of choice here'
                         onChangeText={(value) => (emailRef.current = value)}
                         icon={<Ionicons name="at-outline" size={verticalScale(28)} color={colors.neutral400} weight="fill" />}
                     />
-                    {/* Confirm Email */}
+                    {/* Username */}
                     <Input
-                        placeholder='Confirm your email here'
-                        onChangeText={(value) => (confirmEmailRef.current = value)}
-                        icon={<Ionicons name="at-outline" size={verticalScale(28)} color={colors.neutral400} weight="fill" />}
+                        placeholder='Enter a username of choice here'
+                        onChangeText={(value) => (usernameRef.current = value)}
+                        icon={<Ionicons name="people-sharp" size={verticalScale(28)} color={colors.neutral400} weight="fill" />}
                     />
                     {/* Password */}
                     <Input
                         placeholder='Enter a password of choice here'
                         secureTextEntry
                         onChangeText={(value) => (passwordRef.current = value)}
-                        icon={<Ionicons name="lock-closed-sharp" size={verticalScale(28)} color={colors.neutral400} weight="fill" />}
+                        icon={<Ionicons name="lock-open-sharp" size={verticalScale(28)} color={colors.neutral400} weight="fill" />}
                     />
                     {/* Confirm Password */}
                     <Input

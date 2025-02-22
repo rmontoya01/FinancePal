@@ -3,6 +3,8 @@ import React, { useEffect } from 'react'
 import { colors } from '@/constants/themes'
 import { useRouter } from 'expo-router'
 
+// URL for Ionicons is https://icons.expo.fyi/
+
 const index = () => {
 
     // This constant routes to the welcome screen after a 1.150 second splashscreen icon. 
