@@ -14,13 +14,13 @@ import { verticalScale } from '@/utils/styling';
 import Button from "@/components/Button";
 
 const HomeScreen = () => {
+
+  const router = useRouter();
+
   return (
     <ScreenWrapper>
 
       <View style={styles.container}>
-        <TouchableOpacity style={styles.settingsIcon}>
-          <Ionicons name="settings-sharp" size={24} color={colors.neutral200} weight={"bold"} />
-        </TouchableOpacity>
 
         <View style={styles.header}>
 
@@ -29,6 +29,14 @@ const HomeScreen = () => {
             <Typo size={32} fontWeight={"600"}>User</Typo>
           </View>
 
+          <TouchableOpacity style={styles.settingsIcon} onPress={() => router.push('/(auth)/settings')}>
+            <Ionicons name="settings-sharp" size={24} color={colors.neutral200} weight={"bold"} />
+          </TouchableOpacity>
+
+        </View>
+
+        <View style={styles.displayMenu}>
+          <Typo size={24} fontWeight={"700"} color={colors.textLight}>Current Budget</Typo>
         </View>
 
       </View>
@@ -54,7 +62,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row-reverse',
     alignContent: 'flex-end',
     backgroundColor: colors.neutral800,
-    padding: spacingX._5,
+    padding: spacingX._7,
     borderRadius: 40,
+  },
+  displayMenu: {
+    marginTop: spacingY._20,
+    marginBottom: spacingY._10,
+    alignItems: 'center',
+    backgroundColor: colors.neutral800,
+    height: verticalScale(400),
+    padding: spacingX._10,
+    borderRadius: radius._30,
   }
 })
