@@ -16,6 +16,9 @@ export default function History() {
     <View style={styles.container}>
       <Text style={styles.text}>History Screen Page</Text>
       <View style={styles.containerText}>
+        <div style={styles.borderText}>
+          <Text style={styles.text}>History</Text>
+        </div>
         {/* <FlashList
           data={DATA}
           renderItem={({ item }) => <Text style={styles.listText}>{item.title}</Text>}
@@ -50,4 +53,15 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontStyle: 'italic',
   },
+  borderText: {
+    borderWidth: 1,
+    borderColor: 'white',
+    borderStyle: 'solid',
+    borderRadius: 10,
+    padding: 10,
+    margin: 10,
+    color: 'white',
+    fontSize: 20,
+    fontStyle: 'italic',
+  }
 });
