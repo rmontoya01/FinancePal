@@ -10,11 +10,11 @@ const index = () => {
       <Text >Welcome to FinancePal</Text>
       <View>
         <Image
-        style={styles.imageStyle}
-        source={require('../../assets/images/Designer01.jpeg')}
+          style={styles.imageStyle}
+          source={require('../../assets/images/Designer01.jpeg')}
         />
       </View>
-      <StatusBar style="auto" />
+      <StatusBar />
     </View>
   );
 }
@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     padding: 100,
     margin: 100,
     justifyContent: 'center',
-}
+  }
 });
 
 export default index;

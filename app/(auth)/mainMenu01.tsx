@@ -10,6 +10,7 @@ import Input from '@/components/Input';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { verticalScale } from '@/utils/styling';
 import Button from "@/components/Button";
+import Tabs from "@/components/Tabs";
 
 const mainMenu01 = () => {
   return (
@@ -17,6 +18,7 @@ const mainMenu01 = () => {
       <PreviousButton iconSize={30} />
       <View style={{ gap: 10, marginTop: spacingY._20, alignItems: 'center' }}>
         <Typo>Income and More Info!</Typo>
+        <Tabs />
       </View>
     </ScreenWrapper>
   )
