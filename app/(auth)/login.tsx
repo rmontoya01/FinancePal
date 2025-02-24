@@ -90,6 +90,7 @@ const Login = () => {
                     <Button loading={isLoading} onPress={handleSubmit}>
                         <Typo size={18} fontWeight={"500"} color={colors.white}>Sign In </Typo>
                     </Button>
+                    {/* TEMP SIGN IN BUTTON HERE TO MIMIC LOG IN */}
                     <Button onPress={() => router.push('/(tabs)')}>
                         <Typo> TEMP SIGN IN</Typo>
                     </Button>
