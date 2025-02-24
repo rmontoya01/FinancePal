@@ -1,13 +1,23 @@
-import { View, Platform, TouchableOpacity } from 'react-native';
-import { useLinkBuilder, useTheme } from '@react-navigation/native';
+import { View, Platform, TouchableOpacity, StyleSheet } from 'react-native';
+import { useIsFocused, useLinkBuilder, useTheme } from '@react-navigation/native';
 import { Text, PlatformPressable } from '@react-navigation/elements';
 import { BottomTabBarProps, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { colors } from '@/constants/themes';
+import { colors, spacingY } from '@/constants/themes';
+import { verticalScale } from '@/utils/styling';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 export function TabBarCustomize({ state, descriptors, navigation }: BottomTabBarProps) {
 
+    const tabsIcons: any = {
+        index: (focused: boolean) => <Ionicons name="home" size={24} color={focused ? colors.primary : colors.neutral100} />,
+        budget: (focused: boolean) => <Ionicons name="cash" size={24} color={focused ? colors.primary : colors.neutral100} />,
+        history: (focused: boolean) => <Ionicons name="time" size={24} color={focused ? colors.primary : colors.neutral100} />,
+        stats: (focused: boolean) => <Ionicons name="bar-chart" size={24} color={focused ? colors.primary : colors.neutral100} />,
+        converter: (focused: boolean) => <Ionicons name="calculator" size={24} color={focused ? colors.primary : colors.neutral100} />,
+    }
+
     return (
-        <View style={{ flexDirection: 'row', width: "100%", height: 100 }}>
+        <View style={styles.tabs}>
             {state.routes.map((route, index) => {
                 const { options } = descriptors[route.key];
                 const label: any =
@@ -41,19 +51,48 @@ export function TabBarCustomize({ state, descriptors, navigation }: BottomTabBar
                 return (
                     <TouchableOpacity
                         // href={buildHref(route.name, route.params)}
+                        key={route.key}
                         accessibilityState={isFocused ? { selected: true } : {}}
                         accessibilityLabel={options.tabBarAccessibilityLabel}
                         testID={options.tabBarButtonTestID}
                         onPress={onPress}
                         onLongPress={onLongPress}
-                        style={{ flex: 1 }}
+                        style={styles.tabsObjs}
                     >
-                        <Text style={{ color: isFocused ? colors.primary : colors.text }}>
+
+                        {/* TAB TEXT */}
+                        {<Text style={{ color: isFocused ? colors.primary : colors.neutral100 }}>
                             {label}
-                        </Text>
+                        </Text>}
+
+                        {/* TAB ICONS */}
+                        {
+                            tabsIcons[route.name] && tabsIcons[route.name](isFocused)
+                        }
+
                     </TouchableOpacity>
                 );
             })}
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+    tabs: {
+        flexDirection: 'row',
+        width: "100%",
+        height: Platform.OS == "ios" ? verticalScale(70) : verticalScale(50),
+        backgroundColor: colors.neutral800,
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        borderTopColor: colors.neutral700,
+        borderTopWidth: 4,
+    },
+    tabsObjs: {
+        // flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: Platform.OS == "ios" ? spacingY._12 : spacingY._7,
+    }
+}
+);
