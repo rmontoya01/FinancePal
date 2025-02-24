@@ -16,7 +16,22 @@ import Button from "@/components/Button";
 const HomeScreen = () => {
   return (
     <ScreenWrapper>
-      <Typo>HOME</Typo>
+
+      <View style={styles.container}>
+        <TouchableOpacity style={styles.settingsIcon}>
+          <Ionicons name="settings-sharp" size={24} color={colors.neutral200} weight={"bold"} />
+        </TouchableOpacity>
+
+        <View style={styles.header}>
+
+          <View style={{ gap: 5, marginTop: spacingY._5, alignItems: 'center' }}>
+            <Typo size={30} color={colors.primaryLight} fontWeight={"500"}>Welcome</Typo>
+            <Typo size={32} fontWeight={"600"}>User</Typo>
+          </View>
+
+        </View>
+
+      </View>
     </ScreenWrapper>
   )
 }
@@ -24,5 +39,22 @@ const HomeScreen = () => {
 export default HomeScreen
 
 const styles = StyleSheet.create({
-
+  container: {
+    flex: 1,
+    paddingHorizontal: spacingX._25,
+    marginTop: verticalScale(6),
+  },
+  header: {
+    // flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacingY._7,
+  },
+  settingsIcon: {
+    flexDirection: 'row-reverse',
+    alignContent: 'flex-end',
+    backgroundColor: colors.neutral800,
+    padding: spacingX._5,
+    borderRadius: 40,
+  }
 })
