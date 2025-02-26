@@ -1,8 +1,7 @@
-import { Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useRef, useState } from 'react'
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated'
 import { useRouter } from 'expo-router';
-import { ScrollView } from 'react-native-reanimated/lib/typescript/Animated';
 
 import ScreenWrapper from '@/components/ScreenWrapper';
 import PreviousButton from '@/components/PreviousButton';
@@ -22,7 +21,7 @@ const stats = () => {
         <ScreenWrapper>
             <View style={styles.container}>
                 <View style={{ gap: 5, marginTop: spacingY._5, alignItems: 'center' }}>
-                    <Header title="Stats" />
+                    <Header />
                 </View>
 
                 <ScrollView contentContainerStyle={{
