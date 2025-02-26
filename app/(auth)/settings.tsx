@@ -20,7 +20,7 @@ export default function Settings() {
       <View style={styles.container}>
         <PreviousButton iconSize={30} />
 
-        <View style={{ gap: 5, marginTop: spacingY._5, alignItems: 'center' }}>
+        <View style={{ gap: 2, marginTop: spacingY._5, alignItems: 'center' }}>
           <Typo size={34} fontWeight={"700"}>
             Settings
           </Typo>
@@ -45,6 +45,31 @@ export default function Settings() {
           </Button>
         </View>
 
+        <View style={styles.buttonContainer}>
+          <Button>
+            <Typo size={18} fontWeight={"500"} color={colors.white}>App Info</Typo>
+          </Button>
+        </View>
+
+        <View style={styles.buttonContainer}>
+          <Button>
+            <Typo size={18} fontWeight={"500"} color={colors.white}>Delete User</Typo>
+          </Button>
+        </View>
+
+        <View style={styles.buttonContainer}>
+          <Button>
+            <Typo size={18} fontWeight={"500"} color={colors.white}>Change User</Typo>
+          </Button>
+        </View>
+
+      </View>
+
+      {/* Footer */}
+      <View style={styles.footerContainer}>
+        <Button>
+          <Typo size={18} fontWeight={"500"} color={colors.white}>Return & Confirm</Typo>
+        </Button>
       </View>
 
     </ScreenWrapper>
@@ -65,10 +90,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacingX._40,
     // gap: 2,
   },
-  forgotPassword: {
-    textAlign: "right",
-    fontWeight: "600",
-    color: colors.text,
+  footerContainer: {
+    width: "100%",
+    paddingHorizontal: spacingX._40,
+    paddingBottom: spacingY._40,
+    gap: 2,
   },
 }
 );
