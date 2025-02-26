@@ -1,10 +1,21 @@
 import React from "react";
 import { View, StyleSheet, Text, Dimensions, Image } from 'react-native';
 
+type headerTitle = {
+    title: string;
+};
+
+const Title = (props: headerTitle) => {
+    return (
+        <Text style={styles.labelStyle}>{props.title}</Text>
+
+    )
+}
+
 const Header = () => {
     return (
         <View style={styles.container}>
-            <Text style={styles.labelStyle}>FinancePal</Text>
+            <Title title="Stats"></Title>
             <Image
                 style={styles.imageStyle}
                 source={require('../assets/images/Designer01.jpeg')}
