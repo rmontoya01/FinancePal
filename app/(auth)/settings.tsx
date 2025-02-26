@@ -13,7 +13,11 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { verticalScale } from '@/utils/styling';
 import Button from "@/components/Button";
 
+
 export default function Settings() {
+
+  const router = useRouter();
+
   return (
     <ScreenWrapper>
 
@@ -67,7 +71,7 @@ export default function Settings() {
 
       {/* Footer */}
       <View style={styles.footerContainer}>
-        <Button>
+        <Button onPress={() => router.replace('/(tabs)')}>
           <Typo size={18} fontWeight={"500"} color={colors.white}>Return & Confirm</Typo>
         </Button>
       </View>
