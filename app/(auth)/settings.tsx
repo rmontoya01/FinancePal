@@ -43,24 +43,28 @@ export default function Settings() {
           </Button>
         </Animated.View>
 
+        {/* Other Settings */}
         <View style={styles.buttonContainer}>
           <Button>
             <Typo size={18} fontWeight={"500"} color={colors.white}>Other Settings</Typo>
           </Button>
         </View>
 
+        {/* App Info */}
         <View style={styles.buttonContainer}>
           <Button>
             <Typo size={18} fontWeight={"500"} color={colors.white}>App Info</Typo>
           </Button>
         </View>
 
+        {/* Delete User */}
         <View style={styles.buttonContainer}>
           <Button>
             <Typo size={18} fontWeight={"500"} color={colors.white}>Delete User</Typo>
           </Button>
         </View>
 
+        {/* Change User */}
         <View style={styles.buttonContainer}>
           <Button>
             <Typo size={18} fontWeight={"500"} color={colors.white}>Change User</Typo>

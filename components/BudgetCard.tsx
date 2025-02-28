@@ -1,4 +1,4 @@
-import { ImageBackground, StyleSheet, Text, View } from 'react-native'
+import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import Typo from './Typo'
 import { scale, verticalScale } from '@/utils/styling'
@@ -47,9 +47,9 @@ const BudgetCard = () => {
                     {/* Expenses Amt */}
                     <View style={{ gap: verticalScale(10) }}>
                         <View style={styles.incomesExpenses}>
-                            <View style={styles.statsIcon}>
+                            <TouchableOpacity style={styles.statsIcon}>
                                 <Ionicons name="arrow-up-sharp" size={24} color={colors.neutral900} />
-                            </View>
+                            </TouchableOpacity>
                             <Typo size={16} color={colors.white} fontWeight={"600"}>
                                 Expense
                             </Typo>
