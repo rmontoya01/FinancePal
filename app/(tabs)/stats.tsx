@@ -22,6 +22,7 @@ const stats = () => {
             <View style={styles.container}>
                 <View style={{ gap: 5, marginTop: spacingY._5, alignItems: 'center' }}>
                     <Header />
+                    <Text style={styles.text}> Stats here</Text>
                 </View>
 
                 <ScrollView contentContainerStyle={{
@@ -30,9 +31,21 @@ const stats = () => {
                     paddingBottom: spacingY._12,
                 }}
                     showsVerticalScrollIndicator={false}>
+                    <Text style={styles.text}> Pi Chart Here</Text>
+                    <View style={styles.containerText}>
+                        <Text >Key here</Text>
+                    </View>
+                    <Text style={styles.text}> Details or top 5 over budget</Text>
+                    <View style={styles.containerText}>
+                        <Text >Details here</Text>
+                    </View>
+
                 </ScrollView>
 
+
+
             </View>
+
         </ScreenWrapper>
     )
 }
@@ -44,5 +57,18 @@ const styles = StyleSheet.create({
         paddingHorizontal: spacingX._15,
         paddingVertical: spacingY._7,
         gap: spacingY._12,
-    }
+    },
+    text: {
+        fontSize: 18,
+        fontWeight: '500',
+        color: colors.neutral200,
+    },
+    containerText: {
+        backgroundColor: 'lightblue',
+        padding: 50,
+
+        width: '90%',
+        marginBlockStart: "10%",
+        borderRadius: 20,
+    },
 })
