@@ -52,3 +52,10 @@ export interface InputProps extends TextInputProps {
     // label?: string;
     // error?: string;
 }
+
+export type ModalWrapperProps = {
+    style?: ViewStyle;
+    children: React.ReactNode;
+    background?: string;
+    // bg?: string;
+}

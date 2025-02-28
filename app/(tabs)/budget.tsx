@@ -16,6 +16,8 @@ import BudgetCard from '@/components/BudgetCard';
 
 const budget = () => {
 
+    const router = useRouter();
+
     const getTotalBalance = () => {
         return 0;
     }
@@ -39,7 +41,7 @@ const budget = () => {
                 {/* Creating the touchable buttons */}
                 {/* Income */}
                 <View style={styles.buttonContainer}>
-                    <Button>
+                    <Button onPress={() => router.push('/(modals)/incomeModal')}>
                         <Typo size={18} fontWeight={"500"} color={colors.white}>Income Bro</Typo>
                     </Button>
                 </View>
