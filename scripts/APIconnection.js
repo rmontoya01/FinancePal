@@ -6,7 +6,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const app = express();
-const port = 3000; // Update if port changes
+
 
 const corsOptions = {
   origin: 'http://18.191.240.219:3000',
@@ -14,8 +14,8 @@ const corsOptions = {
   credentials: true,
 };
 app.use(cors(corsOptions)); // To allow cross-origin requests
-
 app.use(express.json()); // To look through JSON requests
+
 
 // MySQL connection pool using environment variables
 const db = mysql.createPool({
@@ -81,7 +81,13 @@ app.post('/register', async (req, res) => {
   }
 });
 
+//Used to handle requests to '/'
+app.get('/', (req, res) => {
+  res.send('Hello, FinancePal API is running!');
+});
+
 // Start server
+const port = 3000; // Update if port changes
 app.listen(port, '0.0.0.0', () => {
   console.log(`Server running on port ${port}`);
 });
