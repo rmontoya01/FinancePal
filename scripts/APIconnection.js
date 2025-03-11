@@ -9,7 +9,7 @@ const app = express();
 
 
 const corsOptions = {
-  origin: 'http://18.191.240.219:3000',
+  origin: '*', // Allow all origins CHANGE LATER
   methods: ['GET', 'POST'],
   credentials: true,
 };
