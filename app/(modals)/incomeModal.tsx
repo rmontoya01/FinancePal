@@ -65,7 +65,7 @@ const IncomeModal = () => {
 
             <View style={styles.footer}>
                 <Button onPress={onSubmit} loading={loading} style={{ flex: 2 }}>
-                    <Typo color={colors.black} fontWeight={"600"}>
+                    <Typo color={colors.white} fontWeight={"600"}>
                         Add Income
                     </Typo>
                 </Button>
