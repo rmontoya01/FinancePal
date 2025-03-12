@@ -11,6 +11,7 @@ import Button from '@/components/Button'
 import { IncomeType } from '@/types'
 import { useRouter } from 'expo-router'
 import { scale } from '@/utils/styling'
+import { createOrUpdateIncome } from '@/services/incomeService'
 
 
 const IncomeModal = () => {
@@ -22,25 +23,30 @@ const IncomeModal = () => {
         // image: null,
     });
 
-    const [loading, setLoading] = useState(false);
-
+    // const [loading, setLoading] = useState(false);
     const router = useRouter();
 
     const onSubmit = async () => {
         let { name } = income;
         if (!name.trim()) {
-            Alert.alert("User", "Please fill in all of the fields!");
+            Alert.alert("Income", "Please fill in all of the fields!");
             return;
         }
 
+        const data: IncomeType = {
+            name,
+            // uid: user?.uid
+        }
+
         // setLoading(true);
-        // const result = await updateUser(user?.uid as string, income);
+        // const result: { status: string } = await createOrUpdateIncome(data);
         // setLoading(false);
-        // if (result.success) {
+        // console.log('result: ', result);
+        // if (result && result.status === 'success') {
         //     updateUserData(user?.uid as string);
         //     router.back();
         // } else {
-        //     Alert.alert("User", "not correct testresult")
+        //     Alert.alert("Income", "not correct testresult")
         // }
     };
 
@@ -55,7 +61,17 @@ const IncomeModal = () => {
                     <View style={styles.textContainer}>
                         <Typo color={colors.neutral200}>Income Name</Typo>
                         <Input
-                            placeholder='Income Name'
+                            placeholder='Salary Pay'
+                            value={income.name}
+                            onChangeText={(value) => setIncome({ ...income, name: value })} />
+                    </View>
+                </ScrollView>
+
+                <ScrollView contentContainerStyle={styles.form}>
+                    <View style={styles.textContainer}>
+                        <Typo color={colors.neutral200}>Income Amount</Typo>
+                        <Input
+                            placeholder='Salary Amount'
                             value={income.name}
                             onChangeText={(value) => setIncome({ ...income, name: value })} />
                     </View>
@@ -64,7 +80,7 @@ const IncomeModal = () => {
             </View>
 
             <View style={styles.footer}>
-                <Button onPress={onSubmit} loading={loading} style={{ flex: 2 }}>
+                <Button onPress={onSubmit} style={{ flex: 2 }}>
                     <Typo color={colors.white} fontWeight={"600"}>
                         Add Income
                     </Typo>
@@ -97,10 +113,14 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         paddingHorizontal: spacingX._15,
         gap: scale(10),
-        paddingTop: spacingY._12,
+        paddingTop: spacingY._25,
         borderTopColor: colors.neutral800,
-        marginBottom: spacingY._5,
+        marginBottom: spacingY._40,
         borderTopWidth: 1,
     }
 })
+
+// function useAuth(): { user: any; updateUserData: any } {
+//     throw new Error('Function not implemented.')
+// }
 
