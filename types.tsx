@@ -59,3 +59,28 @@ export type ModalWrapperProps = {
     background?: string;
     // bg?: string;
 }
+
+export type ResponseType = {
+    success: boolean;
+    data?: any;
+    message?: string;
+}
+
+export type IncomeType = {
+    id?: string;
+    name: string;
+    amount?: number;
+    totalIncome?: number;
+    totalExpenses?: number;
+    // image: any;
+    uid?: string;
+    created?: Date;
+};
+
+export type HeaderProps = {
+    title?: string;
+    style?: ViewStyle;
+    leftIcon?: ReactNode;
+    rightIcon?: ReactNode;
+};
+

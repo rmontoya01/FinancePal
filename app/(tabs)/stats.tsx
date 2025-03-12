@@ -21,8 +21,8 @@ const stats = () => {
         <ScreenWrapper>
             <View style={styles.container}>
                 <View style={{ gap: 5, marginTop: spacingY._5, alignItems: 'center' }}>
-                    <Header />
-                    <Text style={styles.text}> Stats here</Text>
+                    <Header title="Stats" style={{ marginVertical: spacingY._5 }} />
+                    {/* <Text style={styles.text}> Stats here</Text> */}
                 </View>
 
                 <ScrollView contentContainerStyle={{

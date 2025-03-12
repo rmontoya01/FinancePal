@@ -31,9 +31,9 @@ const BudgetCard = () => {
                     {/* Income */}
                     <View style={{ gap: verticalScale(10) }}>
                         <View style={styles.incomesExpenses}>
-                            <View style={styles.statsIcon}>
+                            <TouchableOpacity style={styles.statsIcon}>
                                 <Ionicons name="arrow-down-sharp" size={24} color={colors.neutral900} />
-                            </View>
+                            </TouchableOpacity>
                             <Typo size={16} color={colors.white} fontWeight={"600"}>
                                 Income
                             </Typo>
