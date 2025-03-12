@@ -84,19 +84,19 @@ app.post('/register', async (req, res) => {
 // Login route
 app.post('/login', async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
 
     const connection = await db.promise().getConnection(); // Use the promise-based connection
 
     try {
-      // Check if user with the provided email exists
+      // Check if user with the provided username exists
       const [users] = await connection.query(
-        'SELECT * FROM Users WHERE email = ?',
-        [email]
+        'SELECT * FROM Users WHERE username = ?',
+        [username]
       );
 
       if (users.length === 0) {
-        return res.status(400).json({ error: 'Invalid email or password' });
+        return res.status(400).json({ error: 'Invalid username or password' });
       }
 
       const user = users[0];
@@ -105,7 +105,7 @@ app.post('/login', async (req, res) => {
       const isMatch = await bcrypt.compare(password, user.password_hash);
 
       if (!isMatch) {
-        return res.status(400).json({ error: 'Invalid email or password' });
+        return res.status(400).json({ error: 'Invalid username or password' });
       }
 
       // Generate a JWT token

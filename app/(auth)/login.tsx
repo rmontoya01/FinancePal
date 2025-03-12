@@ -18,24 +18,24 @@ const Login = () => {
 
     const router = useRouter();
 
-    const emailRef = useRef("");
+    const usernameRef = useRef("");
     const passwordRef = useRef("");
 
     const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = async () => {
-        if (!emailRef.current || !passwordRef.current) {
+        if (!usernameRef.current || !passwordRef.current) {
             alert("Please fill in all fields");
             return;
         }
 
-        console.log("Email: ", emailRef.current);
+        console.log("User: ", usernameRef.current);
         console.log("Password: ", passwordRef.current);
         console.log("Submitting... Info is valid!");
 
         // Mock login verification (replace with actual API call in the future)
         // This is where you should call your API to verify the login credentials
-        const isLoginValid = await verifyLogin(emailRef.current, passwordRef.current);
+        const isLoginValid = await verifyLogin(usernameRef.current, passwordRef.current);
 
         if (isLoginValid) {
             router.push('/(tabs)');  // Redirect to next screen if login is successful
@@ -46,14 +46,14 @@ const Login = () => {
 
     // Replace this mock function with actual API call to verify login credentials
     // Replace this mock function with actual API call to verify login credentials
-    const verifyLogin = async (email: string, password: string): Promise<boolean> => {
+    const verifyLogin = async (username: string, password: string): Promise<boolean> => {
         try {
             const response = await fetch('http://localhost:3000/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ email, password }),
+                body: JSON.stringify({ username, password }),
             });
     
             const data = await response.json();
@@ -92,7 +92,7 @@ const Login = () => {
                     </Typo>
                     <Input
                         placeholder='Enter your username here'
-                        onChangeText={(value) => (emailRef.current = value)}
+                        onChangeText={(value) => (usernameRef.current = value)}
                         icon={<Ionicons name="people-sharp" size={verticalScale(28)} color={colors.neutral400} weight="fill" />}
                     />
                     <Input
