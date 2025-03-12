@@ -1,5 +1,6 @@
 import { Text, View, StyleSheet } from 'react-native';
 import { FlatList } from 'react-native-reanimated/lib/typescript/Animated';
+import Header from "@/components/Header";
 
 export default function History() {
 
@@ -14,9 +15,10 @@ export default function History() {
 
   return (
     <View style={styles.container}>
+      <Header />
       <Text style={styles.text}>History Screen Page</Text>
       <View style={styles.containerText}>
-
+        <Text >History List</Text>
         {/* <FlashList
           data={DATA}
           renderItem={({ item }) => <Text style={styles.listText}>{item.title}</Text>}
