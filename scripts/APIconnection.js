@@ -9,7 +9,7 @@ const app = express();
 
 
 const corsOptions = {
-  origin: '*', // Allow all origins CHANGE LATER
+  origin: 'http://localhost:3000', // Allow all origins CHANGE LATER
   methods: ['GET', 'POST'],
   credentials: true,
 };
@@ -29,7 +29,10 @@ const db = mysql.createPool({
 // Debugging (Remove later)
 console.log('DB_HOST:', process.env.DB_HOST);
 console.log('DB_USER:', process.env.DB_USER);
+console.log('DB_PASSWORD:', process.env.DB_PASSWORD);
 console.log('DB_NAME:', process.env.DB_NAME);
+console.log('JWT_SECRET:', process.env.JWT_SECRET);
+
 
 // Testing database connection
 db.getConnection((err, connection) => {
@@ -82,7 +85,8 @@ app.post('/register', async (req, res) => {
 });
 
 //Used to handle requests to '/'
-app.get('/', (req, res) => {
+app.get('/register', (req, res) => {
+  console.log('Register route works!')
   res.send('Hello, FinancePal API is running!');
 });
 
