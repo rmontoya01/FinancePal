@@ -33,14 +33,44 @@ const Login = () => {
         console.log("Password: ", passwordRef.current);
         console.log("Submitting... Info is valid!");
 
-        // setIsLoading(true);
+        // Mock login verification (replace with actual API call in the future)
+        // This is where you should call your API to verify the login credentials
+        const isLoginValid = await verifyLogin(emailRef.current, passwordRef.current);
 
-        // // Simulate a network request
-        // setTimeout(() => {
-        //     setIsLoading(false);
-        //     router.push('/(auth)/mainMenu01');
-        // }, 1500);
+        if (isLoginValid) {
+            router.push('/(tabs)');  // Redirect to next screen if login is successful
+        } else {
+            alert("Invalid credentials. Please try again.");
+        }
     }
+
+    // Replace this mock function with actual API call to verify login credentials
+    // Replace this mock function with actual API call to verify login credentials
+    const verifyLogin = async (email: string, password: string): Promise<boolean> => {
+        try {
+            const response = await fetch('http://localhost:3000/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+            });
+    
+            const data = await response.json();
+    
+            if (response.status === 200) {
+                console.log('Login successful:', data.message);
+                return true;
+            } else {
+                console.log('Login failed:', data.error);
+                return false;
+            }
+        } catch (error) {
+            console.error('Error during login:', error);
+            return false;
+        }
+    };    
+
 
     return (
         <ScreenWrapper>

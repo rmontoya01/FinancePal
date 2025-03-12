@@ -7,7 +7,6 @@ const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const app = express();
 
-
 const corsOptions = {
   origin: 'http://localhost:3000', // Allow all origins CHANGE LATER
   methods: ['GET', 'POST'],
@@ -15,7 +14,6 @@ const corsOptions = {
 };
 app.use(cors(corsOptions)); // To allow cross-origin requests
 app.use(express.json()); // To look through JSON requests
-
 
 // MySQL connection pool using environment variables
 const db = mysql.createPool({
@@ -33,13 +31,12 @@ console.log('DB_PASSWORD:', process.env.DB_PASSWORD);
 console.log('DB_NAME:', process.env.DB_NAME);
 console.log('JWT_SECRET:', process.env.JWT_SECRET);
 
-
 // Testing database connection
 db.getConnection((err, connection) => {
   if (err) {
     console.error('Database connection error:', err);
     return;
-  } 
+  }
   console.log('Successfully connected to the database');
   connection.release(); // Release connection back to the pool
 });
@@ -84,9 +81,50 @@ app.post('/register', async (req, res) => {
   }
 });
 
+// Login route
+app.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const connection = await db.promise().getConnection(); // Use the promise-based connection
+
+    try {
+      // Check if user with the provided email exists
+      const [users] = await connection.query(
+        'SELECT * FROM Users WHERE email = ?',
+        [email]
+      );
+
+      if (users.length === 0) {
+        return res.status(400).json({ error: 'Invalid email or password' });
+      }
+
+      const user = users[0];
+
+      // Compare the provided password with the hashed password in the database
+      const isMatch = await bcrypt.compare(password, user.password_hash);
+
+      if (!isMatch) {
+        return res.status(400).json({ error: 'Invalid email or password' });
+      }
+
+      // Generate a JWT token
+      const token = jwt.sign({ userId: user.id }, jwtSecret, { expiresIn: '1h' });
+
+      // Respond with the token
+      res.status(200).json({ message: 'Login successful', token });
+    } finally {
+      connection.release(); // Release connection back to the pool
+    }
+  } catch (error) {
+    console.error('Error in /login:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 //Used to handle requests to '/'
 app.get('/register', (req, res) => {
-  console.log('Register route works!')
+  console.log('Register route works!');
   res.send('Hello, FinancePal API is running!');
 });
 
