@@ -19,7 +19,7 @@ const budget = () => {
     const router = useRouter();
 
     const getTotalBalance = () => {
-        return 0;
+        return 120;
     }
 
     return (
