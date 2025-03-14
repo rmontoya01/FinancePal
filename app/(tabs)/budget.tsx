@@ -13,6 +13,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { verticalScale } from '@/utils/styling';
 import Button from "@/components/Button";
 import BudgetCard from '@/components/BudgetCard';
+import Header from '@/components/Header';
 
 const budget = () => {
 
@@ -25,6 +26,8 @@ const budget = () => {
     return (
         <ScreenWrapper style={{ backgroundColor: colors.neutral900 }}>
 
+            <Header title="Budget" />
+
             <View style={styles.container}>
                 {/* Get Total Balance Budget Amount */}
                 <View style={styles.totalBalance}>
@@ -32,8 +35,8 @@ const budget = () => {
                         <Typo size={40} fontWeight={"600"}>
                             ${getTotalBalance()}?.toFixed(2)
                         </Typo>
-                        <Typo size={18} fontWeight={"400"} color={colors.neutral200}>
-                            Balance Budget
+                        <Typo size={18} fontWeight={"400"} color={colors.neutral200} >
+                            Total Balance Budget
                         </Typo>
                     </View>
                 </View>
@@ -51,14 +54,15 @@ const budget = () => {
                 <View style={styles.buttonContainer}>
                     <Button>
                         <Typo size={18} fontWeight={"500"} color={colors.white}>Spendings</Typo>
+                        <Ionicons name="trending-down-sharp" size={24} color="white" />
                     </Button>
                 </View>
 
                 {/* Add to Budget */}
                 <View style={styles.buttonContainer}>
                     <Button>
-                        <Ionicons name="add-circle-sharp" size={24} color="white" />
                         <Typo size={18} fontWeight={"500"} color={colors.white}>Add to Budget</Typo>
+                        <Ionicons name="add-circle-sharp" size={24} color="white" />
                     </Button>
                 </View>
 
@@ -66,6 +70,7 @@ const budget = () => {
                 <View style={styles.buttonContainer}>
                     <Button>
                         <Typo size={18} fontWeight={"500"} color={colors.white}>Finish Budget</Typo>
+                        <Ionicons name="trending-up-sharp" size={24} color="white" />
                     </Button>
                 </View>
 
@@ -112,3 +117,4 @@ const styles = StyleSheet.create({
         // gap: 2,
     },
 })
+
