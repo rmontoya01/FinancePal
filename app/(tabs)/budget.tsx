@@ -43,6 +43,7 @@ const budget = () => {
                 <View style={styles.buttonContainer}>
                     <Button onPress={() => router.push('/(modals)/incomeModal')}>
                         <Typo size={18} fontWeight={"500"} color={colors.white}>Income</Typo>
+                        <Ionicons name="cash-sharp" size={24} color="white" />
                     </Button>
                 </View>
 
@@ -56,6 +57,7 @@ const budget = () => {
                 {/* Add to Budget */}
                 <View style={styles.buttonContainer}>
                     <Button>
+                        <Ionicons name="add-circle-sharp" size={24} color="white" />
                         <Typo size={18} fontWeight={"500"} color={colors.white}>Add to Budget</Typo>
                     </Button>
                 </View>
