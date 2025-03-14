@@ -13,6 +13,24 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { verticalScale } from '@/utils/styling';
 import Button from "@/components/Button";
 
+const registerUser = async (email: string, password: string, name: string, username: string) => {
+    try {
+        const response = await fetch("http://18.191.240.219:3000/register", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ email, password, name, username }) // Send the user's input to the server
+        });
+
+        const data = await response.json();
+        return { success: response.ok, data };
+    } catch (error) {
+        console.error("Error registering user:", error);
+        return { success: false, error: "An error occurred while creating your account." };
+    }
+};
+
 
 const accountsCreate01 = () => {
 
@@ -20,28 +38,50 @@ const accountsCreate01 = () => {
 
     const emailRef = useRef("");
     const passwordRef = useRef("");
-    const fullNameRef = useRef("");
+    const nameRef = useRef("");
     const usernameRef = useRef("");
     const confirmPasswordRef = useRef("");
-    const referralCodeRef = useRef("");
 
     const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = async () => {
-        if (!emailRef.current || !passwordRef.current || !fullNameRef.current || !usernameRef.current || !confirmPasswordRef.current) {
+        if (!emailRef.current || !passwordRef.current || !nameRef.current || !usernameRef.current || !confirmPasswordRef.current) {
             alert("Please fill in all fields");
             return;
         }
+        if (passwordRef.current !== confirmPasswordRef.current) {
+            alert("Passwords do not match!");
+            return;
+        }
+
+        setIsLoading(true); // start loading state
 
         // Outputting the users input to the console. 
         console.log("Email: ", emailRef.current);
         console.log("Password: ", passwordRef.current);
-        console.log("Full Name: ", fullNameRef.current);
+        console.log("Full Name: ", nameRef.current);
         console.log("Username: ", usernameRef.current);
         console.log("Confirmed Password: ", confirmPasswordRef.current);
         console.log("Submitting... Info is valid!");
 
-    }
+        try {
+            const result = await registerUser(
+                emailRef.current,
+                passwordRef.current,
+                nameRef.current,
+                usernameRef.current
+            );
+    
+            if (result.success) {
+                alert("Account created successfully!");
+                router.replace('/(auth)/login'); // Navigate to login page
+            } else {
+                alert(result.data.error || "Registration failed");
+            }
+        } finally {
+            setIsLoading(false); // Stop loading state
+        }
+    };
 
     return (
         <ScreenWrapper>
@@ -65,7 +105,7 @@ const accountsCreate01 = () => {
                     {/* Full Name */}
                     <Input
                         placeholder="Enter your full name here"
-                        onChangeText={(text) => fullNameRef.current = text}
+                        onChangeText={(text) => nameRef.current = text}
                         icon={<Ionicons name="person-circle-sharp"
                             size={verticalScale(28)} color={colors.neutral400} weight="fill" />}
                     />
