@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React, { useRef } from 'react'
+import { Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import React, { useRef, useState } from 'react'
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated'
 import { useRouter } from 'expo-router';
 
@@ -18,8 +18,59 @@ const Login = () => {
 
     const router = useRouter();
 
-    const emailRef = useRef("");
+    const usernameRef = useRef("");
     const passwordRef = useRef("");
+
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleSubmit = async () => {
+        if (!usernameRef.current || !passwordRef.current) {
+            alert("Please fill in all fields");
+            return;
+        }
+
+        console.log("User: ", usernameRef.current);
+        console.log("Password: ", passwordRef.current);
+        console.log("Submitting... Info is valid!");
+
+        // Mock login verification (replace with actual API call in the future)
+        // This is where you should call your API to verify the login credentials
+        const isLoginValid = await verifyLogin(usernameRef.current, passwordRef.current);
+
+        if (isLoginValid) {
+            router.push('/(tabs)');  // Redirect to next screen if login is successful
+        } else {
+            alert("Invalid credentials. Please try again.");
+        }
+    }
+
+    // Replace this mock function with actual API call to verify login credentials
+    // Replace this mock function with actual API call to verify login credentials
+    const verifyLogin = async (username: string, password: string): Promise<boolean> => {
+        try {
+            const response = await fetch('http://18.191.240.219:3000/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password }),
+            });
+
+            const data = await response.json();
+
+            if (response.status === 200) {
+                console.log('Login successful:', data.message);
+                return true;
+            } else {
+                console.log('Login failed:', data.error);
+                return false;
+            }
+        } catch (error) {
+            console.error('Error during login:', error);
+            return false;
+        }
+    };
+
 
     return (
         <ScreenWrapper>
@@ -40,9 +91,9 @@ const Login = () => {
                         Login here to continue:
                     </Typo>
                     <Input
-                        placeholder='Enter your email here'
-                        onChangeText={(value) => (emailRef.current = value)}
-                        icon={<Ionicons name="at-outline" size={verticalScale(28)} color={colors.neutral400} weight="fill" />}
+                        placeholder='Enter your username here'
+                        onChangeText={(value) => (usernameRef.current = value)}
+                        icon={<Ionicons name="people-sharp" size={verticalScale(28)} color={colors.neutral400} weight="fill" />}
                     />
                     <Input
                         placeholder='Enter your password here'
@@ -53,21 +104,29 @@ const Login = () => {
                 </View>
                 {/* email and password box */}
 
-                {/* sign in button code below here */}
+                {/* Forgot Password touchable text here */}
+
+                <TouchableOpacity>
+                    <Typo size={16} color={colors.text} style={{ alignSelf: "flex-end" }}>
+                        Forgot Password?
+                    </Typo>
+                </TouchableOpacity>
+                {/* <TouchableOpacity onPress={() => router.push('/(auth)/forgotPassword')} style={styles.forgotPassword}> */}
+
+                {/* sign in button code below here + animated view */}
                 <Animated.View
-                    // onPress={()=> router.push('/(auth)/login') 
                     entering={FadeInDown.duration(1100).delay(210).springify().damping(12)}
                     style={styles.buttonContainer}>
-                    <Button onPress={() => router.push('/(auth)/mainMenu01')}>
-                        <Typo size={18} fontWeight={"500"}>Sign In</Typo>
+                    <Button loading={isLoading} onPress={handleSubmit}>
+                        <Typo size={18} fontWeight={"500"} color={colors.white}>Sign In </Typo>
                     </Button>
                 </Animated.View>
 
                 <Animated.View
                     entering={FadeInDown.duration(1100).delay(210).springify().damping(12)}
                     style={styles.buttonContainer}>
-                    <Button onPress={() => router.push('/(auth)/accountsCreate01')}>
-                        <Typo size={18} fontWeight={"500"}>Create an Account?</Typo>
+                    <Button onPress={() => router.replace('/(auth)/accountsCreate01')}>
+                        <Typo size={18} fontWeight={"500"} color={colors.white}>Create an Account?</Typo>
                     </Button>
                 </Animated.View>
 
@@ -86,10 +145,26 @@ const styles = StyleSheet.create({
     },
     formSubtitle: {
         gap: spacingY._20,
-    }, // button style herer
+    }, // button style here
     buttonContainer: {
         width: "100%",
         paddingHorizontal: spacingX._40,
         // gap: 2,
     },
-})
+    forgotPassword: {
+        textAlign: "right",
+        fontWeight: "600",
+        color: colors.text,
+    },
+    // footer: {
+    //     flexDirection: "row",
+    //     justifyContent: "center",
+    //     alignItems: "center",
+    //     gap: 5,
+    // },
+    // textFooter: {
+    //     textAlign: "center",
+    //     color: colors.text,
+    //     fontSize: verticalScale(17),
+    // },
+});

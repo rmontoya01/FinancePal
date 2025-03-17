@@ -1,45 +1,34 @@
-import React from "react";
-import { View, StyleSheet, Text, Dimensions, Image } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native'
+import React from 'react'
+import Typo from './Typo'
+import { HeaderProps } from '@/types'
 
-const Header = () => {
+const Header = ({ title = "", rightIcon, style }: HeaderProps) => {
     return (
-        <View style={styles.container}>
-            <Text style={styles.labelStyle}>FinancePal</Text>
-            <Image
-                style={styles.imageStyle}
-                source={require('../assets/images/Designer01.jpeg')}
-            />
+        <View style={[styles.container, style]}>
+            {rightIcon && <View style={styles.rightIcon}>{rightIcon}</View>}
+            {
+                title && (
+                    <Typo style={{ textAlign: "center", width: rightIcon ? "80%" : "95%", }} size={28} fontWeight={"700"}>
+
+                        {title}
+
+                    </Typo>
+                )
+            }
         </View>
     )
-};
+}
 
-const deviceWidth = Math.round(Dimensions.get('window').width);
+export default Header
 
 const styles = StyleSheet.create({
     container: {
-        width: deviceWidth,
-        height: 90,
-        // flex: 1,
-        justifyContent: 'flex-end',
-        backgroundColor: 'lightblue',
+        width: '100%',
         alignItems: 'center',
-        paddingBottom: 10,
-        // justifyContent: 'center',
+        flexDirection: 'row',
     },
-    labelStyle: {
-        fontSize: 28,
-        fontWeight: 'bold',
-        color: 'black',
-        // textAlign: 'center',
+    rightIcon: {
+        alignSelf: "flex-end"
     },
-    imageStyle: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        position: 'absolute',
-        alignItems: 'flex-end',
-        right: 10,
-    }
 });
-
-export default Header;

@@ -1,5 +1,7 @@
 import { Text, View, StyleSheet } from 'react-native';
 import { FlatList } from 'react-native-reanimated/lib/typescript/Animated';
+import Header from "@/components/Header";
+import { spacingY } from '@/constants/themes';
 
 export default function History() {
 
@@ -14,8 +16,10 @@ export default function History() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>History Screen Page</Text>
+      <Header title="History Screen Page" style={{ marginVertical: spacingY._5 }} />
+      {/* <Text style={styles.text}>History Screen Page</Text> */}
       <View style={styles.containerText}>
+        <Text >History List</Text>
         {/* <FlashList
           data={DATA}
           renderItem={({ item }) => <Text style={styles.listText}>{item.title}</Text>}
@@ -41,13 +45,15 @@ const styles = StyleSheet.create({
   containerText: {
     backgroundColor: 'lightblue',
     padding: 50,
-    height: 50,
-    width: 50,
+    height: 500,
+    width: 250,
     marginBlockStart: "10%",
+    borderRadius: 20,
   },
   listText: {
     backgroundColor: "red",
     fontSize: 20,
     fontStyle: 'italic',
   },
+
 });
