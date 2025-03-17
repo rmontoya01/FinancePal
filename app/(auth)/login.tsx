@@ -122,6 +122,11 @@ const Login = () => {
                     </Button>
                 </Animated.View>
 
+                {/* TEMP SIGN IN BUTTON HERE TO MIMIC LOG IN */}
+                <Button onPress={() => router.push('/(tabs)')}>
+                    <Typo> TEMP SIGN IN</Typo>
+                </Button>
+
                 <Animated.View
                     entering={FadeInDown.duration(1100).delay(210).springify().damping(12)}
                     style={styles.buttonContainer}>
