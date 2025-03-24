@@ -43,21 +43,45 @@ const spendingsModal = () => {
                 <Header title="New Spendings" rightIcon={<PreviousButton />} style={{ marginBottom: spacingY._7, }} />
 
                 {/* Entry Input Slots */}
+                {/* Spendings Name */}
                 <ScrollView contentContainerStyle={styles.form}>
                     <View style={styles.textContainer}>
-                        <Typo color={colors.neutral200}>Income Name</Typo>
+                        <Typo color={colors.neutral200}>Spendings Name</Typo>
                         <Input
-                            placeholder='Salary Pay'
+                            placeholder='Spendings Name'
                             value={income.name}
                             onChangeText={(value) => setIncome({ ...income, name: value })} />
                     </View>
                 </ScrollView>
 
+                {/* Spendings Cost */}
                 <ScrollView contentContainerStyle={styles.form}>
                     <View style={styles.textContainer}>
-                        <Typo color={colors.neutral200}>Income Amount</Typo>
+                        <Typo color={colors.neutral200}>Spendings Cost</Typo>
                         <Input
-                            placeholder='Salary Amount'
+                            placeholder='Spendings Cost'
+                            value={income.name}
+                            onChangeText={(value) => setIncome({ ...income, name: value })} />
+                    </View>
+                </ScrollView>
+
+                {/* Spendings Type */}
+                <ScrollView contentContainerStyle={styles.form}>
+                    <View style={styles.textContainer}>
+                        <Typo color={colors.neutral200}>Spendings Type</Typo>
+                        <Input
+                            placeholder='Spendings Type'
+                            value={income.name}
+                            onChangeText={(value) => setIncome({ ...income, name: value })} />
+                    </View>
+                </ScrollView>
+
+                {/* Transaction Date */}
+                <ScrollView contentContainerStyle={styles.form}>
+                    <View style={styles.textContainer}>
+                        <Typo color={colors.neutral200}>Transaction Date</Typo>
+                        <Input
+                            placeholder='Transaction Date'
                             value={income.name}
                             onChangeText={(value) => setIncome({ ...income, name: value })} />
                     </View>
@@ -68,7 +92,7 @@ const spendingsModal = () => {
             <View style={styles.footer}>
                 <Button onPress={onSubmit} style={{ flex: 2 }}>
                     <Typo color={colors.white} fontWeight={"600"}>
-                        Add Income
+                        Add Spendings
                     </Typo>
                 </Button>
             </View>
