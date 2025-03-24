@@ -52,7 +52,7 @@ const budget = () => {
 
                 {/* Spendings */}
                 <View style={styles.buttonContainer}>
-                    <Button>
+                    <Button onPress={() => router.push('/(modals)/spendingsModal')}>
                         <Typo size={18} fontWeight={"500"} color={colors.white}>Spendings</Typo>
                         <Ionicons name="trending-down-sharp" size={24} color="white" />
                     </Button>
