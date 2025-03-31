@@ -8,9 +8,9 @@ import { colors } from '@/constants/themes'
 import { Picker } from '@react-native-picker/picker'
 
 import Freecurrencyapi from '@everapi/freecurrencyapi-js'
-
 // API Key: keep it secret
-const API_KEY = 'fca_live_mqgNju64qb0u0DfjXvWkg36sECHcZVsDX3xHMFKl';
+import Constants from 'expo-constants';
+const API_KEY = Constants.expoConfig?.extra?.CURRENCY_API_KEY || process.env.CURRENCY_API_KEY;
 
 const Converter = () => {
     const [fromCurrency, setFromCurrency] = useState('USD');
@@ -24,14 +24,18 @@ const Converter = () => {
         return result;
     };
 
-    // Fetching currency list
+    // Fetching the currency list
     useEffect(() => {
         const fetchCurrency = async () => {
             try {
-                const freecurrencyapi = new Freecurrencyapi(API_KEY);
-                const data = await freecurrencyapi.currencies();
+                // const freecurrencyapi = new Freecurrencyapi(API_KEY);
+                const response = await fetch(`https://api.freecurrencyapi.com/v1/currencies?apikey=${API_KEY}`);
 
-                // console.log('API Response:', data);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                //console.log('API Response:', data);
 
                 if (data && data.data) {
                     const currencyList = Object.keys(data.data);
@@ -43,31 +47,33 @@ const Converter = () => {
                 console.log("Error fetching currencies:", error);
             }
         };
+
         fetchCurrency();
     }, []);
 
-    // Fetching exchange rate
+    // Fetching the exchange rate
     useEffect(() => {
         const fetchExchangeRate = async () => {
             try {
-                const freecurrencyapi = new Freecurrencyapi(API_KEY);
-                const response = await freecurrencyapi.latest({
-                    base_currency: fromCurrency,
-                    currencies: toCurrency
-                });
+                const response = await fetch(`https://api.freecurrencyapi.com/v1/latest?apikey=${API_KEY}&base_currency=${fromCurrency}&currencies=${toCurrency}`);
 
-                console.log('Exchange Rate Response:', response);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                console.log('Exchange Rate Response:', data);
 
-                if (response && response.data && response.data[toCurrency]) {
-                    setExchangeRate(response.data[toCurrency]);
+                if (data && data.data && data.data[toCurrency]) {
+                    setExchangeRate(data.data[toCurrency]);
                 } else {
-                    console.error('Exchange rate not found:', response);
+                    console.error('Exchange rate not found:', data);
                 }
 
             } catch (error) {
                 console.log('Error fetching exchange rate:', error);
             }
         };
+
         fetchExchangeRate();
     }, [fromCurrency, toCurrency]);
 
