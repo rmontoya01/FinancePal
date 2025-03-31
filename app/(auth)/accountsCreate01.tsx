@@ -15,7 +15,7 @@ import Button from "@/components/Button";
 
 const registerUser = async (email: string, password: string, name: string, username: string) => {
     try {
-        const response = await fetch("http://18.191.240.219:3000/register", {
+        const response = await fetch("http://18.226.82.202:3000/register", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
