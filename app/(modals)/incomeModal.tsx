@@ -16,14 +16,16 @@ import { createOrUpdateIncome } from '@/services/incomeService'
 
 const IncomeModal = () => {
 
-    // const { user, updateUserData } = useAuth();
-
+    const { user, updateUserData } = useAuth();
+    const [show, setShow] = useState(false);
+    const [showPicker, setShowPicker] = useState(false);
     const [income, setIncome] = useState<IncomeType>({
         name: "",
-        // image: null,
+        amount: 0,
+        totalIncome: 0,
     });
 
-    // const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
     const router = useRouter();
 
     const onSubmit = async () => {
