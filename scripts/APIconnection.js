@@ -122,6 +122,30 @@ app.post('/login', async (req, res) => {
   }
 });
 
+// Get transaction history by month
+app.get('/transactions/history/:year/:month', async (req, res) => {
+  try {
+    const { year, month } = req.params;
+    const userId = req.user.id; // Assuming user authentication middleware
+
+    const connection = await db.promise().getConnection();
+    try {
+      const [transactions] = await connection.query(
+        `SELECT * FROM transactions 
+         WHERE user_id = ? AND YEAR(transaction_date) = ? AND MONTH(transaction_date) = ?
+         ORDER BY transaction_date DESC`,
+        [userId, year, month]
+      );
+      res.status(200).json(transactions);
+    } finally {
+      connection.release();
+    }
+  } catch (error) {
+    console.error('Error fetching transaction history:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 //Used to handle requests to '/'
 app.get('/register', (req, res) => {
   console.log('Register route works!');
