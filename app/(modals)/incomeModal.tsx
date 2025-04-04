@@ -17,6 +17,8 @@ import { Timestamp } from 'firebase/firestore'
 
 const IncomeModal = () => {
 
+    const { user, updateUserData } = useAuth();
+
     const { username } = useLocalSearchParams();
     const [show, setShow] = useState(false);
     const [showPicker, setShowPicker] = useState(false);
@@ -41,14 +43,22 @@ const IncomeModal = () => {
             return;
         }
 
+        const calendarNow = new Date(Date.now());
+
         const data: IncomeType = {
             user_id: user?.uid,
             source,
-            amount
+            amount,
+            month: calendarNow.getMonth() + 1,
+            year: calendarNow.getFullYear(),
+            created_at: Timestamp.now(),
+            updated_at: Timestamp.now(),
         };
 
         setLoading(true);
         try {
+            console.log("Submitting income to:", 'http://18.226.82.202:3000/income');
+            console.log("Payload:", data);
             const response = await fetch('http://18.226.82.202:3000/income', {
                 method: 'POST',
                 headers: {
@@ -74,17 +84,6 @@ const IncomeModal = () => {
         }
     };
 
-    // setLoading(true);
-    // const result: { status: string } = await createOrUpdateIncome(data);
-    // setLoading(false);
-    // console.log('result: ', result);
-    // if (result && result.status === 'success') {
-    //     updateUserData(user?.uid as string);
-    //     router.back();
-    // } else {
-    //     Alert.alert("Income", "not correct testresult")
-    // }
-
     return (
         <ModalWrapper>
 
@@ -92,22 +91,24 @@ const IncomeModal = () => {
                 <Header title="New Income" rightIcon={<PreviousButton />} style={{ marginBottom: spacingY._7, }} />
 
                 {/* Entry Input Slots */}
+                {/* Income Name Aka Source */}
                 <ScrollView contentContainerStyle={styles.form}>
                     <View style={styles.textContainer}>
                         <Typo color={colors.neutral200}>Income Name</Typo>
                         <Input
-                            placeholder='Salary Pay'
-                            value={income.name}
-                            onChangeText={(value) => setIncome({ ...income, name: value })} />
+                            placeholder='Source of Income'
+                            value={income.source}
+                            onChangeText={(value) => setIncome({ ...income, source: value })} />
                     </View>
-                </ScrollView>
 
-                <ScrollView contentContainerStyle={styles.form}>
+
+                    {/* Income Amount */}
                     <View style={styles.textContainer}>
                         <Typo color={colors.neutral200}>Income Amount</Typo>
                         <Input
                             placeholder='Salary Amount'
                             value={(income.amount ?? 0).toString()}
+                            keyboardType="numeric"
                             onChangeText={(value) => setIncome({ ...income, amount: parseFloat(value) || 0 })} />
                     </View>
                 </ScrollView>
@@ -155,7 +156,13 @@ const styles = StyleSheet.create({
     }
 })
 
-// function useAuth(): { user: any; updateUserData: any } {
-//     throw new Error('Function not implemented.')
-// }
+function useAuth(): { user: any; updateUserData: any } {
+    const [user, setUser] = useState<{ uid: string } | null>({ uid: "12345" }); // Mock user object
 
+    const updateUserData = (userId: string) => {
+        console.log(`User data updated for userId: ${userId}`);
+        // Add logic to refresh or fetch user data here
+    };
+
+    return { user, updateUserData };
+}

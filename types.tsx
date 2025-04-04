@@ -77,6 +77,16 @@ export type IncomeType = {
     updated_at?: Timestamp;
 };
 
+export type SpendingsType = {
+    expense_id?: number;
+    user_id?: number;
+    amount?: number;
+    category?: string;
+    description?: string;
+    date?: Date;
+    created_at?: Timestamp;
+};
+
 export type HeaderProps = {
     title?: string;
     style?: ViewStyle;

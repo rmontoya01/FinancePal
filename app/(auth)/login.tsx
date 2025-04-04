@@ -45,7 +45,6 @@ const Login = () => {
     }
 
     // Replace this mock function with actual API call to verify login credentials
-    // Replace this mock function with actual API call to verify login credentials
     const verifyLogin = async (username: string, password: string): Promise<boolean> => {
         try {
             const response = await fetch('http://18.226.82.202:3000/login', {

@@ -133,3 +133,22 @@ const port = 3000; // Update if port changes
 app.listen(port, '0.0.0.0', () => {
   console.log(`Server running on port ${port}`);
 });
+
+
+// ADDING MY TEST ADDINCOME FUNCTIONALITY
+export const addIncome = async (incomeData) => {
+  try {
+    const response = await fetch('http://18.226.82.202:3000/income', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(incomeData),
+    });
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error adding income:", error);
+    throw error;
+  }
+};
+
+export default addIncome;

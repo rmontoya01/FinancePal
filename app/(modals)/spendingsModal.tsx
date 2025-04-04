@@ -8,32 +8,65 @@ import PreviousButton from '@/components/PreviousButton'
 import Header from '@/components/Header'
 import Input from '@/components/Input'
 import Button from '@/components/Button'
-import { IncomeType } from '@/types'
+import { IncomeType, SpendingsType } from '@/types'
 import { useRouter } from 'expo-router'
 import { scale } from '@/utils/styling'
 import { createOrUpdateIncome } from '@/services/incomeService'
+import { Timestamp } from 'firebase/firestore'
 
-const spendingsModal = () => {
+const SpendingsModal = () => {
 
-    const [income, setIncome] = useState<IncomeType>({
-        name: "",
-        // image: null,
+    const [spendings, setSpendings] = useState<SpendingsType>({
+        expense_id: 0,
+        user_id: 0,
+        amount: 0,
+        category: "",
+        description: "",
+        date: new Date(Date.now()),
+        created_at: Timestamp.now(),
     });
 
     const router = useRouter();
 
     const onSubmit = async () => {
-        let { name } = income;
-        if (!name.trim()) {
+        let { amount, category, description, date } = spendings;
+        if (!amount || !category.trim() || !description.trim() || !date) {
             Alert.alert("Spendings", "Please fill in all of the fields!");
             return;
         }
 
-        const data: IncomeType = {
-            name,
-            // uid: user?.uid
+        const data: SpendingsType = {
+            user_id: 0,
+            amount,
+            category,
+            description,
+            date,
+            created_at: Timestamp.now(),
+        };
+
+        try {
+            // Sending data to your backend or database
+            const response = await fetch('http://18.226.82.202:3000/spendings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+            const result = await response.json();
+            console.log('result: ', result);
+
+            if (result?.status === 'success') {
+                router.back(); // Navigate back
+            } else {
+                Alert.alert("Spendings", "Failed to save spendings.");
+            }
+        } catch (error) {
+            console.error("Submit Error:", error);
+            Alert.alert("Spendings", "Something went wrong.");
         }
-    }
+    };
 
     return (
 
@@ -49,8 +82,8 @@ const spendingsModal = () => {
                         <Typo color={colors.neutral200}>Spendings Name</Typo>
                         <Input
                             placeholder='Spendings Name'
-                            value={income.name}
-                            onChangeText={(value) => setIncome({ ...income, name: value })} />
+                            value={spendings.category}
+                            onChangeText={(value) => setSpendings({ ...spendings, category: value })} />
                     </View>
                 </ScrollView>
 
@@ -60,8 +93,8 @@ const spendingsModal = () => {
                         <Typo color={colors.neutral200}>Spendings Cost</Typo>
                         <Input
                             placeholder='Spendings Cost'
-                            value={income.name}
-                            onChangeText={(value) => setIncome({ ...income, name: value })} />
+                            value={String(spendings.amount)}
+                            onChangeText={(value) => setSpendings({ ...spendings, amount: parseFloat(value) || 0 })} />
                     </View>
                 </ScrollView>
 
@@ -71,8 +104,8 @@ const spendingsModal = () => {
                         <Typo color={colors.neutral200}>Spendings Type</Typo>
                         <Input
                             placeholder='Spendings Type'
-                            value={income.name}
-                            onChangeText={(value) => setIncome({ ...income, name: value })} />
+                            value={spendings.description}
+                            onChangeText={(value) => setSpendings({ ...spendings, description: value })} />
                     </View>
                 </ScrollView>
 
@@ -82,8 +115,8 @@ const spendingsModal = () => {
                         <Typo color={colors.neutral200}>Transaction Date</Typo>
                         <Input
                             placeholder='Transaction Date'
-                            value={income.name}
-                            onChangeText={(value) => setIncome({ ...income, name: value })} />
+                            value={spendings.date?.toString()}
+                            onChangeText={(value) => setSpendings({ ...spendings, date: new Date(value) })} />
                     </View>
                 </ScrollView>
 
@@ -102,7 +135,7 @@ const spendingsModal = () => {
     )
 }
 
-export default spendingsModal
+export default SpendingsModal
 
 const styles = StyleSheet.create({
     container: {
