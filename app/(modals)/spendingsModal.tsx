@@ -30,7 +30,7 @@ const SpendingsModal = () => {
 
     const onSubmit = async () => {
         let { amount, category, description, date } = spendings;
-        if (!amount || !category.trim() || !description.trim() || !date) {
+        if (!amount || !category?.trim() || !description?.trim() || !date) {
             Alert.alert("Spendings", "Please fill in all of the fields!");
             return;
         }
@@ -85,10 +85,9 @@ const SpendingsModal = () => {
                             value={spendings.category}
                             onChangeText={(value) => setSpendings({ ...spendings, category: value })} />
                     </View>
-                </ScrollView>
 
-                {/* Spendings Cost */}
-                <ScrollView contentContainerStyle={styles.form}>
+
+                    {/* Spendings Cost */}
                     <View style={styles.textContainer}>
                         <Typo color={colors.neutral200}>Spendings Cost</Typo>
                         <Input
@@ -96,10 +95,8 @@ const SpendingsModal = () => {
                             value={String(spendings.amount)}
                             onChangeText={(value) => setSpendings({ ...spendings, amount: parseFloat(value) || 0 })} />
                     </View>
-                </ScrollView>
 
-                {/* Spendings Type */}
-                <ScrollView contentContainerStyle={styles.form}>
+                    {/* Spendings Type */}
                     <View style={styles.textContainer}>
                         <Typo color={colors.neutral200}>Spendings Type</Typo>
                         <Input
@@ -107,10 +104,8 @@ const SpendingsModal = () => {
                             value={spendings.description}
                             onChangeText={(value) => setSpendings({ ...spendings, description: value })} />
                     </View>
-                </ScrollView>
 
-                {/* Transaction Date */}
-                <ScrollView contentContainerStyle={styles.form}>
+                    {/* Transaction Date */}
                     <View style={styles.textContainer}>
                         <Typo color={colors.neutral200}>Transaction Date</Typo>
                         <Input
