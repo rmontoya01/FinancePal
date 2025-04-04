@@ -152,3 +152,28 @@ export const addIncome = async (incomeData) => {
 };
 
 export default addIncome;
+
+// ADDING INCOME FUNCTIONALITY ENDPOINT STILL IN PROGRESS
+app.post('/income', async (req, res) => {
+  try {
+    const { user_id, source, amount, month, year } = req.body;
+
+    if (!user_id || !source || !amount || !month || !year) {
+      return res.status(400).json({ error: 'All fields are required' });
+    }
+
+    const connection = await db.promise().getConnection();
+    try {
+      await connection.query(
+        'INSERT INTO Income (user_id, source, amount, month, year, created_at, updated_at) VALUES (?, ?, ?, ?, ?, NOW(), NOW())',
+        [user_id, source, amount, month, year]
+      );
+      res.status(201).json({ status: 'success', message: 'Income added successfully' });
+    } finally {
+      connection.release();
+    }
+  } catch (error) {
+    console.error('Error adding income:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
