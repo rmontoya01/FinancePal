@@ -67,15 +67,22 @@ const IncomeModal = () => {
                 body: JSON.stringify(data),
             });
 
-            const result = await response.json();
-            console.log('result: ', result);
-            setLoading(false);
+            const text = await response.text(); // Get raw response text
+            console.log('Raw Response:', text); // Log raw response to see if it's HTML or JSON
 
-            if (result?.status === 'success') {
-                updateUserData(user?.uid as string); // Refresh user data
-                router.back(); // Navigate back
-            } else {
-                Alert.alert("Income", "Failed to save income.");
+            try {
+                const result = JSON.parse(text); // Parse it as JSON if it's valid
+                console.log('result: ', result);
+
+                if (result?.status === 'success') {
+                    updateUserData(user?.uid as string); // Refresh user data
+                    router.back(); // Navigate back
+                } else {
+                    Alert.alert("Income", "Failed to save income.");
+                }
+            } catch (error) {
+                console.error("Parsing Error:", error);
+                Alert.alert("Income", "Unexpected response from server.");
             }
         } catch (error) {
             setLoading(false);

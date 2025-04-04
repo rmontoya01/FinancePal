@@ -13,7 +13,7 @@ const corsOptions = {
   credentials: true,
 };
 app.use(cors(corsOptions)); // To allow cross-origin requests
-app.use(express.json()); // To look through JSON requests
+app.use(express.json()); // For parsing application/json
 
 // MySQL connection pool using environment variables
 const db = mysql.createPool({
@@ -122,38 +122,13 @@ app.post('/login', async (req, res) => {
   }
 });
 
-//Used to handle requests to '/'
+// Used to handle requests to '/'
 app.get('/register', (req, res) => {
   console.log('Register route works!');
   res.send('Hello, FinancePal API is running!');
 });
 
-// Start server
-const port = 3000; // Update if port changes
-app.listen(port, '0.0.0.0', () => {
-  console.log(`Server running on port ${port}`);
-});
-
-
-// ADDING MY TEST ADDINCOME FUNCTIONALITY
-export const addIncome = async (incomeData) => {
-  try {
-    const response = await fetch('http://18.226.82.202:3000/income', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(incomeData),
-    });
-
-    return await response.json();
-  } catch (error) {
-    console.error("Error adding income:", error);
-    throw error;
-  }
-};
-
-export default addIncome;
-
-// ADDING INCOME FUNCTIONALITY ENDPOINT STILL IN PROGRESS
+// ADDING INCOME FUNCTIONALITY ENDPOINT
 app.post('/income', async (req, res) => {
   try {
     const { user_id, source, amount, month, year } = req.body;
@@ -177,3 +152,36 @@ app.post('/income', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+// ADDING SPENDINGS FUNCTIONALITY ENDPOINT
+app.post('/spendings', async (req, res) => {
+  try {
+    const { user_id, amount, category, description, date } = req.body;
+
+    if (!user_id || !amount || !category || !description || !date) {
+      return res.status(400).json({ error: 'All fields are required' });
+    }
+
+    const connection = await db.promise().getConnection();
+    try {
+      await connection.query(
+        'INSERT INTO Spendings (user_id, amount, category, description, date, created_at) VALUES (?, ?, ?, ?, ?, NOW())',
+        [user_id, amount, category, description, date]
+      );
+      res.status(201).json({ status: 'success', message: 'Spendings added successfully' });
+    } finally {
+      connection.release();
+    }
+  } catch (error) {
+    console.error('Error adding spendings:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Start server
+const port = 3000; // Update if port changes
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Server running on port ${port}`);
+});
+
+module.exports = app;

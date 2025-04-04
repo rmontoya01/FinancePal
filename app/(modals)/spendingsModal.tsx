@@ -54,7 +54,7 @@ const SpendingsModal = () => {
                 body: JSON.stringify(data),
             });
 
-            const result = await response.json();
+            const result = await response.json(); // No need to parse if it's already JSON
             console.log('result: ', result);
 
             if (result?.status === 'success') {
