@@ -9,48 +9,81 @@ import Header from '@/components/Header'
 import Input from '@/components/Input'
 import Button from '@/components/Button'
 import { IncomeType } from '@/types'
-import { useRouter } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 import { scale } from '@/utils/styling'
 import { createOrUpdateIncome } from '@/services/incomeService'
+import { Timestamp } from 'firebase/firestore'
 
 
 const IncomeModal = () => {
 
-    const { user, updateUserData } = useAuth();
+    const { username } = useLocalSearchParams();
     const [show, setShow] = useState(false);
     const [showPicker, setShowPicker] = useState(false);
     const [income, setIncome] = useState<IncomeType>({
-        name: "",
+        income_id: 0,
+        user_id: 0,
+        source: "",
         amount: 0,
-        totalIncome: 0,
+        month: 0,
+        year: 0,
+        created_at: Timestamp.now(),
+        updated_at: Timestamp.now()
     });
 
     const [loading, setLoading] = useState(false);
     const router = useRouter();
 
     const onSubmit = async () => {
-        let { name } = income;
-        if (!name.trim()) {
+        let { source, amount = 0 } = income;
+        if (!source.trim() || amount <= 0) {
             Alert.alert("Income", "Please fill in all of the fields!");
             return;
         }
 
         const data: IncomeType = {
-            name,
-            // uid: user?.uid
-        }
+            user_id: user?.uid,
+            source,
+            amount
+        };
 
-        // setLoading(true);
-        // const result: { status: string } = await createOrUpdateIncome(data);
-        // setLoading(false);
-        // console.log('result: ', result);
-        // if (result && result.status === 'success') {
-        //     updateUserData(user?.uid as string);
-        //     router.back();
-        // } else {
-        //     Alert.alert("Income", "not correct testresult")
-        // }
+        setLoading(true);
+        try {
+            const response = await fetch('http://18.226.82.202:3000/income', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+            const result = await response.json();
+            console.log('result: ', result);
+            setLoading(false);
+
+            if (result?.status === 'success') {
+                updateUserData(user?.uid as string); // Refresh user data
+                router.back(); // Navigate back
+            } else {
+                Alert.alert("Income", "Failed to save income.");
+            }
+        } catch (error) {
+            setLoading(false);
+            console.error("Submit Error:", error);
+            Alert.alert("Income", "Something went wrong.");
+        }
     };
+
+    // setLoading(true);
+    // const result: { status: string } = await createOrUpdateIncome(data);
+    // setLoading(false);
+    // console.log('result: ', result);
+    // if (result && result.status === 'success') {
+    //     updateUserData(user?.uid as string);
+    //     router.back();
+    // } else {
+    //     Alert.alert("Income", "not correct testresult")
+    // }
 
     return (
         <ModalWrapper>
@@ -74,8 +107,8 @@ const IncomeModal = () => {
                         <Typo color={colors.neutral200}>Income Amount</Typo>
                         <Input
                             placeholder='Salary Amount'
-                            value={income.name}
-                            onChangeText={(value) => setIncome({ ...income, name: value })} />
+                            value={(income.amount ?? 0).toString()}
+                            onChangeText={(value) => setIncome({ ...income, amount: parseFloat(value) || 0 })} />
                     </View>
                 </ScrollView>
 

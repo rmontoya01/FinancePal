@@ -67,14 +67,14 @@ export type ResponseType = {
 }
 
 export type IncomeType = {
-    id?: string;
-    name: string;
+    income_id?: number;
+    user_id?: number;
+    source: string;
     amount?: number;
-    totalIncome?: number;
-    totalExpenses?: number;
-    // image: any;
-    uid?: string;
-    created?: Date;
+    month?: number;
+    year?: number;
+    created_at?: Timestamp;
+    updated_at?: Timestamp;
 };
 
 export type HeaderProps = {
