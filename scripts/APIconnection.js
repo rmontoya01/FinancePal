@@ -131,8 +131,9 @@ app.get('/register', (req, res) => {
 // ADDING INCOME FUNCTIONALITY ENDPOINT
 app.post('/income', async (req, res) => {
   try {
-    const { user_id, source, amount, month, year } = req.body;
+    const { amount, month, year, source, user_id } = req.body;
 
+    // Validation check for required fields
     if (!user_id || !source || !amount || !month || !year) {
       return res.status(400).json({ error: 'All fields are required' });
     }
