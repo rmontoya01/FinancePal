@@ -13,10 +13,10 @@ export default function useAuth(): { user: User | null; updateUserData: any } {
         const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
             if (firebaseUser) {
                 setUser(firebaseUser);
-                console.log("✅ Logged in user:", firebaseUser.uid);
+                console.log(" Logged in user:", firebaseUser.uid);
             } else {
                 setUser(null);
-                console.log("⚠️ No user logged in.");
+                console.log(" No user logged in.");
             }
         });
 

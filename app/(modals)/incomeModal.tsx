@@ -23,7 +23,7 @@ type IncomeType = {
     year: number;
     created_at?: Timestamp;
     updated_at?: Timestamp;
-  };
+};
 
 const IncomeModal = () => {
 
@@ -56,7 +56,7 @@ const IncomeModal = () => {
         if (!user?.uid) {
             Alert.alert("Authentication", "User not logged in.");
             return;
-        }          
+        }
 
         const calendarNow = new Date(Date.now());
 
