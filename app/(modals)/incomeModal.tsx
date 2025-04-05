@@ -50,9 +50,7 @@ const IncomeModal = () => {
             source,
             amount,
             month: calendarNow.getMonth() + 1,
-            year: calendarNow.getFullYear(),
-            created_at: Timestamp.now(),
-            updated_at: Timestamp.now(),
+            year: calendarNow.getFullYear()
         };
 
         setLoading(true);
