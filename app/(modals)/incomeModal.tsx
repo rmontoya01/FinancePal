@@ -11,9 +11,6 @@ import Button from '@/components/Button'
 import { IncomeType } from '@/types'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { scale } from '@/utils/styling'
-import { createOrUpdateIncome } from '@/services/incomeService'
-import { Timestamp } from 'firebase/firestore'
-
 
 const IncomeModal = () => {
 
@@ -29,8 +26,8 @@ const IncomeModal = () => {
         amount: 0,
         month: 0,
         year: 0,
-        created_at: Timestamp.now(),
-        updated_at: Timestamp.now()
+        created_at: new Date(),
+        updated_at: new Date()
     });
 
     const [loading, setLoading] = useState(false);
@@ -42,50 +39,41 @@ const IncomeModal = () => {
             Alert.alert("Income", "Please fill in all of the fields!");
             return;
         }
-
+    
+        // Get current date to add to the income record
         const calendarNow = new Date(Date.now());
-
-        const data: IncomeType = {
-            user_id: user?.uid,
+    
+        // Create the data object to send to the backend
+        const data = {
+            user_id: user?.uid,  // This is where you're using the logged-in user's ID
             source,
             amount,
             month: calendarNow.getMonth() + 1,
             year: calendarNow.getFullYear()
         };
-
+    
+        // Send the data to the backend API
         setLoading(true);
         try {
-            console.log("Submitting income to:", 'http://18.226.82.202:3000/income');
-            console.log("Payload:", data);
             const response = await fetch('http://18.226.82.202:3000/income', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(data),
+                body: JSON.stringify(data),  // This includes the logged-in user's user_id
             });
-
-            const text = await response.text(); // Get raw response text
-            console.log('Raw Response:', text); // Log raw response to see if it's HTML or JSON
-
-            try {
-                const result = JSON.parse(text); // Parse it as JSON if it's valid
-                console.log('result: ', result);
-
-                if (result?.status === 'success') {
-                    updateUserData(user?.uid as string); // Refresh user data
-                    router.back(); // Navigate back
-                } else {
-                    Alert.alert("Income", "Failed to save income.");
-                }
-            } catch (error) {
-                console.error("Parsing Error:", error);
-                Alert.alert("Income", "Unexpected response from server.");
+    
+            const result = await response.json();
+            if (result?.status === 'success') {
+                updateUserData(user?.uid ?? "");  // Refresh user data
+                router.back();  // Navigate back to the previous screen
+            } else {
+                Alert.alert("Income", "Failed to save income.");
             }
         } catch (error) {
             setLoading(false);
-            console.error("Submit Error:", error);
             Alert.alert("Income", "Something went wrong.");
+            console.error("Submit Error:", error);
         }
     };
 
@@ -132,7 +120,7 @@ const IncomeModal = () => {
     );
 };
 
-export default IncomeModal
+export default IncomeModal;
 
 const styles = StyleSheet.create({
     container: {
@@ -161,13 +149,14 @@ const styles = StyleSheet.create({
     }
 })
 
-function useAuth(): { user: any; updateUserData: any } {
-    const [user, setUser] = useState<{ uid: string } | null>({ uid: "12345" }); // Mock user object
+function useAuth() {
+    const [user, setUser] = useState<{ uid: string } | null>(null); // Initially null
 
     const updateUserData = (userId: string) => {
         console.log(`User data updated for userId: ${userId}`);
-        // Add logic to refresh or fetch user data here
+        setUser({ uid: userId }); // Set the actual logged-in user ID
     };
 
     return { user, updateUserData };
 }
+

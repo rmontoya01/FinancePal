@@ -11,8 +11,6 @@ import Button from '@/components/Button'
 import { IncomeType, SpendingsType } from '@/types'
 import { useRouter } from 'expo-router'
 import { scale } from '@/utils/styling'
-import { createOrUpdateIncome } from '@/services/incomeService'
-import { Timestamp } from 'firebase/firestore'
 
 const SpendingsModal = () => {
 
@@ -22,8 +20,8 @@ const SpendingsModal = () => {
         amount: 0,
         category: "",
         description: "",
-        date: new Date(Date.now()),
-        created_at: Timestamp.now(),
+        date: new Date(Date.now()), // Initialize date with the current date
+        created_at: new Date(),
     });
 
     const router = useRouter();
@@ -41,7 +39,7 @@ const SpendingsModal = () => {
             category,
             description,
             date,
-            created_at: Timestamp.now(),
+            created_at: new Date(),
         };
 
         try {
@@ -86,7 +84,6 @@ const SpendingsModal = () => {
                             onChangeText={(value) => setSpendings({ ...spendings, category: value })} />
                     </View>
 
-
                     {/* Spendings Cost */}
                     <View style={styles.textContainer}>
                         <Typo color={colors.neutral200}>Spendings Cost</Typo>
@@ -107,11 +104,12 @@ const SpendingsModal = () => {
 
                     {/* Transaction Date */}
                     <View style={styles.textContainer}>
-                        <Typo color={colors.neutral200}>Transaction Date</Typo>
+                        <Typo color={colors.neutral200}>Spendings Date</Typo>
                         <Input
-                            placeholder='Transaction Date'
-                            value={spendings.date?.toString()}
-                            onChangeText={(value) => setSpendings({ ...spendings, date: new Date(value) })} />
+                            placeholder='Date of Spendings'
+                            value={spendings.date ? spendings.date.toLocaleDateString() : ''} // Display current date or fallback to an empty string
+                            editable={false} // Make it non-editable since backend captures this
+                        />
                     </View>
                 </ScrollView>
 

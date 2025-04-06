@@ -131,26 +131,32 @@ app.get('/register', (req, res) => {
 // ADDING INCOME FUNCTIONALITY ENDPOINT
 app.post('/income', async (req, res) => {
   try {
-    const { amount, month, year, source, user_id } = req.body;
+      const { amount, month, year, source, user_id } = req.body;
 
-    // Validation check for required fields
-    if (!user_id || !source || !amount || !month || !year) {
-      return res.status(400).json({ error: 'All fields are required' });
-    }
+      // Validation check to ensure that user_id exists
+      if (!user_id || !source || !amount || !month || !year) {
+          return res.status(400).json({ error: 'All fields are required' });
+      }
 
-    const connection = await db.promise().getConnection();
-    try {
+      // Check if user exists in the Users table
+      const [user] = await connection.query(
+          'SELECT * FROM Users WHERE user_id = ?',
+          [user_id]
+      );
+
+      if (user.length === 0) {
+          return res.status(400).json({ error: 'User does not exist' });
+      }
+
+      // Insert income into the Income table
       await connection.query(
-        'INSERT INTO Income (user_id, source, amount, month, year, created_at, updated_at) VALUES (?, ?, ?, ?, ?, NOW(), NOW())',
-        [user_id, source, amount, month, year]
+          'INSERT INTO Income (user_id, source, amount, month, year, created_at, updated_at) VALUES (?, ?, ?, ?, ?, NOW(), NOW())',
+          [user_id, source, amount, month, year]
       );
       res.status(201).json({ status: 'success', message: 'Income added successfully' });
-    } finally {
-      connection.release();
-    }
   } catch (error) {
-    console.error('Error adding income:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+      console.error('Error adding income:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 

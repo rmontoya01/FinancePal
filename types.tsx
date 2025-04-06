@@ -1,25 +1,11 @@
 import { Href } from "expo-router";
-import { Firestore, Timestamp } from "firebase/firestore";
 import { Icon } from "phosphor-react-native";
 import React, { ReactNode } from "react";
-
-import {
-    ActivityIndicator,
-    ActivityIndicatorProps,
-    ImageStyle,
-    PressableProps,
-    TextInput,
-    TextInputProps,
-    TextProps,
-    TextStyle,
-    TouchableOpacityProps,
-    ViewStyle,
-} from "react-native";
+import { ActivityIndicator, ActivityIndicatorProps, ImageStyle, PressableProps, TextInput, TextInputProps, TextProps, TextStyle, TouchableOpacityProps, ViewStyle } from "react-native";
 
 export type ScreenWrapperProps = {
     style?: ViewStyle;
     children: React.ReactNode;
-    // bg?: string;
 };
 
 export type TypoProps = {
@@ -35,7 +21,6 @@ export interface CustomButtonProps extends TouchableOpacityProps {
     style?: ViewStyle;
     onPress?: () => void;
     loading?: boolean;
-    // hasShadow?: boolean;
     children: React.ReactNode;
 }
 
@@ -49,15 +34,12 @@ export interface InputProps extends TextInputProps {
     containerStyle?: ViewStyle;
     inputStyle?: TextStyle;
     inputRef?: React.RefObject<TextInput>;
-    // label?: string;
-    // error?: string;
 }
 
 export type ModalWrapperProps = {
     style?: ViewStyle;
     children: React.ReactNode;
     background?: string;
-    // bg?: string;
 }
 
 export type ResponseType = {
@@ -73,8 +55,8 @@ export type IncomeType = {
     amount?: number;
     month?: number;
     year?: number;
-    created_at?: Timestamp;
-    updated_at?: Timestamp;
+    created_at?: Date;
+    updated_at?: Date;
 };
 
 export type SpendingsType = {
@@ -84,7 +66,7 @@ export type SpendingsType = {
     category?: string;
     description?: string;
     date?: Date;
-    created_at?: Timestamp;
+    created_at?: Date;
 };
 
 export type HeaderProps = {
