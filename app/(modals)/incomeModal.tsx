@@ -45,12 +45,14 @@ const IncomeModal = () => {
     
         // Create the data object to send to the backend
         const data = {
+            user_id: user?.uid,  // This is where you're using the logged-in user's ID
+            source,
             amount,
             month: calendarNow.getMonth() + 1,
-            source,
-            user_id: user?.uid,  // Ensure this is being set correctly
-            year: calendarNow.getFullYear(),
+            year: calendarNow.getFullYear()
         };
+
+        console.log("Submitting data: ", data);
     
         // Send the data to the backend API
         setLoading(true);
@@ -64,6 +66,8 @@ const IncomeModal = () => {
             });
     
             const result = await response.json();
+            console.log('API Response: ', result); //log to see API response
+
             if (result?.status === 'success') {
                 updateUserData(user?.uid ?? "");  // Refresh user data
                 router.back();  // Navigate back to the previous screen

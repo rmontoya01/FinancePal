@@ -131,9 +131,11 @@ app.get('/register', (req, res) => {
 // ADDING INCOME FUNCTIONALITY ENDPOINT
 app.post('/income', async (req, res) => {
   const { amount, month, year, source, user_id } = req.body;
+  console/log('Recieved request to add income:', req.body); // Debugging line
 
   // Validation check to ensure that user_id exists
   if (!user_id || !source || !amount || !month || !year) {
+    console.log('Validation error: Missing required fields'); // Debugging line
     return res.status(400).json({ error: 'All fields are required' });
   }
 
@@ -148,6 +150,7 @@ app.post('/income', async (req, res) => {
       );
 
       if (user.length === 0) {
+          console.log('User not found', user_id); // Debugging line
           return res.status(400).json({ error: 'User does not exist' });
       }
 
@@ -156,6 +159,7 @@ app.post('/income', async (req, res) => {
           'INSERT INTO Income (user_id, source, amount, month, year, created_at, updated_at) VALUES (?, ?, ?, ?, ?, NOW(), NOW())',
           [user_id, source, amount, month, year]
       );
+      console.log('Income added successfully'); // Debugging line
       res.status(201).json({ status: 'success', message: 'Income added successfully' });
   } catch (error) {
       console.error('Error adding income:', error);
