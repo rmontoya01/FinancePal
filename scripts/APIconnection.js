@@ -130,13 +130,16 @@ app.get('/register', (req, res) => {
 
 // ADDING INCOME FUNCTIONALITY ENDPOINT
 app.post('/income', async (req, res) => {
-  try {
-      const { amount, month, year, source, user_id } = req.body;
+  const { amount, month, year, source, user_id } = req.body;
 
-      // Validation check to ensure that user_id exists
-      if (!user_id || !source || !amount || !month || !year) {
-          return res.status(400).json({ error: 'All fields are required' });
-      }
+  // Validation check to ensure that user_id exists
+  if (!user_id || !source || !amount || !month || !year) {
+    return res.status(400).json({ error: 'All fields are required' });
+  }
+
+  const connection = await db.promise().getConnection(); // get a connection from the pool
+  
+  try {
 
       // Check if user exists in the Users table
       const [user] = await connection.query(
