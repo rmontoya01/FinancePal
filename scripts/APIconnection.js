@@ -86,20 +86,7 @@ app.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    const user = await User.findOne({ where: { username } });
-    if (!user || user.password !== password) {
-      return res.status(401).json({ error: 'Invalid username or password' });
-    }
-    // Generate a JWT token
-    const token = generateJwtToken(user);
-    return res.status(200).json({
-      message: 'Login successful',
-      token,
-      userId: user.id,
-     });
-
-
-    const connection = await db.promise().getConnection(); // Use the promise-based connection
+    const connection = await db.promise().getConnection();
 
     try {
       // Check if user with the provided username exists
@@ -122,18 +109,19 @@ app.post('/login', async (req, res) => {
       }
 
       // Generate a JWT token
-      const token = jwt.sign({ userId: user.id }, jwtSecret, { expiresIn: '1h' });
+      const token = jwt.sign({ userId: user.user_id }, jwtSecret, { expiresIn: '1h' });
 
-      // Respond with the token
-      res.status(200).json({ message: 'Login successful', token });
+      // Respond with the token and user_id
+      res.status(200).json({ message: 'Login successful', token, user_id: user.user_id });
     } finally {
-      connection.release(); // Release connection back to the pool
+      connection.release();
     }
   } catch (error) {
     console.error('Error in /login:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 // Used to handle requests to '/'
 app.get('/register', (req, res) => {
