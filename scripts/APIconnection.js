@@ -131,7 +131,7 @@ app.get('/register', (req, res) => {
 // ADDING INCOME FUNCTIONALITY ENDPOINT
 app.post('/income', async (req, res) => {
   const { amount, month, year, source, user_id } = req.body;
-  console/log('Recieved request to add income:', req.body); // Debugging line
+  console.log('Recieved request to add income:', req.body); // Debugging line
 
   // Validation check to ensure that user_id exists
   if (!user_id || !source || !amount || !month || !year) {

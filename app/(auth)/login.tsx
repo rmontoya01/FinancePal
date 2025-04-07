@@ -12,7 +12,7 @@ import Input from '@/components/Input';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { verticalScale } from '@/utils/styling';
 import Button from "@/components/Button";
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Login = () => {
 
@@ -54,11 +54,25 @@ const Login = () => {
                 },
                 body: JSON.stringify({ username, password }),
             });
-
+    
             const data = await response.json();
-
+    
             if (response.status === 200) {
                 console.log('Login successful:', data.message);
+    
+                // Assuming the response contains a JWT token and user_id
+                if (data.token) {
+                    // Store the JWT token in AsyncStorage
+                    await AsyncStorage.setItem('user_token', data.token);
+                    console.log('Received token:', data.token);
+                }
+    
+                if (data.userId) {
+                    // Store user_id in AsyncStorage
+                    await AsyncStorage.setItem('user_id', data.userId.toString());
+                    console.log('Received user_id:', data.userId);
+                }
+                
                 return true;
             } else {
                 console.log('Login failed:', data.error);
@@ -69,6 +83,15 @@ const Login = () => {
             return false;
         }
     };
+
+    const getUserData = async () => {
+        const userId = await AsyncStorage.getItem('user_id');
+        const token = await AsyncStorage.getItem('user_token');
+        console.log('User ID:', userId);
+        console.log('Token:', token);
+        // You can return or use the userId and token as needed
+        return { userId, token };
+};    
 
 
     return (
