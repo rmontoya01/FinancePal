@@ -44,15 +44,15 @@ const IncomeModal = () => {
         // Get current date to add to the income record
         const calendarNow = new Date(Date.now());
 
-        const userId = await AsyncStorage.getItem("userId");
-        if (!userId) {
+        const user_id = await AsyncStorage.getItem("user_id");
+        if (!user_id) {
             Alert.alert("Income", "User is not logged in.");
             return;
         }    
     
         // Create the data object to send to the backend
         const data = {
-            user_id: userId, //using user_id from AsyncStorage
+            user_id, //using user_id from AsyncStorage
             source,
             amount,
             month: calendarNow.getMonth() + 1,
@@ -163,9 +163,9 @@ const styles = StyleSheet.create({
 function useAuth() {
     const [user, setUser] = useState<{ uid: string } | null>(null); // Initially null
 
-    const updateUserData = (userId: string) => {
-        console.log(`User data updated for userId: ${userId}`);
-        setUser({ uid: userId }); // Set the actual logged-in user ID
+    const updateUserData = (user_id: string) => {
+        console.log(`User data updated for user_id: ${user_id}`);
+        setUser({ uid: user_id }); // Set the actual logged-in user ID
     };
 
     return { user, updateUserData };

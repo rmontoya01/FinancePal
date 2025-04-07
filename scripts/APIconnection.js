@@ -109,7 +109,7 @@ app.post('/login', async (req, res) => {
       }
 
       // Generate a JWT token
-      const token = jwt.sign({ userId: user.user_id }, jwtSecret, { expiresIn: '1h' });
+      const token = jwt.sign({ user_id: user.user_id }, jwtSecret, { expiresIn: '1h' });
 
       // Respond with the token and user_id
       res.status(200).json({ message: 'Login successful', token, user_id: user.user_id });

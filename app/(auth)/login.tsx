@@ -67,13 +67,12 @@ const Login = () => {
                     console.log('Received token:', data.token);
                 }
     
-                if (data.userId) {
+                if (data.user_id) {
                     // Store user_id in AsyncStorage
-                    await AsyncStorage.setItem('user_id', data.userId.toString());
-                    console.log('Received user_id:', data.userId);
+                    await AsyncStorage.setItem('user_id', data.user_id.toString());
+                    console.log('Received user_id:', data.user_id);
                 } else {
-                    console.log('No user_id returned from server');
-                }
+                    console.log('No user_id returned from server');}
                 
                 return true;
             } else {
@@ -87,12 +86,12 @@ const Login = () => {
     };
 
     const getUserData = async () => {
-        const userId = await AsyncStorage.getItem('user_id');
+        const user_id = await AsyncStorage.getItem('user_id');
         const token = await AsyncStorage.getItem('user_token');
-        console.log('User ID:', userId);
+        console.log('User ID:', user_id);
         console.log('Token:', token);
-        // You can return or use the userId and token as needed
-        return { userId, token };
+        // You can return or use the user_id and token as needed
+        return { user_id, token };
 };    
 
 
