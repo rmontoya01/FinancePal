@@ -10,6 +10,7 @@ import Input from '@/components/Input'
 import Button from '@/components/Button'
 import { IncomeType } from '@/types'
 import { useLocalSearchParams, useRouter } from 'expo-router'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { scale } from '@/utils/styling'
 
 const IncomeModal = () => {
@@ -42,10 +43,16 @@ const IncomeModal = () => {
     
         // Get current date to add to the income record
         const calendarNow = new Date(Date.now());
+
+        const userId = await AsyncStorage.getItem("userId");
+        if (!userId) {
+            Alert.alert("Income", "User is not logged in.");
+            return;
+        }    
     
         // Create the data object to send to the backend
         const data = {
-            user_id: user?.uid,  // This is where you're using the logged-in user's ID
+            user_id: userId, //using user_id from AsyncStorage
             source,
             amount,
             month: calendarNow.getMonth() + 1,

@@ -86,6 +86,19 @@ app.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
 
+    const user = await User.findOne({ where: { username } });
+    if (!user || user.password !== password) {
+      return res.status(401).json({ error: 'Invalid username or password' });
+    }
+    // Generate a JWT token
+    const token = generateJwtToken(user);
+    return res.status(200).json({
+      message: 'Login successful',
+      token,
+      userId: user.id,
+     });
+
+
     const connection = await db.promise().getConnection(); // Use the promise-based connection
 
     try {

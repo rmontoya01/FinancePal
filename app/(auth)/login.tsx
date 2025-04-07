@@ -71,6 +71,8 @@ const Login = () => {
                     // Store user_id in AsyncStorage
                     await AsyncStorage.setItem('user_id', data.userId.toString());
                     console.log('Received user_id:', data.userId);
+                } else {
+                    console.log('No user_id returned from server');
                 }
                 
                 return true;
