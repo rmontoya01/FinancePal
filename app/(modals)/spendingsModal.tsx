@@ -11,8 +11,7 @@ import Button from '@/components/Button'
 import { IncomeType, SpendingsType } from '@/types'
 import { useRouter } from 'expo-router'
 import { scale } from '@/utils/styling'
-import { createOrUpdateIncome } from '@/services/incomeService'
-import { Timestamp } from 'firebase/firestore'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SpendingsModal = () => {
 
@@ -22,8 +21,8 @@ const SpendingsModal = () => {
         amount: 0,
         category: "",
         description: "",
-        date: new Date(Date.now()),
-        created_at: Timestamp.now(),
+        date: new Date(Date.now()), // Initialize date with the current date
+        created_at: new Date(),
     });
 
     const router = useRouter();
@@ -34,18 +33,23 @@ const SpendingsModal = () => {
             Alert.alert("Spendings", "Please fill in all of the fields!");
             return;
         }
-
-        const data: SpendingsType = {
-            user_id: 0,
-            amount,
-            category,
-            description,
-            date,
-            created_at: Timestamp.now(),
-        };
-
+    
         try {
-            // Sending data to your backend or database
+            const user_id = await AsyncStorage.getItem('user_id');
+            if (!user_id) {
+                Alert.alert("Spendings", "User not logged in.");
+                return;
+            }
+    
+            const data: SpendingsType = {
+                user_id: parseInt(user_id),
+                amount,
+                category,
+                description,
+                date,
+                created_at: new Date(),
+            };
+    
             const response = await fetch('http://18.226.82.202:3000/spendings', {
                 method: 'POST',
                 headers: {
@@ -53,12 +57,12 @@ const SpendingsModal = () => {
                 },
                 body: JSON.stringify(data),
             });
-
-            const result = await response.json(); // No need to parse if it's already JSON
+    
+            const result = await response.json();
             console.log('result: ', result);
-
+    
             if (result?.status === 'success') {
-                router.back(); // Navigate back
+                router.back();
             } else {
                 Alert.alert("Spendings", "Failed to save spendings.");
             }
@@ -67,6 +71,7 @@ const SpendingsModal = () => {
             Alert.alert("Spendings", "Something went wrong.");
         }
     };
+    
 
     return (
 
@@ -85,7 +90,6 @@ const SpendingsModal = () => {
                             value={spendings.category}
                             onChangeText={(value) => setSpendings({ ...spendings, category: value })} />
                     </View>
-
 
                     {/* Spendings Cost */}
                     <View style={styles.textContainer}>
@@ -107,11 +111,12 @@ const SpendingsModal = () => {
 
                     {/* Transaction Date */}
                     <View style={styles.textContainer}>
-                        <Typo color={colors.neutral200}>Transaction Date</Typo>
+                        <Typo color={colors.neutral200}>Spendings Date</Typo>
                         <Input
-                            placeholder='Transaction Date'
-                            value={spendings.date?.toString()}
-                            onChangeText={(value) => setSpendings({ ...spendings, date: new Date(value) })} />
+                            placeholder='Date of Spendings'
+                            value={spendings.date ? spendings.date.toLocaleDateString() : ''} // Display current date or fallback to an empty string
+                            editable={false} // Make it non-editable since backend captures this
+                        />
                     </View>
                 </ScrollView>
 

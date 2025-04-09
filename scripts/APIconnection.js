@@ -86,7 +86,7 @@ app.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    const connection = await db.promise().getConnection(); // Use the promise-based connection
+    const connection = await db.promise().getConnection();
 
     try {
       // Check if user with the provided username exists
@@ -109,18 +109,19 @@ app.post('/login', async (req, res) => {
       }
 
       // Generate a JWT token
-      const token = jwt.sign({ userId: user.id }, jwtSecret, { expiresIn: '1h' });
+      const token = jwt.sign({ user_id: user.user_id }, jwtSecret, { expiresIn: '1h' });
 
-      // Respond with the token
-      res.status(200).json({ message: 'Login successful', token });
+      // Respond with the token and user_id
+      res.status(200).json({ message: 'Login successful', token, user_id: user.user_id });
     } finally {
-      connection.release(); // Release connection back to the pool
+      connection.release();
     }
   } catch (error) {
     console.error('Error in /login:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 // Used to handle requests to '/'
 app.get('/register', (req, res) => {
@@ -130,26 +131,40 @@ app.get('/register', (req, res) => {
 
 // ADDING INCOME FUNCTIONALITY ENDPOINT
 app.post('/income', async (req, res) => {
+  const { amount, month, year, source, user_id } = req.body;
+  console.log('Recieved request to add income:', req.body); // Debugging line
+
+  // Validation check to ensure that user_id exists
+  if (!user_id || !source || !amount || !month || !year) {
+    console.log('Validation error: Missing required fields'); // Debugging line
+    return res.status(400).json({ error: 'All fields are required' });
+  }
+
+  const connection = await db.promise().getConnection(); // get a connection from the pool
+  
   try {
-    const { user_id, source, amount, month, year } = req.body;
 
-    if (!user_id || !source || !amount || !month || !year) {
-      return res.status(400).json({ error: 'All fields are required' });
-    }
-
-    const connection = await db.promise().getConnection();
-    try {
-      await connection.query(
-        'INSERT INTO Income (user_id, source, amount, month, year, created_at, updated_at) VALUES (?, ?, ?, ?, ?, NOW(), NOW())',
-        [user_id, source, amount, month, year]
+      // Check if user exists in the Users table
+      const [user] = await connection.query(
+          'SELECT * FROM Users WHERE user_id = ?',
+          [user_id]
       );
+
+      if (user.length === 0) {
+          console.log('User not found', user_id); // Debugging line
+          return res.status(400).json({ error: 'User does not exist' });
+      }
+
+      // Insert income into the Income table
+      await connection.query(
+          'INSERT INTO Income (user_id, source, amount, month, year, created_at, updated_at) VALUES (?, ?, ?, ?, ?, NOW(), NOW())',
+          [user_id, source, amount, month, year]
+      );
+      console.log('Income added successfully'); // Debugging line
       res.status(201).json({ status: 'success', message: 'Income added successfully' });
-    } finally {
-      connection.release();
-    }
   } catch (error) {
-    console.error('Error adding income:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+      console.error('Error adding income:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
