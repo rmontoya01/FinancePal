@@ -66,13 +66,14 @@ const budget = () => {
                     </Button>
                 </View>
 
-                {/* Finish Budget */}
+                {/* Finish Budget
+                MIGHT BE REMOVING THIS BUTTON "FINISH BUDGET"
                 <View style={styles.buttonContainer}>
                     <Button onPress={() => router.push('/(tabs)')}>
                         <Typo size={18} fontWeight={"500"} color={colors.white}>Finish Budget</Typo>
                         <Ionicons name="trending-up-sharp" size={24} color="white" />
                     </Button>
-                </View>
+                </View> */}
 
             </View>
 
