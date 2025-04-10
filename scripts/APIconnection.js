@@ -170,16 +170,17 @@ app.post('/income', async (req, res) => {
 app.post('/expenses', async (req, res) => {
   try {
     const { user_id, amount, category, description } = req.body;
-
+    // Debugging line to check the request body
     if (!user_id || !amount || !category || !description) {
       return res.status(400).json({ error: 'All fields are required' });
     }
 
     const connection = await db.promise().getConnection();
     try {
+      // Check if user exists in the Users table
       await connection.query(
-        'INSERT INTO Expenses (user_id, amount, description, category, created_at) VALUES (?, ?, ?, ?, NOW())',
-        [user_id, amount, description, category]
+        'INSERT INTO Expenses (user_id, amount, category, description, created_at) VALUES (?, ?, ?, ?, NOW())',
+        [user_id, amount, category, description]  // Correctly pass the values
       );
       res.status(201).json({ status: 'success', message: 'Expense added successfully' });
     } finally {
@@ -189,12 +190,6 @@ app.post('/expenses', async (req, res) => {
     console.error('Error adding expense:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
-});
-
-// Start server
-const port = 3000; // Update if port changes
-app.listen(port, '0.0.0.0', () => {
-  console.log(`Server running on port ${port}`);
 });
 
 module.exports = app;
