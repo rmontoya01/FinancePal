@@ -178,8 +178,8 @@ app.post('/expenses', async (req, res) => {
     const connection = await db.promise().getConnection();
     try {
       await connection.query(
-        'INSERT INTO Expenses (user_id, amount, category, description, created_at) VALUES (?, ?, ?, ?, ?, NOW())',
-        [user_id, amount, category, description]
+        'INSERT INTO Expenses (user_id, amount, description, category, created_at) VALUES (?, ?, ?, ?, NOW())',
+        [user_id, amount, description, category]
       );
       res.status(201).json({ status: 'success', message: 'Expense added successfully' });
     } finally {
