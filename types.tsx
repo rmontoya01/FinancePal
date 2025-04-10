@@ -59,7 +59,7 @@ export type IncomeType = {
     updated_at?: Date;
 };
 
-export type SpendingsType = {
+export type ExpenseType = {
     expense_id?: number;
     user_id?: number;
     amount?: number;
