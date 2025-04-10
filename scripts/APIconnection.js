@@ -192,4 +192,10 @@ app.post('/expenses', async (req, res) => {
   }
 });
 
+// Start server
+const port = 3000; // Update if port changes
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Server running on port ${port}`);
+});
+
 module.exports = app;
