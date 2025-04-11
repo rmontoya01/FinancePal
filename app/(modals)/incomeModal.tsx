@@ -9,45 +9,83 @@ import Header from '@/components/Header'
 import Input from '@/components/Input'
 import Button from '@/components/Button'
 import { IncomeType } from '@/types'
-import { useRouter } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { scale } from '@/utils/styling'
-import { createOrUpdateIncome } from '@/services/incomeService'
-
 
 const IncomeModal = () => {
 
-    // const { user, updateUserData } = useAuth();
+    const { user, updateUserData } = useAuth();
 
+    const { username } = useLocalSearchParams();
+    const [show, setShow] = useState(false);
+    const [showPicker, setShowPicker] = useState(false);
     const [income, setIncome] = useState<IncomeType>({
-        name: "",
-        // image: null,
+        income_id: 0,
+        user_id: 0,
+        source: "",
+        amount: 0,
+        month: 0,
+        year: 0,
+        created_at: new Date(),
+        updated_at: new Date()
     });
 
-    // const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
     const router = useRouter();
 
     const onSubmit = async () => {
-        let { name } = income;
-        if (!name.trim()) {
+        let { source, amount = 0 } = income;
+        if (!source.trim() || amount <= 0) {
             Alert.alert("Income", "Please fill in all of the fields!");
             return;
         }
+    
+        // Get current date to add to the income record
+        const calendarNow = new Date(Date.now());
 
-        const data: IncomeType = {
-            name,
-            // uid: user?.uid
+        const user_id = await AsyncStorage.getItem("user_id");
+        if (!user_id) {
+            Alert.alert("Income", "User is not logged in.");
+            return;
+        }    
+    
+        // Create the data object to send to the backend
+        const data = {
+            user_id, //using user_id from AsyncStorage
+            source,
+            amount,
+            month: calendarNow.getMonth() + 1,
+            year: calendarNow.getFullYear()
+        };
+
+        console.log("Submitting data: ", data);
+    
+        // Send the data to the backend API
+        setLoading(true);
+        try {
+            const response = await fetch('http://18.226.82.202:3000/income', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),  // This includes the logged-in user's user_id
+            });
+    
+            const result = await response.json();
+            console.log('API Response: ', result); //log to see API response
+
+            if (result?.status === 'success') {
+                updateUserData(user?.uid ?? "");  // Refresh user data
+                router.back();  // Navigate back to the previous screen
+            } else {
+                Alert.alert("Income", "Failed to save income.");
+            }
+        } catch (error) {
+            setLoading(false);
+            Alert.alert("Income", "Something went wrong.");
+            console.error("Submit Error:", error);
         }
-
-        // setLoading(true);
-        // const result: { status: string } = await createOrUpdateIncome(data);
-        // setLoading(false);
-        // console.log('result: ', result);
-        // if (result && result.status === 'success') {
-        //     updateUserData(user?.uid as string);
-        //     router.back();
-        // } else {
-        //     Alert.alert("Income", "not correct testresult")
-        // }
     };
 
     return (
@@ -57,23 +95,25 @@ const IncomeModal = () => {
                 <Header title="New Income" rightIcon={<PreviousButton />} style={{ marginBottom: spacingY._7, }} />
 
                 {/* Entry Input Slots */}
+                {/* Income Name Aka Source */}
                 <ScrollView contentContainerStyle={styles.form}>
                     <View style={styles.textContainer}>
                         <Typo color={colors.neutral200}>Income Name</Typo>
                         <Input
-                            placeholder='Salary Pay'
-                            value={income.name}
-                            onChangeText={(value) => setIncome({ ...income, name: value })} />
+                            placeholder='Source of Income'
+                            value={income.source}
+                            onChangeText={(value) => setIncome({ ...income, source: value })} />
                     </View>
-                </ScrollView>
 
-                <ScrollView contentContainerStyle={styles.form}>
+
+                    {/* Income Amount */}
                     <View style={styles.textContainer}>
                         <Typo color={colors.neutral200}>Income Amount</Typo>
                         <Input
                             placeholder='Salary Amount'
-                            value={income.name}
-                            onChangeText={(value) => setIncome({ ...income, name: value })} />
+                            value={(income.amount ?? 0).toString()}
+                            keyboardType="numeric"
+                            onChangeText={(value) => setIncome({ ...income, amount: parseFloat(value) || 0 })} />
                     </View>
                 </ScrollView>
 
@@ -91,7 +131,7 @@ const IncomeModal = () => {
     );
 };
 
-export default IncomeModal
+export default IncomeModal;
 
 const styles = StyleSheet.create({
     container: {
@@ -120,7 +160,14 @@ const styles = StyleSheet.create({
     }
 })
 
-// function useAuth(): { user: any; updateUserData: any } {
-//     throw new Error('Function not implemented.')
-// }
+function useAuth() {
+    const [user, setUser] = useState<{ uid: string } | null>(null); // Initially null
+
+    const updateUserData = (user_id: string) => {
+        console.log(`User data updated for user_id: ${user_id}`);
+        setUser({ uid: user_id }); // Set the actual logged-in user ID
+    };
+
+    return { user, updateUserData };
+}
 

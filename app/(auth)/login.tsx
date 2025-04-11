@@ -12,7 +12,7 @@ import Input from '@/components/Input';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { verticalScale } from '@/utils/styling';
 import Button from "@/components/Button";
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Login = () => {
 
@@ -45,7 +45,6 @@ const Login = () => {
     }
 
     // Replace this mock function with actual API call to verify login credentials
-    // Replace this mock function with actual API call to verify login credentials
     const verifyLogin = async (username: string, password: string): Promise<boolean> => {
         try {
             const response = await fetch('http://18.226.82.202:3000/login', {
@@ -55,11 +54,26 @@ const Login = () => {
                 },
                 body: JSON.stringify({ username, password }),
             });
-
+    
             const data = await response.json();
-
+    
             if (response.status === 200) {
                 console.log('Login successful:', data.message);
+    
+                // Assuming the response contains a JWT token and user_id
+                if (data.token) {
+                    // Store the JWT token in AsyncStorage
+                    await AsyncStorage.setItem('user_token', data.token);
+                    console.log('Received token:', data.token);
+                }
+    
+                if (data.user_id) {
+                    // Store user_id in AsyncStorage
+                    await AsyncStorage.setItem('user_id', data.user_id.toString());
+                    console.log('Received user_id:', data.user_id);
+                } else {
+                    console.log('No user_id returned from server');}
+                
                 return true;
             } else {
                 console.log('Login failed:', data.error);
@@ -70,6 +84,15 @@ const Login = () => {
             return false;
         }
     };
+
+    const getUserData = async () => {
+        const user_id = await AsyncStorage.getItem('user_id');
+        const token = await AsyncStorage.getItem('user_token');
+        console.log('User ID:', user_id);
+        console.log('Token:', token);
+        // You can return or use the user_id and token as needed
+        return { user_id, token };
+};    
 
 
     return (
@@ -121,6 +144,11 @@ const Login = () => {
                         <Typo size={18} fontWeight={"500"} color={colors.white}>Sign In </Typo>
                     </Button>
                 </Animated.View>
+
+                {/* TEMP SIGN IN BUTTON HERE TO MIMIC LOG IN */}
+                <Button onPress={() => router.push('/(tabs)')}>
+                    <Typo> TEMP SIGN IN</Typo>
+                </Button>
 
                 <Animated.View
                     entering={FadeInDown.duration(1100).delay(210).springify().damping(12)}

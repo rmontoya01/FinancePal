@@ -11,7 +11,7 @@ const index = () => {
     const router = useRouter();
     useEffect(() => {
         setTimeout(() => {
-            router.push('/(auth)/welcome')
+            router.replace('/(auth)/welcome')
         }, 1150);
     }, [])
 

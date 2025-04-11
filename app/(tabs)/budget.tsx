@@ -52,7 +52,7 @@ const budget = () => {
 
                 {/* Spendings */}
                 <View style={styles.buttonContainer}>
-                    <Button>
+                    <Button onPress={() => router.push('/(modals)/spendingsModal')}>
                         <Typo size={18} fontWeight={"500"} color={colors.white}>Spendings</Typo>
                         <Ionicons name="trending-down-sharp" size={24} color="white" />
                     </Button>
@@ -60,19 +60,20 @@ const budget = () => {
 
                 {/* Add to Budget */}
                 <View style={styles.buttonContainer}>
-                    <Button>
+                    <Button onPress={() => alert("Budget Added!")}>
                         <Typo size={18} fontWeight={"500"} color={colors.white}>Add to Budget</Typo>
                         <Ionicons name="add-circle-sharp" size={24} color="white" />
                     </Button>
                 </View>
 
-                {/* Finish Budget */}
+                {/* Finish Budget
+                MIGHT BE REMOVING THIS BUTTON "FINISH BUDGET"
                 <View style={styles.buttonContainer}>
-                    <Button>
+                    <Button onPress={() => router.push('/(tabs)')}>
                         <Typo size={18} fontWeight={"500"} color={colors.white}>Finish Budget</Typo>
                         <Ionicons name="trending-up-sharp" size={24} color="white" />
                     </Button>
-                </View>
+                </View> */}
 
             </View>
 

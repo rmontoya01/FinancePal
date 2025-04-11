@@ -13,7 +13,7 @@ const corsOptions = {
   credentials: true,
 };
 app.use(cors(corsOptions)); // To allow cross-origin requests
-app.use(express.json()); // To look through JSON requests
+app.use(express.json()); // For parsing application/json
 
 // MySQL connection pool using environment variables
 const db = mysql.createPool({
@@ -86,7 +86,7 @@ app.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    const connection = await db.promise().getConnection(); // Use the promise-based connection
+    const connection = await db.promise().getConnection();
 
     try {
       // Check if user with the provided username exists
@@ -109,12 +109,12 @@ app.post('/login', async (req, res) => {
       }
 
       // Generate a JWT token
-      const token = jwt.sign({ userId: user.id }, jwtSecret, { expiresIn: '1h' });
+      const token = jwt.sign({ user_id: user.user_id }, jwtSecret, { expiresIn: '1h' });
 
-      // Respond with the token
-      res.status(200).json({ message: 'Login successful', token });
+      // Respond with the token and user_id
+      res.status(200).json({ message: 'Login successful', token, user_id: user.user_id });
     } finally {
-      connection.release(); // Release connection back to the pool
+      connection.release();
     }
   } catch (error) {
     console.error('Error in /login:', error);
@@ -122,34 +122,74 @@ app.post('/login', async (req, res) => {
   }
 });
 
-// Get transaction history by month
-app.get('/transactions/history/:year/:month', async (req, res) => {
+// Used to handle requests to '/'
+app.get('/register', (req, res) => {
+  console.log('Register route works!');
+  res.send('Hello, FinancePal API is running!');
+});
+
+// ADDING INCOME FUNCTIONALITY ENDPOINT
+app.post('/income', async (req, res) => {
+  const { amount, month, year, source, user_id } = req.body;
+  console.log('Recieved request to add income:', req.body); // Debugging line
+
+  // Validation check to ensure that user_id exists
+  if (!user_id || !source || !amount || !month || !year) {
+    console.log('Validation error: Missing required fields'); // Debugging line
+    return res.status(400).json({ error: 'All fields are required' });
+  }
+
+  const connection = await db.promise().getConnection(); // get a connection from the pool
+  
   try {
-    const { year, month } = req.params;
-    const userId = req.user.id; // Assuming user authentication middleware
+      // Check if user exists in the Users table
+      const [user] = await connection.query(
+          'SELECT * FROM Users WHERE user_id = ?',
+          [user_id]
+      );
+
+      if (user.length === 0) {
+          console.log('User not found', user_id); // Debugging line
+          return res.status(400).json({ error: 'User does not exist' });
+      }
+
+      // Insert income into the Income table
+      await connection.query(
+          'INSERT INTO Income (user_id, source, amount, month, year, created_at, updated_at) VALUES (?, ?, ?, ?, ?, NOW(), NOW())',
+          [user_id, source, amount, month, year]
+      );
+      console.log('Income added successfully'); // Debugging line
+      res.status(201).json({ status: 'success', message: 'Income added successfully' });
+  } catch (error) {
+      console.error('Error adding income:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// ADDING EXPENSES FUNCTIONALITY ENDPOINT
+app.post('/expenses', async (req, res) => {
+  try {
+    const { user_id, amount, category, description } = req.body;
+    // Debugging line to check the request body
+    if (!user_id || !amount || !category || !description) {
+      return res.status(400).json({ error: 'All fields are required' });
+    }
 
     const connection = await db.promise().getConnection();
     try {
-      const [transactions] = await connection.query(
-        `SELECT * FROM transactions 
-         WHERE user_id = ? AND YEAR(transaction_date) = ? AND MONTH(transaction_date) = ?
-         ORDER BY transaction_date DESC`,
-        [userId, year, month]
+      // Check if user exists in the Users table
+      await connection.query(
+        'INSERT INTO Expenses (user_id, amount, category, description, created_at) VALUES (?, ?, ?, ?, NOW())',
+        [user_id, amount, category, description]  // Correctly pass the values
       );
-      res.status(200).json(transactions);
+      res.status(201).json({ status: 'success', message: 'Expense added successfully' });
     } finally {
       connection.release();
     }
   } catch (error) {
-    console.error('Error fetching transaction history:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('Error adding expense:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
-});
-
-//Used to handle requests to '/'
-app.get('/register', (req, res) => {
-  console.log('Register route works!');
-  res.send('Hello, FinancePal API is running!');
 });
 
 // Start server
@@ -157,3 +197,5 @@ const port = 3000; // Update if port changes
 app.listen(port, '0.0.0.0', () => {
   console.log(`Server running on port ${port}`);
 });
+
+module.exports = app;
