@@ -122,7 +122,6 @@ app.post('/login', async (req, res) => {
   }
 });
 
-
 // Used to handle requests to '/'
 app.get('/register', (req, res) => {
   console.log('Register route works!');
@@ -143,7 +142,6 @@ app.post('/income', async (req, res) => {
   const connection = await db.promise().getConnection(); // get a connection from the pool
   
   try {
-
       // Check if user exists in the Users table
       const [user] = await connection.query(
           'SELECT * FROM Users WHERE user_id = ?',
@@ -168,27 +166,28 @@ app.post('/income', async (req, res) => {
   }
 });
 
-// ADDING SPENDINGS FUNCTIONALITY ENDPOINT
-app.post('/spendings', async (req, res) => {
+// ADDING EXPENSES FUNCTIONALITY ENDPOINT
+app.post('/expenses', async (req, res) => {
   try {
-    const { user_id, amount, category, description, date } = req.body;
-
-    if (!user_id || !amount || !category || !description || !date) {
+    const { user_id, amount, category, description } = req.body;
+    // Debugging line to check the request body
+    if (!user_id || !amount || !category || !description) {
       return res.status(400).json({ error: 'All fields are required' });
     }
 
     const connection = await db.promise().getConnection();
     try {
+      // Check if user exists in the Users table
       await connection.query(
-        'INSERT INTO Spendings (user_id, amount, category, description, date, created_at) VALUES (?, ?, ?, ?, ?, NOW())',
-        [user_id, amount, category, description, date]
+        'INSERT INTO Expenses (user_id, amount, category, description, created_at) VALUES (?, ?, ?, ?, NOW())',
+        [user_id, amount, category, description]  // Correctly pass the values
       );
-      res.status(201).json({ status: 'success', message: 'Spendings added successfully' });
+      res.status(201).json({ status: 'success', message: 'Expense added successfully' });
     } finally {
       connection.release();
     }
   } catch (error) {
-    console.error('Error adding spendings:', error);
+    console.error('Error adding expense:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
