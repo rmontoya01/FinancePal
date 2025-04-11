@@ -1,4 +1,4 @@
-const db = require('../db');
+const db = require('../database');
 
 exports.addIncome = async (req, res) => {
   const { amount, month, year, source, user_id } = req.body;
