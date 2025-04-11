@@ -7,7 +7,11 @@ const _layout = () => {
   return (
     <Stack screenOptions={{ headerShown: false }}>
 
+      {/* To confirm modals, edit it inline here */}
+      {/* Income Modal */}
       <Stack.Screen name="(modals)/incomeModal" options={{ presentation: "modal", }} />
+      {/* Spendings Modal */}
+      <Stack.Screen name="(modals)/spendingsModal" options={{ presentation: "modal", }} />
 
     </Stack>
   )

@@ -76,7 +76,7 @@ export default function Settings() {
       {/* Footer */}
       <View style={styles.footerContainer}>
         <Button onPress={() => router.replace('/(tabs)')}>
-          <Typo size={18} fontWeight={"500"} color={colors.white}>Return & Confirm</Typo>
+          <Typo size={22} fontWeight={"600"} color={colors.white}>Return & Confirm</Typo>
         </Button>
       </View>
 
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
   footerContainer: {
     width: "100%",
     paddingHorizontal: spacingX._40,
-    paddingBottom: spacingY._40,
+    paddingBottom: spacingY._50,
     gap: 2,
   },
 }
