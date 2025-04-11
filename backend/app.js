@@ -2,9 +2,9 @@ require('dotenv').config({ path: 'connect.env' });
 const express = require('express');
 const cors = require('cors');
 
-const authRoutes = require('./routes/authRoutes.js');
-const incomeRoutes = require('./routes/incomeRoutes.js');
-const expensesRoutes = require('./routes/expensesRoutes.js');
+const authRoutes = require('./routes/auth.js');
+const incomeRoutes = require('./routes/income.js');
+const expensesRoutes = require('./routes/expenses.js');
 
 const app = express();
 const port = 3000;
