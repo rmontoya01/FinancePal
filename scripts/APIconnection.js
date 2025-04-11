@@ -140,29 +140,29 @@ app.post('/income', async (req, res) => {
   }
 
   const connection = await db.promise().getConnection(); // get a connection from the pool
-  
+
   try {
-      // Check if user exists in the Users table
-      const [user] = await connection.query(
-          'SELECT * FROM Users WHERE user_id = ?',
-          [user_id]
-      );
+    // Check if user exists in the Users table
+    const [user] = await connection.query(
+      'SELECT * FROM Users WHERE user_id = ?',
+      [user_id]
+    );
 
-      if (user.length === 0) {
-          console.log('User not found', user_id); // Debugging line
-          return res.status(400).json({ error: 'User does not exist' });
-      }
+    if (user.length === 0) {
+      console.log('User not found', user_id); // Debugging line
+      return res.status(400).json({ error: 'User does not exist' });
+    }
 
-      // Insert income into the Income table
-      await connection.query(
-          'INSERT INTO Income (user_id, source, amount, month, year, created_at, updated_at) VALUES (?, ?, ?, ?, ?, NOW(), NOW())',
-          [user_id, source, amount, month, year]
-      );
-      console.log('Income added successfully'); // Debugging line
-      res.status(201).json({ status: 'success', message: 'Income added successfully' });
+    // Insert income into the Income table
+    await connection.query(
+      'INSERT INTO Income (user_id, source, amount, month, year, created_at, updated_at) VALUES (?, ?, ?, ?, ?, NOW(), NOW())',
+      [user_id, source, amount, month, year]
+    );
+    console.log('Income added successfully'); // Debugging line
+    res.status(201).json({ status: 'success', message: 'Income added successfully' });
   } catch (error) {
-      console.error('Error adding income:', error);
-      res.status(500).json({ error: 'Internal Server Error' });
+    console.error('Error adding income:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
@@ -191,7 +191,51 @@ app.post('/expenses', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+app.get('/transactions/history/', async (req, res) => {
+  try {
+    const { year, month } = req.params;
+    const userId = req.user.id; // Assuming user authentication middleware
+    //note fix here likely error
+    const connection = await db.promise().getConnection();
+    try {
+      const [transactions] = await connection.query(
+        `SELECT * FROM transactions 
+         WHERE user_id = ? AND YEAR(transaction_date) = ? AND MONTH(transaction_date) = ?
+         ORDER BY transaction_date DESC`,
+        [userId, year, month]
+      );
+      res.status(200).json(transactions);
+    } finally {
+      connection.release();
+    }
+  } catch (error) {
+    console.error('Error fetching transaction history:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+// Get expenses history by month
+app.get('/expenses/stats/:year/:month', async (req, res) => {
+  try {
+    const { year, month } = req.params;
+    const userId = req.user.id; // Assuming user authentication middleware
 
+    const connection = await db.promise().getConnection();
+    try {
+      const [expenses] = await connection.query(
+        `SELECT * FROM expenses 
+         WHERE user_id = ? AND YEAR(date) = ? AND MONTH(date) = ?
+         ORDER BY date DESC`,
+        [userId, year, month]
+      );
+      res.status(200).json(expenses);
+    } finally {
+      connection.release();
+    }
+  } catch (error) {
+    console.error('Error fetching expenses stats:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 // Start server
 const port = 3000; // Update if port changes
 app.listen(port, '0.0.0.0', () => {
