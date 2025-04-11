@@ -1,8 +1,5 @@
 require('dotenv').config({ path: 'connect.env' });
-const mysql = require('mysql2');
 
-// Create a MySQL connection pool
-// This allows for multiple connections to be managed efficiently
 const db = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,

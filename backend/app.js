@@ -1,7 +1,8 @@
-require('dotenv').config({ path: 'connect.env' });
+require('./config/env'); // Loads environment variables first
 const express = require('express');
 const cors = require('cors');
 
+// Route imports
 const authRoutes = require('./routes/auth.js');
 const incomeRoutes = require('./routes/income.js');
 const expensesRoutes = require('./routes/expenses.js');
