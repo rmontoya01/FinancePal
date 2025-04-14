@@ -17,7 +17,7 @@ const appInfoModal = () => {
     return (
 
         <ModalWrapper>
-            <Header title="App Info Screen" />
+            <Header title="App Info Screen" rightIcon={<PreviousButton />} style={{ marginBottom: spacingY._7 }} />
 
             <View>
                 <Text>App Info Modal Screen</Text>
