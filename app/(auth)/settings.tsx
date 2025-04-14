@@ -52,7 +52,7 @@ export default function Settings() {
 
         {/* App Info */}
         <View style={styles.buttonContainer}>
-          <Button>
+          <Button onPress={() => router.push('/(modals)/appInfoModal')}>
             <Typo size={18} fontWeight={"500"} color={colors.white}>App Info</Typo>
           </Button>
         </View>

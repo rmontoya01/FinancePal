@@ -40,7 +40,7 @@ const IncomeModal = () => {
             Alert.alert("Income", "Please fill in all of the fields!");
             return;
         }
-    
+
         // Get current date to add to the income record
         const calendarNow = new Date(Date.now());
 
@@ -48,8 +48,8 @@ const IncomeModal = () => {
         if (!user_id) {
             Alert.alert("Income", "User is not logged in.");
             return;
-        }    
-    
+        }
+
         // Create the data object to send to the backend
         const data = {
             user_id, //using user_id from AsyncStorage
@@ -60,7 +60,7 @@ const IncomeModal = () => {
         };
 
         console.log("Submitting data: ", data);
-    
+
         // Send the data to the backend API
         setLoading(true);
         try {
@@ -71,7 +71,7 @@ const IncomeModal = () => {
                 },
                 body: JSON.stringify(data),  // This includes the logged-in user's user_id
             });
-    
+
             const result = await response.json();
             console.log('API Response: ', result); //log to see API response
 
@@ -170,4 +170,3 @@ function useAuth() {
 
     return { user, updateUserData };
 }
-

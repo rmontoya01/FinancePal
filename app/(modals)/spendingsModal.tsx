@@ -44,14 +44,14 @@ const ExpensesModal = () => {
             Alert.alert("Expenses", "Please fill in all of the fields!");
             return;
         }
-    
+
         try {
             const user_id = await AsyncStorage.getItem('user_id');
             if (!user_id) {
                 Alert.alert("Expenses", "User not logged in.");
                 return;
             }
-    
+
             const data: ExpenseType = {
                 user_id: parseInt(user_id),
                 amount,
@@ -59,7 +59,7 @@ const ExpensesModal = () => {
                 description,
                 created_at: new Date(),
             };
-    
+
             // Sending the POST request
             const response = await fetch('http://18.226.82.202:3000/expenses', {  // Fixed endpoint to lowercase 'e'
                 method: 'POST',
@@ -68,15 +68,15 @@ const ExpensesModal = () => {
                 },
                 body: JSON.stringify(data),
             });
-    
+
             const responseText = await response.text(); // Get the raw response as text
             console.log('Response Text:', responseText);  // Log the raw response
-    
+
             // Try to parse the raw response as JSON
             try {
                 const result = JSON.parse(responseText); // Parse the raw response into JSON
                 console.log('result: ', result);
-    
+
                 if (result?.status === 'success') {
                     router.back();
                 } else {
@@ -86,13 +86,13 @@ const ExpensesModal = () => {
                 console.error('Error parsing JSON:', error);  // Handle any JSON parsing errors
                 Alert.alert("Expenses", "Failed to parse server response.");
             }
-    
+
         } catch (error) {
             console.error("Submit Error:", error);
             Alert.alert("Expenses", "Something went wrong.");
         }
     };
-    
+
 
     const handleCategorySelect = (category: string) => {
         setExpenses({ ...Expenses, description: category });
