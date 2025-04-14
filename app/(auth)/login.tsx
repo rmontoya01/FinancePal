@@ -38,7 +38,7 @@ const Login = () => {
         const isLoginValid = await verifyLogin(usernameRef.current, passwordRef.current);
 
         if (isLoginValid) {
-            router.push('/(tabs)');  // Redirect to next screen if login is successful
+            router.push({ pathname: '/(tabs)', params: { username: usernameRef.current } });  // Redirect to next screen if login is successful
         } else {
             alert("Invalid credentials. Please try again.");
         }
