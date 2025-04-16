@@ -15,23 +15,30 @@ interface Entry {
 
 export default function History() {
   const [entries, setEntries] = useState<Entry[]>([]);
-  const [sortAscending, setSortAscending] = useState(true);
+  const [sortAscending, setSortAscending] = useState(false);
+  const [balance, setBalance] = useState<number>(0);
 
   useEffect(() => {
-    const fetchEntries = async () => {
+    const fetchData = async () => {
       const user_id = await AsyncStorage.getItem('user_id');
       if (!user_id) return;
 
       try {
-        const response = await fetch(`http://18.226.82.202:3000/entries/${user_id}`);
-        const data = await response.json();
-        setEntries(data);
+        // Fetch entries
+        const entriesRes = await fetch(`http://18.226.82.202:3000/entries/${user_id}`);
+        const entriesData = await entriesRes.json();
+        setEntries(entriesData);
+
+        // Fetch total balance
+        const balanceRes = await fetch(`http://18.226.82.202:3000/budget-summary/${user_id}`);
+        const balanceData = await balanceRes.json();
+        setBalance(balanceData.total_balance || 0);
       } catch (error) {
-        console.error('Error fetching entries:', error);
+        console.error('Error fetching data:', error);
       }
     };
 
-    fetchEntries();
+    fetchData();
   }, []);
 
   const toggleSortOrder = () => {
@@ -44,26 +51,46 @@ export default function History() {
     return sortAscending ? dateA.getTime() - dateB.getTime() : dateB.getTime() - dateA.getTime();
   });
 
-  const renderItem = ({ item }: { item: Entry }) => (
+  // Calculate running balance from sorted entries
+  const entriesWithBalance = sortedEntries.reduce((acc: any[], curr) => {
+    const previousBalance = acc.length > 0 ? acc[acc.length - 1].balance : 0;
+    const amount = Number(curr.amount);
+    const newBalance = curr.type === 'income' ? previousBalance + amount : previousBalance - amount;
+    acc.push({ ...curr, balance: newBalance });
+    return acc;
+  }, []);
+
+  const renderItem = ({ item }: { item: Entry & { balance: number } }) => (
     <View style={styles.entryItem}>
-      <Text style={styles.entryType}>{item.type.toUpperCase()}</Text>
-      <Text style={styles.entryAmount}>${item.amount.toFixed(2)}</Text>
-      <Text style={styles.entryCategory}>{item.category}</Text>
+      <Text style={styles.entryType}>
+        {item.type.toUpperCase()}: {item.type === 'income' ? '+' : '-'}${Number(item.amount).toFixed(2)}
+      </Text>
+      <Text style={styles.balanceText}>BALANCE: ${item.balance.toFixed(2)}</Text>
       <Text style={styles.entryDescription}>{item.description}</Text>
+      <Text style={styles.entryCategory}>{item.category}</Text>
       <Text style={styles.entryDate}>{new Date(item.created_at).toLocaleDateString()}</Text>
     </View>
   );
 
   return (
     <View style={styles.container}>
-      <Header title="History" style={{ marginVertical: spacingY._5 }} />
+      <Header title="History" style={styles.headerSpacing} />
+
+      {/* Total Balance Display */}
+      <View style={styles.totalBalanceCard}>
+        <Text style={styles.totalBalanceLabel}>Total Balance</Text>
+        <Text style={styles.totalBalanceValue}>${balance.toFixed(2)}</Text>
+      </View>
+
+      {/* Sort Button */}
       <TouchableOpacity onPress={toggleSortOrder} style={styles.sortButton}>
         <Text style={styles.sortButtonText}>
           Sort by Date {sortAscending ? '▲' : '▼'}
         </Text>
       </TouchableOpacity>
+
       <FlatList
-        data={sortedEntries}
+        data={entriesWithBalance}
         renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={styles.listContainer}
@@ -77,7 +104,27 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#25292e',
     paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingTop: 10,
+  },
+  headerSpacing: {
+    marginTop: spacingY._20,
+  },
+  totalBalanceCard: {
+    backgroundColor: '#1e1e1e',
+    borderRadius: 12,
+    padding: 20,
+    marginVertical: 10,
+  },
+  totalBalanceLabel: {
+    fontSize: 18,
+    color: '#b0b0b0',
+    fontWeight: '600',
+  },
+  totalBalanceValue: {
+    fontSize: 32,
+    color: '#fff',
+    fontWeight: 'bold',
+    marginTop: 4,
   },
   sortButton: {
     alignSelf: 'flex-end',
@@ -101,15 +148,19 @@ const styles = StyleSheet.create({
   entryType: {
     color: '#fff',
     fontWeight: 'bold',
+    fontSize: 16,
   },
-  entryAmount: {
-    color: '#fff',
-  },
-  entryCategory: {
-    color: '#ccc',
+  balanceText: {
+    color: '#89d489',
+    fontSize: 15,
+    marginTop: 4,
   },
   entryDescription: {
     color: '#ccc',
+    marginTop: 5,
+  },
+  entryCategory: {
+    color: '#aaa',
   },
   entryDate: {
     color: '#aaa',
