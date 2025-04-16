@@ -192,6 +192,36 @@ app.post('/expenses', async (req, res) => {
   }
 });
 
+// DELETE USER FUNCTIONALITY ENDPOINT
+app.delete('/users/:user_id', async (req, res) => {
+  try {
+    const { user_id } = req.params;
+
+    const connection = await db.promise().getConnection();
+    try {
+      // Delete related Income records
+      await connection.query('DELETE FROM Income WHERE user_id = ?', [user_id]);
+
+      // Delete related Expenses records
+      await connection.query('DELETE FROM Expenses WHERE user_id = ?', [user_id]);
+
+      // Delete User account
+      const [result] = await connection.query('DELETE FROM Users WHERE user_id = ?', [user_id]);
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      res.status(200).json({ message: 'User and all related records deleted successfully' });
+    } finally {
+      connection.release();
+    }
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // Start server
 const port = 3000; // Update if port changes
 app.listen(port, '0.0.0.0', () => {
