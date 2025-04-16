@@ -192,6 +192,40 @@ app.post('/expenses', async (req, res) => {
   }
 });
 
+// GET BUDGET SUMMARY (income, expenses, total) FOR A USER 
+app.get('/budget-summary/:user_id', async (req, res) => {
+  const { user_id } = req.params;
+
+  const connection = await db.promise().getConnection();
+  try {
+    // Total Income
+    const [incomeRows] = await connection.query(
+      'SELECT COALESCE(SUM(amount), 0) AS total_income FROM Income WHERE user_id = ?',
+      [user_id]
+    );
+
+    // Total Expenses
+    const [expenseRows] = await connection.query(
+      'SELECT COALESCE(SUM(amount), 0) AS total_expense FROM Expenses WHERE user_id = ?',
+      [user_id]
+    );
+
+    const income = incomeRows[0].total_income;
+    const expense = expenseRows[0].total_expense;
+
+    res.status(200).json({
+      total_income: income,
+      total_expense: expense,
+      total_balance: income - expense,
+    });
+  } catch (error) {
+    console.error('Error fetching budget summary:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  } finally {
+    connection.release();
+  }
+});
+
 // DELETE USER FUNCTIONALITY ENDPOINT
 app.delete('/users/:user_id', async (req, res) => {
   try {

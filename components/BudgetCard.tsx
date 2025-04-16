@@ -1,11 +1,36 @@
-import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
-import Typo from './Typo'
-import { scale, verticalScale } from '@/utils/styling'
-import { colors, spacingX, spacingY } from '@/constants/themes'
-import Ionicons from '@expo/vector-icons/Ionicons'
+import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import Typo from './Typo';
+import { scale, verticalScale } from '@/utils/styling';
+import { colors, spacingX, spacingY } from '@/constants/themes';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const BudgetCard = () => {
+    const [income, setIncome] = useState(0);
+    const [expense, setExpense] = useState(0);
+    const [balance, setBalance] = useState(0);
+
+    useEffect(() => {
+        const fetchBudgetData = async () => {
+            const user_id = await AsyncStorage.getItem('user_id');
+            if (!user_id) return;
+
+            try {
+                const response = await fetch(`http://18.226.82.202:3000/budget-summary/${user_id}`);
+                const data = await response.json();
+
+                setIncome(data.total_income);
+                setExpense(data.total_expense);
+                setBalance(data.total_balance);
+            } catch (error) {
+                console.error('Error fetching budget summary:', error);
+            }
+        };
+
+        fetchBudgetData();
+    }, []);
+
     return (
         <ImageBackground
             source={require('../assets/images/bluePatternTransperant.png')}
@@ -22,7 +47,7 @@ const BudgetCard = () => {
                         <Ionicons name="ellipsis-vertical-sharp" size={24} color={colors.white} weight="fill" />
                     </View>
                     <Typo color={colors.white} size={30} fontWeight={"700"}>
-                        $2,245.57
+                        ${balance.toFixed(2)}
                     </Typo>
                 </View>
 
@@ -40,7 +65,7 @@ const BudgetCard = () => {
                         </View>
                         <View style={{ alignSelf: "center" }}>
                             <Typo size={20} color={colors.green} fontWeight={"700"}>
-                                $1,712.25
+                                ${income.toFixed(2)}
                             </Typo>
                         </View>
                     </View>
@@ -56,7 +81,7 @@ const BudgetCard = () => {
                         </View>
                         <View style={{ alignSelf: "center" }}>
                             <Typo size={20} color={colors.red} fontWeight={"700"}>
-                                $1,109.25
+                                ${expense.toFixed(2)}
                             </Typo>
                         </View>
                     </View>
@@ -66,7 +91,7 @@ const BudgetCard = () => {
     );
 };
 
-export default BudgetCard
+export default BudgetCard;
 
 const styles = StyleSheet.create({
     cardImage: {
@@ -90,7 +115,6 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        // marginBottom: spacingY._7,
     },
     statsIcon: {
         backgroundColor: colors.neutral300,
@@ -99,7 +123,6 @@ const styles = StyleSheet.create({
     },
     incomesExpenses: {
         flexDirection: "row",
-        // justifyContent: "space-between",
         alignItems: "center",
         gap: spacingY._10,
     },
