@@ -1,36 +1,11 @@
 import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Typo from './Typo';
 import { scale, verticalScale } from '@/utils/styling';
 import { colors, spacingX, spacingY } from '@/constants/themes';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const BudgetCard = () => {
-    const [income, setIncome] = useState(0);
-    const [expense, setExpense] = useState(0);
-    const [balance, setBalance] = useState(0);
-
-    useEffect(() => {
-        const fetchBudgetData = async () => {
-            const user_id = await AsyncStorage.getItem('user_id');
-            if (!user_id) return;
-
-            try {
-                const response = await fetch(`http://18.226.82.202:3000/budget-summary/${user_id}`);
-                const data = await response.json();
-
-                setIncome(data.total_income);
-                setExpense(data.total_expense);
-                setBalance(data.total_balance);
-            } catch (error) {
-                console.error('Error fetching budget summary:', error);
-            }
-        };
-
-        fetchBudgetData();
-    }, []);
-
+const BudgetCard = ({ income = 0, expense = 0, balance = 0 }) => {
     return (
         <ImageBackground
             source={require('../assets/images/bluePatternTransperant.png')}
