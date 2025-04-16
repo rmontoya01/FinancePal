@@ -1,5 +1,5 @@
 import { Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated'
 import { useRouter } from 'expo-router';
 
@@ -13,11 +13,28 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { verticalScale } from '@/utils/styling';
 import Button from "@/components/Button";
 import BudgetCard from '@/components/BudgetCard';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const HomeScreen = () => {
 
   const router = useRouter();
+  const [username, setUsername] = useState<string>('User');
+
+  useEffect(() => {
+    const fetchUsername = async () => {
+      try {
+        const storedUsername = await AsyncStorage.getItem('username');
+        if (storedUsername) {
+          setUsername(storedUsername);
+          console.log("Fetched username:", storedUsername);
+        }
+      } catch (error) {
+        console.log("Error fetching username:", error);
+      }
+    };
+
+    fetchUsername();
+  }, []);
 
   return (
     <ScreenWrapper>
@@ -28,7 +45,7 @@ const HomeScreen = () => {
 
           <View style={{ gap: 5, marginTop: spacingY._5, alignItems: 'center' }}>
             <Typo size={30} color={colors.primaryLight} fontWeight={"500"}>Welcome</Typo>
-            <Typo size={32} fontWeight={"600"}>User</Typo>
+            <Typo size={32} fontWeight={"600"}>{username}</Typo>
           </View>
 
           <TouchableOpacity style={styles.settingsIcon} onPress={() => router.push('/(auth)/settings')}>

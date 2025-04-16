@@ -108,7 +108,7 @@ const ExpensesModal = () => {
                 <ScrollView contentContainerStyle={styles.form}>
                     {/* Expense Name */}
                     <View style={styles.textContainer}>
-                        <Typo color={colors.neutral200}>Expense Desc</Typo>
+                        <Typo color={colors.neutral200}>Expense Description</Typo>
                         <Input
                             placeholder='Expense Name'
                             value={Expenses.category}
