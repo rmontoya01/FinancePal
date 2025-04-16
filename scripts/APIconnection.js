@@ -226,6 +226,32 @@ app.get('/budget-summary/:user_id', async (req, res) => {
   }
 });
 
+// GET combined income and expense entries for a user
+app.get('/entries/:user_id', async (req, res) => {
+  const { user_id } = req.params;
+
+  const connection = await db.promise().getConnection();
+  try {
+    const [incomeRows] = await connection.query(
+      'SELECT income_id AS id, "income" AS type, amount, source AS category, "" AS description, created_at FROM Income WHERE user_id = ?',
+      [user_id]
+    );
+
+    const [expenseRows] = await connection.query(
+      'SELECT expense_id AS id, "expense" AS type, amount, category, description, created_at FROM Expenses WHERE user_id = ?',
+      [user_id]
+    );
+
+    const combinedEntries = [...incomeRows, ...expenseRows];
+    res.status(200).json(combinedEntries);
+  } catch (error) {
+    console.error('Error fetching entries:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  } finally {
+    connection.release();
+  }
+});
+
 // DELETE USER FUNCTIONALITY ENDPOINT
 app.delete('/users/:user_id', async (req, res) => {
   try {
