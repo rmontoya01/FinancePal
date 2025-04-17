@@ -92,7 +92,7 @@ export default function History() {
       <FlatList
         data={entriesWithBalance}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item, index) => `${item.amount}-${item.created_at}-${index}`}
         contentContainerStyle={styles.listContainer}
       />
     </View>

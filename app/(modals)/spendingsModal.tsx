@@ -12,6 +12,7 @@ import { IncomeType, ExpenseType } from '@/types';
 import { useRouter } from 'expo-router';
 import { scale } from '@/utils/styling';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ScreenWrapper from '@/components/ScreenWrapper';
 
 const ExpensesModal = () => {
     const [Expenses, setExpenses] = useState<ExpenseType>({
@@ -101,7 +102,7 @@ const ExpensesModal = () => {
 
     return (
         <ModalWrapper>
-            <View style={styles.container}>
+            <ScreenWrapper style={styles.container}>
                 <Header title="New Expenses" rightIcon={<PreviousButton />} style={{ marginBottom: spacingY._7 }} />
 
                 {/* Entry Input Slots */}
@@ -158,7 +159,7 @@ const ExpensesModal = () => {
                         </View>
                     </View>
                 </Modal>
-            </View>
+            </ScreenWrapper>
 
             <View style={styles.footer}>
                 <Button onPress={onSubmit} style={{ flex: 2 }}>

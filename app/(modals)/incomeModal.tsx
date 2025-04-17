@@ -1,4 +1,5 @@
 import { Alert, StatusBar, StyleSheet, Text, View, ScrollView } from 'react-native'
+import ScreenWrapper from '@/components/ScreenWrapper' // Adjust the path if necessary
 import React, { useState } from 'react'
 import ModalWrapper from '@/components/ModalWrapper'
 import Typo from '@/components/Typo'
@@ -91,7 +92,7 @@ const IncomeModal = () => {
     return (
         <ModalWrapper>
 
-            <View style={styles.container}>
+            <ScreenWrapper style={styles.container}>
                 <Header title="New Income" rightIcon={<PreviousButton />} style={{ marginBottom: spacingY._7, }} />
 
                 {/* Entry Input Slots */}
@@ -117,7 +118,7 @@ const IncomeModal = () => {
                     </View>
                 </ScrollView>
 
-            </View>
+            </ScreenWrapper>
 
             <View style={styles.footer}>
                 <Button onPress={onSubmit} style={{ flex: 2 }}>
