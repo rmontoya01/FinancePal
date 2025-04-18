@@ -12,9 +12,9 @@ const ScreenWrapper = ({ style, children }: ScreenWrapperProps) => {
     return (
         <LinearGradient
 
-        colors={['#000428', '#004e92']} //Blue Gradient
+        //colors={['#000428', '#004e92']} //Blue Gradient
         //colors={['#41295a', '#2F0743']} //Purple Night
-        //colors={['#0a0f2c', '#152154', '#1b2c6b']} //Business Night Blue
+        colors={['#0a0f2c', '#152154', '#1b2c6b']} //Business Night Blue
         //colors={['#1F1C2C', '#928DAB']} //Artic Ice
         //colors={['#000000', '#434343']} //Black Gradient
         //colors={['#000000', '#1f1f1f', '#2b2b2b']} //Phantom Black
