@@ -9,7 +9,7 @@ import { colors, radius } from '@/constants/themes';
 
 const PreviousButton = ({
   style,
-  iconSize = 26
+  iconSize = 24
 }: PreviousButtonProps) => {
 
   const router = useRouter();
