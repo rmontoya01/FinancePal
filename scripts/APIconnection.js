@@ -282,6 +282,68 @@ app.delete('/users/:user_id', async (req, res) => {
   }
 });
 
+// ADDING BUDGET FUNCTIONALITY ENDPOINT
+// This endpoint allows users to set or update their monthly budget
+app.post('/set-budget', async (req, res) => {
+  const { user_id, monthly_budget } = req.body;
+
+  if (!user_id || !monthly_budget) {
+    return res.status(400).json({ error: 'Missing user_id or monthly_budget' });
+  }
+
+  const connection = await db.promise().getConnection();
+  try {
+    const [existing] = await connection.query(
+      'SELECT * FROM UserBudget WHERE user_id = ?',
+      [user_id]
+    );
+
+    if (existing.length > 0) {
+      await connection.query(
+        'UPDATE UserBudget SET monthly_budget = ?, updated_at = NOW() WHERE user_id = ?',
+        [monthly_budget, user_id]
+      );
+    } else {
+      await connection.query(
+        'INSERT INTO UserBudget (user_id, monthly_budget) VALUES (?, ?)',
+        [user_id, monthly_budget]
+      );
+    }
+
+    res.status(200).json({ status: 'success', message: 'Budget set successfully' });
+  } catch (error) {
+    console.error('Error setting budget:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  } finally {
+    connection.release();
+  }
+});
+
+// GET BUDGET FUNCTIONALITY ENDPOINT
+// This endpoint retrieves the user's budget
+app.get('/budget/:user_id', async (req, res) => {
+  const { user_id } = req.params;
+
+  const connection = await db.promise().getConnection();
+  try {
+    const [budgetRows] = await connection.query(
+      'SELECT * FROM UserBudget WHERE user_id = ?',
+      [user_id]
+    );
+
+    if (budgetRows.length === 0) {
+      return res.status(404).json({ error: 'No budget found for user' });
+    }
+
+    res.status(200).json(budgetRows[0]);
+  } catch (error) {
+    console.error('Error fetching budget:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  } finally {
+    connection.release();
+  }
+});
+
 // Start server
 const port = 3000; // Update if port changes
 app.listen(port, '0.0.0.0', () => {

@@ -1,121 +1,141 @@
-import { Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useRef, useState } from 'react'
-import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated'
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, View, ActivityIndicator } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
+import { AnimatedCircularProgress } from 'react-native-circular-progress';
 
 import ScreenWrapper from '@/components/ScreenWrapper';
-import PreviousButton from '@/components/PreviousButton';
-import { spacingY, spacingX } from '@/constants/themes';
 import Typo from '@/components/Typo';
-import { colors, radius } from '@/constants/themes';
-import Input from '@/components/Input';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { verticalScale } from '@/utils/styling';
-import Button from "@/components/Button";
-import BudgetCard from '@/components/BudgetCard';
-import Header from '@/components/Header';
+import Button from '@/components/Button';
+import { spacingY, spacingX, colors } from '@/constants/themes';
 
-const budget = () => {
+const Budget = () => {
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [budgetData, setBudgetData] = useState({
+    budget_limit: 0,
+    total_spent: 0,
+    remaining: 0,
+    percentage: 0,
+  });
 
-    const router = useRouter();
+  useEffect(() => {
+    const fetchBudget = async () => {
+      try {
+        const user_id = await AsyncStorage.getItem('user_id');
+        const res = await fetch(`http://18.226.82.202:3000/user-budget/${user_id}`);
+        const data = await res.json();
 
-    const getTotalBalance = () => {
-        return 120;
-    }
+        if (res.status === 200) {
+          const percentage = data.budget_limit > 0
+            ? (data.total_spent / data.budget_limit) * 100
+            : 0;
 
-    return (
-        <ScreenWrapper style={{ backgroundColor: colors.neutral900 }}>
+          setBudgetData({
+            ...data,
+            percentage,
+          });
+        } else {
+          console.error('Error fetching budget:', data.error);
+        }
+      } catch (err) {
+        console.error('Fetch error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-            <Header title="Budget" />
+    fetchBudget();
+  }, []);
 
-            <View style={styles.container}>
-                {/* Get Total Balance Budget Amount */}
-                <View style={styles.totalBalance}>
-                    <View style={{ alignItems: 'center' }}>
-                        <Typo size={40} fontWeight={"600"}>
-                            ${getTotalBalance()}?.toFixed(2)
-                        </Typo>
-                        <Typo size={18} fontWeight={"400"} color={colors.neutral200} >
-                            Total Balance Budget
-                        </Typo>
-                    </View>
+  return (
+    <LinearGradient
+      colors={['#0f2027', '#203a43', '#2c5364']}
+      style={{ flex: 1 }}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+    >
+      <ScreenWrapper>
+        <View style={styles.container}>
+          <Typo size={30} fontWeight="700" color={colors.white} style={{ marginBottom: spacingY._15 }}>
+            Budget Overview
+          </Typo>
+
+          {loading ? (
+            <ActivityIndicator size="large" color={colors.primary} />
+          ) : (
+            <>
+              <View style={styles.card}>
+                <AnimatedCircularProgress
+                  size={170}
+                  width={15}
+                  fill={budgetData.percentage}
+                  tintColor="#00e0ff"
+                  backgroundColor="#3d5875"
+                  rotation={0}
+                >
+                  {() => (
+                    <Typo size={20} fontWeight="600" color={colors.white}>
+                      {budgetData.percentage.toFixed(0)}%
+                    </Typo>
+                  )}
+                </AnimatedCircularProgress>
+
+                <View style={styles.budgetDetails}>
+                  <Typo size={16} color={colors.white}>Monthly Limit: ${budgetData.budget_limit.toFixed(2)}</Typo>
+                  <Typo size={16} color={colors.red}>Spent: ${budgetData.total_spent.toFixed(2)}</Typo>
+                  <Typo size={16} color={colors.green}>Remaining: ${budgetData.remaining.toFixed(2)}</Typo>
+                </View>
+              </View>
+
+              <View style={styles.actions}>
+                <Button onPress={() => router.push({ pathname: '/(modals)/setBudgetModal' })}>
+                    <Typo color="white" size={16}>Set Budget</Typo>
+                </Button>
+
+                <Button onPress={() => router.push({ pathname: '/(modals)/incomeModal' })}>
+                    <Typo color="white" size={16}>Add Income</Typo>
+                </Button>
+
+                <Button onPress={() => router.push({ pathname: '/(modals)/spendingsModal' })}>
+                    <Typo color="white" size={16}>Add Expense</Typo>
+                </Button>
                 </View>
 
-                {/* Creating the touchable buttons */}
-                {/* Income */}
-                <View style={styles.buttonContainer}>
-                    <Button onPress={() => router.push('/(modals)/incomeModal')}>
-                        <Typo size={18} fontWeight={"500"} color={colors.white}>Income</Typo>
-                        <Ionicons name="cash-sharp" size={24} color="white" />
-                    </Button>
-                </View>
+            </>
+          )}
+        </View>
+      </ScreenWrapper>
+    </LinearGradient>
+  );
+};
 
-                {/* Spendings */}
-                <View style={styles.buttonContainer}>
-                    <Button onPress={() => router.push('/(modals)/spendingsModal')}>
-                        <Typo size={18} fontWeight={"500"} color={colors.white}>Spendings</Typo>
-                        <Ionicons name="trending-down-sharp" size={24} color="white" />
-                    </Button>
-                </View>
-
-                {/* Add to Budget */}
-                <View style={styles.buttonContainer}>
-                    <Button onPress={() => alert("Budget Added!")}>
-                        <Typo size={18} fontWeight={"500"} color={colors.white}>Add to Budget</Typo>
-                        <Ionicons name="add-circle-sharp" size={24} color="white" />
-                    </Button>
-                </View>
-
-                {/* Finish Budget
-                MIGHT BE REMOVING THIS BUTTON "FINISH BUDGET"
-                <View style={styles.buttonContainer}>
-                    <Button onPress={() => router.push('/(tabs)')}>
-                        <Typo size={18} fontWeight={"500"} color={colors.white}>Finish Budget</Typo>
-                        <Ionicons name="trending-up-sharp" size={24} color="white" />
-                    </Button>
-                </View> */}
-
-            </View>
-
-        </ScreenWrapper>
-    )
-}
-
-export default budget
+export default Budget;
 
 const styles = StyleSheet.create({
-    container: {
-        // flex: 2,
-        // justifyContent: 'space-between',
-        flex: 1,
-        gap: spacingY._25,
-        paddingHorizontal: spacingX._20,
-    },
-    text: {
-        color: '#fff',
-    },
-    containerText: {
-        justifyContent: 'center',
-
-        alignItems: 'center',
-        backgroundColor: 'lightblue',
-        padding: 50,
-        height: 10,
-        width: 50,
-
-        borderRadius: 20,
-    },
-    totalBalance: {
-        backgroundColor: colors.neutral900,
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: 150,
-    },
-    buttonContainer: {
-        width: "100%",
-        paddingHorizontal: spacingX._40,
-        marginTop: spacingY._30,
-        // gap: 2,
-    },
-})
-
+  container: {
+    flex: 1,
+    paddingHorizontal: spacingX._20,
+    gap: spacingY._20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  card: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 20,
+    padding: spacingY._20,
+    width: '100%',
+  },
+  budgetDetails: {
+    marginTop: spacingY._15,
+    gap: spacingY._7,
+    alignItems: 'center',
+  },
+  actions: {
+    marginTop: spacingY._20,
+    gap: spacingY._15,
+    width: '100%',
+  },
+});
