@@ -23,6 +23,26 @@ export const colors = {
     neutral900: "#260e18",
 };
 
+export const lightTheme = {
+    background: '#ffffff',
+    text: '#111111',
+    primary: '#2e7d32',
+    card: '#f2f2f2',
+    border: '#cccccc',
+    neutral900: '#ffffff',
+    neutral100: '#111111',
+}
+
+export const darkTheme = {
+    background: '#121212',
+    text: '#ffffff',
+    primary: '#2e7d32',
+    card: '#1f1f1f',
+    border: '#444444',
+    neutral900: '#121212',
+    neutral100: '#ffffff',
+}
+
 export const spacingX = {
     _3: scale(3),
     _5: scale(5),

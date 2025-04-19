@@ -2,25 +2,28 @@ import { StyleSheet, Text, View, Platform, Dimensions, StatusBar } from 'react-n
 import React from 'react'
 import { ScreenWrapperProps } from '@/types'
 import { colors } from "@/constants/themes"
+import { useTheme } from '@/context/ThemeContext'
 
-const {height} = Dimensions.get('window'); 
+const { height } = Dimensions.get('window');
 
-const ScreenWrapper = ({style, children}: ScreenWrapperProps) => {
+const ScreenWrapper = ({ style, children }: ScreenWrapperProps) => {
 
-    let paddingTop = Platform.OS == 'ios'? height * 0.06 : 50;
-     
+  const { theme } = useTheme()
+
+  let paddingTop = Platform.OS == 'ios' ? height * 0.06 : 50;
+
   return (
-    <View 
-        style={[
-    {
-        paddingTop, 
-        flex: 1, 
-        backgroundColor: colors.neutral900
-    },
-     style
-     ]}>
-        <StatusBar barStyle={"light-content"} />
-        {children}
+    <View
+      style={[
+        {
+          paddingTop,
+          flex: 1,
+          backgroundColor: theme.background
+        },
+        style
+      ]}>
+      <StatusBar barStyle={"light-content"} />
+      {children}
     </View>
   );
 };

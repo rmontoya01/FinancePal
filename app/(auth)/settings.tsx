@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Pressable, StyleSheet, Switch, Text, TouchableOpacity, useColorScheme, View } from 'react-native'
 import React, { useRef, useState } from 'react'
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated'
 import { useRouter } from 'expo-router';
@@ -12,11 +12,22 @@ import Input from '@/components/Input';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { verticalScale } from '@/utils/styling';
 import Button from "@/components/Button";
+import { useTheme } from '@/context/ThemeContext';
 
 
 export default function Settings() {
 
   const router = useRouter();
+
+  const { themeMode, setThemeMode } = useTheme();
+
+  const isDark = themeMode === 'dark';
+
+  const toggleSwitch = () => {
+    const newMode = isDark ? 'light' : 'dark';
+    console.log('Toggling to:', newMode);
+    setThemeMode(newMode);
+  };
 
   return (
     <ScreenWrapper>
@@ -38,9 +49,17 @@ export default function Settings() {
         <Animated.View
           entering={FadeInDown.duration(1100).delay(210).springify().damping(12)}
           style={styles.buttonContainer}>
-          <Button onPress={() => router.push('/(modals)/darkModeModal')}>
+          {/* <Button onPress={() => router.push('/(modals)/darkModeModal')}>
             <Typo size={18} fontWeight={"500"} color={colors.white}>Light/Dark Mode</Typo>
-          </Button>
+          </Button> */}
+          <Typo size={18} fontWeight={"500"} color={colors.white}>Light/Dark Mode</Typo>
+          <Switch
+            value={isDark}
+            onValueChange={toggleSwitch}
+            trackColor={{ false: colors.neutral600, true: colors.neutral900 }}
+            thumbColor={colors.white}
+            style={{ transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }] }}
+          />
         </Animated.View>
 
         {/* Other Settings */}
