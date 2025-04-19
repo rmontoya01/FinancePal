@@ -13,29 +13,17 @@ import { spacingY, spacingX, colors } from '@/constants/themes';
 const Budget = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [budgetData, setBudgetData] = useState({
-    budget_limit: 0,
-    total_spent: 0,
-    remaining: 0,
-    percentage: 0,
-  });
+  const [budgetLimit, setBudgetLimit] = useState(0);
 
   useEffect(() => {
     const fetchBudget = async () => {
       try {
         const user_id = await AsyncStorage.getItem('user_id');
-        const res = await fetch(`http://18.226.82.202:3000/user-budget/${user_id}`);
+        const res = await fetch(`http://18.226.82.202:3000/budget/${user_id}`);
         const data = await res.json();
-
-        if (res.status === 200) {
-          const percentage = data.budget_limit > 0
-            ? (data.total_spent / data.budget_limit) * 100
-            : 0;
-
-          setBudgetData({
-            ...data,
-            percentage,
-          });
+  
+        if (res.status === 200 && data.monthly_budget) {
+          setBudgetLimit(Number(data.monthly_budget)); // ✅ Fix applied here
         } else {
           console.error('Error fetching budget:', data.error);
         }
@@ -45,9 +33,10 @@ const Budget = () => {
         setLoading(false);
       }
     };
-
+  
     fetchBudget();
   }, []);
+  
 
   return (
     <LinearGradient
@@ -70,39 +59,37 @@ const Budget = () => {
                 <AnimatedCircularProgress
                   size={170}
                   width={15}
-                  fill={budgetData.percentage}
+                  fill={budgetLimit > 0 ? 100 : 0}
                   tintColor="#00e0ff"
                   backgroundColor="#3d5875"
                   rotation={0}
                 >
                   {() => (
                     <Typo size={20} fontWeight="600" color={colors.white}>
-                      {budgetData.percentage.toFixed(0)}%
+                      ${budgetLimit.toFixed(2)}
                     </Typo>
                   )}
                 </AnimatedCircularProgress>
 
                 <View style={styles.budgetDetails}>
-                  <Typo size={16} color={colors.white}>Monthly Limit: ${budgetData.budget_limit.toFixed(2)}</Typo>
-                  <Typo size={16} color={colors.red}>Spent: ${budgetData.total_spent.toFixed(2)}</Typo>
-                  <Typo size={16} color={colors.green}>Remaining: ${budgetData.remaining.toFixed(2)}</Typo>
+                  <Typo size={16} color={colors.white}>Monthly Limit: ${budgetLimit.toFixed(2)}</Typo>
+                  <Typo size={16} color={colors.textLighters}>More insights coming soon...</Typo>
                 </View>
               </View>
 
               <View style={styles.actions}>
-                <Button onPress={() => router.push({ pathname: '/(modals)/setBudgetModal' })}>
-                    <Typo color="white" size={16}>Set Budget</Typo>
+                <Button onPress={() => router.push({ pathname: '/(modals)/SetBudgetModal' })}>
+                  <Typo color="white" size={16}>Set Budget</Typo>
                 </Button>
 
                 <Button onPress={() => router.push({ pathname: '/(modals)/incomeModal' })}>
-                    <Typo color="white" size={16}>Add Income</Typo>
+                  <Typo color="white" size={16}>Add Income</Typo>
                 </Button>
 
                 <Button onPress={() => router.push({ pathname: '/(modals)/spendingsModal' })}>
-                    <Typo color="white" size={16}>Add Expense</Typo>
+                  <Typo color="white" size={16}>Add Expense</Typo>
                 </Button>
-                </View>
-
+              </View>
             </>
           )}
         </View>
