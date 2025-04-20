@@ -18,11 +18,12 @@ const ScreenWrapper = ({ style, children }: ScreenWrapperProps) => {
         {
           paddingTop,
           flex: 1,
-          backgroundColor: theme.background
+          backgroundColor: theme.neutral900
         },
-        style
+        style,
       ]}>
-      <StatusBar barStyle={"light-content"} />
+      {/* <StatusBar barStyle={"light-content"} /> */}
+      <StatusBar barStyle={theme.text === '#ffffff' ? 'light-content' : 'dark-content'} />
       {children}
     </View>
   );
@@ -30,5 +31,7 @@ const ScreenWrapper = ({ style, children }: ScreenWrapperProps) => {
 
 export default ScreenWrapper
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+
+})
 

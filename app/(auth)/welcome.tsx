@@ -8,18 +8,22 @@ import Typo from "@/components/Typo"
 import { spacingX, spacingY, colors } from '@/constants/themes';
 import { verticalScale } from '@/utils/styling';
 import Button from "@/components/Button";
+import { useTheme } from '@/context/ThemeContext';
 
 
 const Welcome = () => {
 
     const router = useRouter();
 
+    // Beginning of color themes. 
+    const { theme } = useTheme();
+
     return (
         <ScreenWrapper>
             <View style={styles.container}>
                 <View>
                     <TouchableOpacity onPress={() => router.push('/(auth)/login')} style={styles.loginButton}>
-                        <Typo fontWeight={"600"}>Sign In</Typo>
+                        <Typo fontWeight={"700"} color={theme.text}>Sign In</Typo>
                     </TouchableOpacity>
 
                     <Animated.Image
@@ -30,18 +34,18 @@ const Welcome = () => {
                     />
                 </View>
 
-                <View style={styles.welcomeFooter}>
+                <View style={[styles.welcomeFooter, { backgroundColor: theme.neutral900 }]}>
                     <Animated.View
                         entering={FadeInDown.duration(1100).delay(110).springify().damping(12)}
                         style={{ alignItems: "center" }}>
-                        <Typo size={28} fontWeight={"600"}>Welcome to FinancePal!</Typo>
+                        <Typo size={28} fontWeight={"700"} color={theme.text}>Welcome to FinancePal!</Typo>
                     </Animated.View>
 
                     <Animated.View
                         entering={FadeInDown.duration(1100).delay(210).springify().damping(12)}
                         style={styles.buttonContainer}>
                         <Button onPress={() => router.push('/(auth)/login')}>
-                            <Typo size={18} fontWeight={"500"}>Sign In</Typo>
+                            <Typo size={18} fontWeight={"600"} color={theme.text}>Sign In</Typo>
                         </Button>
                     </Animated.View>
                 </View>
@@ -73,12 +77,11 @@ const styles = StyleSheet.create({
         borderRadius: 25,
     },
     welcomeFooter: {
-        backgroundColor: colors.neutral900,
         alignItems: "center",
         paddingTop: verticalScale(40),
         paddingBottom: verticalScale(70),
         gap: spacingY._20,
-        shadowColor: "white",
+        shadowColor: "teal",
         shadowOffset: { width: 5, height: -5 },
         elevation: 15,
         shadowRadius: 25,

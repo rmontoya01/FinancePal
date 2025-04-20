@@ -17,11 +17,20 @@ import { useTheme } from '@/context/ThemeContext';
 
 export default function Settings() {
 
+  // Setting up the router
   const router = useRouter();
 
+  // Setting the color theme
   const { themeMode, setThemeMode } = useTheme();
 
-  const isDark = themeMode === 'dark';
+  // Grabs the color scheme of the system first, can be dark or light.
+  const systemScheme = useColorScheme();
+
+  // Grabbing the theme to be either system or dark/light mode.
+  const effectiveTheme = themeMode === 'system' ? systemScheme : themeMode;
+
+  // Setting the theme to be in dark or light mode.
+  const isDark = effectiveTheme === 'dark';
 
   const toggleSwitch = () => {
     const newMode = isDark ? 'light' : 'dark';
