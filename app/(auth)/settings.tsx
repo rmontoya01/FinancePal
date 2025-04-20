@@ -1,49 +1,46 @@
-import { Alert, StyleSheet, TextInput, View } from 'react-native'
-import React, { useState } from 'react'
-import Animated, { FadeInDown } from 'react-native-reanimated'
+import React, { useState } from 'react';
+import {
+  View,
+  TextInput,
+  StyleSheet,
+  Alert,
+  TouchableOpacity,
+  FlatList,
+} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import ScreenWrapper from '@/components/ScreenWrapper';
 import PreviousButton from '@/components/PreviousButton';
-import { spacingY, spacingX } from '@/constants/themes';
 import Typo from '@/components/Typo';
-import { colors } from '@/constants/themes';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { verticalScale } from '@/utils/styling';
-import Button from "@/components/Button";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import Button from '@/components/Button';
+import { spacingY, spacingX, colors } from '@/constants/themes';
+import { gradientPresets } from '@/components/ScreenWrapper';
 
 export default function Settings() {
-
   const router = useRouter();
+  const [showDropdown, setShowDropdown] = useState(false);
   const [verifyUsername, setVerifyUsername] = useState('');
-  const [showVerifyInput, setShowVerifyInput] = useState(false);
   const [storedUsername, setStoredUsername] = useState('');
 
+  const handleSetTheme = async (themeName: string) => {
+    await AsyncStorage.setItem('selectedTheme', themeName);
+    setShowDropdown(false);
+  };
+
   const handleLogout = async () => {
-    try {
-      await AsyncStorage.removeItem('user_token');
-      await AsyncStorage.removeItem('user_id');
-      await AsyncStorage.removeItem('username');
-      console.log("User logged out. AsyncStorage cleared.");
-      router.replace('/(auth)/login');
-    } catch (error) {
-      console.error('Error during logout:', error);
-    }
+    await AsyncStorage.multiRemove(['user_token', 'user_id', 'username']);
+    router.replace('/(auth)/login');
   };
 
   const startDeleteVerification = async () => {
-    try {
-      const savedUsername = await AsyncStorage.getItem('username');
-      if (!savedUsername) {
-        Alert.alert('Error', 'No username found.');
-        return;
-      }
-      setStoredUsername(savedUsername);
-      setShowVerifyInput(true);
-    } catch (error) {
-      console.error('Error fetching username:', error);
+    const savedUsername = await AsyncStorage.getItem('username');
+    if (!savedUsername) {
+      Alert.alert('Error', 'No username found.');
+      return;
     }
+    setStoredUsername(savedUsername);
   };
 
   const confirmAndDeleteUser = async () => {
@@ -52,28 +49,15 @@ export default function Settings() {
       return;
     }
 
-    try {
-      const user_id = await AsyncStorage.getItem('user_id');
-      if (!user_id) {
-        Alert.alert('Error', 'User ID not found.');
-        return;
-      }
+    const user_id = await AsyncStorage.getItem('user_id');
+    if (!user_id) return;
 
-      const response = await fetch(`http://18.226.82.202:3000/users/${user_id}`, {
-        method: 'DELETE',
-      });
-
-      if (response.status === 200) {
-        await AsyncStorage.clear();
-        console.log('User deleted and storage cleared.');
-        router.replace('/(auth)/login');
-      } else {
-        const data = await response.json();
-        Alert.alert('Failed to delete user', data.error || 'Something went wrong.');
-      }
-    } catch (error) {
-      console.error('Error deleting user:', error);
-      Alert.alert('Error', 'Failed to delete user.');
+    const res = await fetch(`http://18.226.82.202:3000/users/${user_id}`, { method: 'DELETE' });
+    if (res.status === 200) {
+      await AsyncStorage.clear();
+      router.replace('/(auth)/login');
+    } else {
+      Alert.alert('Error', 'Could not delete user.');
     }
   };
 
@@ -83,40 +67,42 @@ export default function Settings() {
         <PreviousButton iconSize={30} />
 
         <View style={{ gap: 2, marginTop: spacingY._5, alignItems: 'center' }}>
-          <Typo size={34} fontWeight={"700"}>
-            Settings
-          </Typo>
-          <Typo size={30} fontWeight={"700"}>
-            Page
-          </Typo>
+          <Typo size={34} fontWeight="700">Settings</Typo>
+          <Typo size={30} fontWeight="700">Page</Typo>
         </View>
 
-        {/* Light/Dark Mode */}
-        <Animated.View
-          entering={FadeInDown.duration(1100).delay(210).springify().damping(12)}
-          style={styles.buttonContainer}>
-          <Button>
-            <Typo size={18} fontWeight={"500"} color={colors.white}>Light/Dark Mode</Typo>
-          </Button>
-        </Animated.View>
-
-        {/* Other Settings */}
+        {/* Background Theme */}
         <View style={styles.buttonContainer}>
-          <Button>
-            <Typo size={18} fontWeight={"500"} color={colors.white}>Other Settings</Typo>
+          <Button onPress={() => setShowDropdown(!showDropdown)}>
+            <Typo size={18} fontWeight="500" color={colors.white}>Background Theme</Typo>
           </Button>
+          {showDropdown && (
+            <View style={styles.dropdown}>
+              <FlatList
+                data={Object.keys(gradientPresets)}
+                renderItem={({ item }) => (
+                  <TouchableOpacity onPress={() => handleSetTheme(item)}>
+                    <Typo style={styles.dropdownItem}>{item}</Typo>
+                  </TouchableOpacity>
+                )}
+                keyExtractor={(item) => item}
+              />
+            </View>
+          )}
         </View>
 
-        {/* App Info */}
+        {/* Other Buttons */}
         <View style={styles.buttonContainer}>
-          <Button>
-            <Typo size={18} fontWeight={"500"} color={colors.white}>App Info</Typo>
-          </Button>
+          <Button><Typo size={18} fontWeight="500" color={colors.white}>Other Settings</Typo></Button>
+        </View>
+
+        <View style={styles.buttonContainer}>
+          <Button><Typo size={18} fontWeight="500" color={colors.white}>App Info</Typo></Button>
         </View>
 
         {/* Delete User */}
         <View style={styles.buttonContainer}>
-          {showVerifyInput ? (
+          {storedUsername ? (
             <>
               <Typo size={16} color={colors.text}>Please verify your username</Typo>
               <TextInput
@@ -127,12 +113,12 @@ export default function Settings() {
                 onChangeText={setVerifyUsername}
               />
               <Button onPress={confirmAndDeleteUser}>
-                <Typo size={18} fontWeight={"500"} color={colors.white}>Confirm Delete</Typo>
+                <Typo color="white">Confirm Delete</Typo>
               </Button>
             </>
           ) : (
             <Button onPress={startDeleteVerification}>
-              <Typo size={18} fontWeight={"500"} color={colors.white}>Delete User</Typo>
+              <Typo color="white">Delete User</Typo>
             </Button>
           )}
         </View>
@@ -140,15 +126,14 @@ export default function Settings() {
         {/* Logout */}
         <View style={styles.buttonContainer}>
           <Button onPress={handleLogout}>
-            <Typo size={18} fontWeight={"500"} color={colors.white}>Logout</Typo>
+            <Typo color="white">Logout</Typo>
           </Button>
         </View>
       </View>
 
-      {/* Footer */}
       <View style={styles.footerContainer}>
         <Button onPress={() => router.replace('/(tabs)')}>
-          <Typo size={18} fontWeight={"500"} color={colors.white}>Return & Confirm</Typo>
+          <Typo color="white">Return & Confirm</Typo>
         </Button>
       </View>
     </ScreenWrapper>
@@ -161,28 +146,36 @@ const styles = StyleSheet.create({
     gap: spacingY._25,
     paddingHorizontal: spacingX._20,
   },
-  formSubtitle: {
-    gap: spacingY._17,
-  }, // button style here
   buttonContainer: {
-    width: "100%",
+    width: '100%',
     paddingHorizontal: spacingX._40,
   },
   footerContainer: {
-    width: "100%",
+    width: '100%',
     paddingHorizontal: spacingX._40,
     paddingBottom: spacingY._40,
     gap: 2,
   },
   input: {
-    width: '100%',
     borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 10,
     padding: 12,
-    marginTop: 10,
-    marginBottom: 15,
     color: colors.text,
     backgroundColor: colors.neutral800,
+  },
+  dropdown: {
+    position: 'absolute',
+    top: 50,
+    left: 0,
+    right: 0,
+    backgroundColor: '#111',
+    borderRadius: 10,
+    padding: 10,
+    zIndex: 1000,
+  },
+  dropdownItem: {
+    paddingVertical: 10,
+    color: 'white',
   },
 });

@@ -24,14 +24,12 @@ const Budget = () => {
   const fetchBudget = async () => {
     try {
       const user_id = await AsyncStorage.getItem('user_id');
-      const res = await fetch(`http://18.226.82.202:3000/user-budget/${user_id}`, {
-        headers: { 'Accept': 'application/json' }
-      });
-  
+      const res = await fetch(`http://18.226.82.202:3000/user-budget/${user_id}`);
       const data = await res.json();
-  
-      if (res.ok && data.budget_limit !== undefined) {
+
+      if (res.status === 200 && data.budget_limit !== undefined) {
         setBudgetData({
+          ...data,
           budget_limit: parseFloat(data.budget_limit),
           total_spent: parseFloat(data.total_spent),
           remaining: parseFloat(data.remaining),
@@ -46,13 +44,15 @@ const Budget = () => {
       setLoading(false);
     }
   };
-  
 
   useFocusEffect(
     useCallback(() => {
       fetchBudget();
     }, [])
   );
+
+  const overBudget = budgetData.remaining < 0;
+  const fillPercent = Math.min(budgetData.percentage, 100);
 
   return (
     <LinearGradient
@@ -75,8 +75,8 @@ const Budget = () => {
                 <AnimatedCircularProgress
                   size={170}
                   width={15}
-                  fill={budgetData.percentage}
-                  tintColor="#00e0ff"
+                  fill={fillPercent}
+                  tintColor={overBudget ? colors.red : '#00e0ff'}
                   backgroundColor="#3d5875"
                   rotation={0}
                 >
@@ -91,6 +91,12 @@ const Budget = () => {
                   <Typo size={16} color={colors.white}>Monthly Limit: ${budgetData.budget_limit.toFixed(2)}</Typo>
                   <Typo size={16} color={colors.red}>Spent: ${budgetData.total_spent.toFixed(2)}</Typo>
                   <Typo size={16} color={colors.green}>Remaining: ${budgetData.remaining.toFixed(2)}</Typo>
+
+                  {overBudget && (
+                    <Typo size={14} color={colors.red} fontWeight="600">
+                      ⚠ You are over budget!
+                    </Typo>
+                  )}
                 </View>
               </View>
 

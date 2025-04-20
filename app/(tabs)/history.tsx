@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Platform } from 'react-native';
 import Header from "@/components/Header";
 import { spacingY } from '@/constants/themes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -26,12 +26,10 @@ export default function History() {
         if (!user_id) return;
 
         try {
-          // Fetch entries
           const entriesRes = await fetch(`http://18.226.82.202:3000/entries/${user_id}`);
           const entriesData = await entriesRes.json();
           setEntries(entriesData);
 
-          // Fetch total balance
           const balanceRes = await fetch(`http://18.226.82.202:3000/budget-summary/${user_id}`);
           const balanceData = await balanceRes.json();
           setBalance(balanceData.total_balance || 0);
@@ -104,10 +102,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#25292e',
     paddingHorizontal: 20,
-    paddingTop: 10,
+    paddingTop: Platform.OS === 'ios' ? 70 : 40, // adds space under iOS notch
   },
   headerSpacing: {
-    marginTop: spacingY._20,
+    marginBottom: 10,
   },
   totalBalanceCard: {
     backgroundColor: '#1e1e1e',
