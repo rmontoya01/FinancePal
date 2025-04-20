@@ -12,6 +12,7 @@ import Input from '@/components/Input';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { verticalScale } from '@/utils/styling';
 import Button from "@/components/Button";
+import { useTheme } from '@/context/ThemeContext';
 
 const registerUser = async (email: string, password: string, name: string, username: string) => {
     try {
@@ -35,6 +36,9 @@ const registerUser = async (email: string, password: string, name: string, usern
 const accountsCreate01 = () => {
 
     const router = useRouter();
+
+    // Beginning of color themes. 
+    const { theme } = useTheme();
 
     const emailRef = useRef("");
     const passwordRef = useRef("");
@@ -71,7 +75,7 @@ const accountsCreate01 = () => {
                 nameRef.current,
                 usernameRef.current
             );
-    
+
             if (result.success) {
                 alert("Account created successfully!");
                 router.replace('/(auth)/login'); // Navigate to login page
@@ -89,17 +93,17 @@ const accountsCreate01 = () => {
                 <PreviousButton iconSize={30} />
 
                 <View style={{ gap: 5, marginTop: spacingY._5, alignItems: 'center' }}>
-                    <Typo size={34} fontWeight={"700"}>
+                    <Typo size={34} fontWeight={"700"} color={theme.text}>
                         New User?
                     </Typo>
-                    <Typo size={30} fontWeight={"700"}>
+                    <Typo size={30} fontWeight={"700"} color={theme.text}>
                         Create Your Account!
                     </Typo>
                 </View>
 
                 {/* Creating the text fields */}
                 <View style={styles.formSubtitle}>
-                    <Typo size={14} color={colors.textLighters}>
+                    <Typo size={14} color={theme.textLighters}>
                         Start your budgeting journey with our help!
                     </Typo>
                     {/* Full Name */}
@@ -107,33 +111,33 @@ const accountsCreate01 = () => {
                         placeholder="Enter your full name here"
                         onChangeText={(text) => nameRef.current = text}
                         icon={<Ionicons name="person-circle-sharp"
-                            size={verticalScale(28)} color={colors.neutral400} weight="fill" />}
+                            size={verticalScale(28)} color={theme.neutral100} weight="fill" />}
                     />
                     {/* Email */}
                     <Input
                         placeholder='Enter an email of choice here'
                         onChangeText={(value) => (emailRef.current = value)}
-                        icon={<Ionicons name="at-outline" size={verticalScale(28)} color={colors.neutral400} weight="fill" />}
+                        icon={<Ionicons name="at-outline" size={verticalScale(28)} color={theme.neutral100} weight="fill" />}
                     />
                     {/* Username */}
                     <Input
                         placeholder='Enter a username of choice here'
                         onChangeText={(value) => (usernameRef.current = value)}
-                        icon={<Ionicons name="people-sharp" size={verticalScale(28)} color={colors.neutral400} weight="fill" />}
+                        icon={<Ionicons name="people-sharp" size={verticalScale(28)} color={theme.neutral100} weight="fill" />}
                     />
                     {/* Password */}
                     <Input
                         placeholder='Enter a password of choice here'
                         secureTextEntry
                         onChangeText={(value) => (passwordRef.current = value)}
-                        icon={<Ionicons name="lock-open-sharp" size={verticalScale(28)} color={colors.neutral400} weight="fill" />}
+                        icon={<Ionicons name="lock-open-sharp" size={verticalScale(28)} color={theme.neutral100} weight="fill" />}
                     />
                     {/* Confirm Password */}
                     <Input
                         placeholder='Confirm your password here'
                         secureTextEntry
                         onChangeText={(value) => (confirmPasswordRef.current = value)}
-                        icon={<Ionicons name="lock-closed-sharp" size={verticalScale(28)} color={colors.neutral400} weight="fill" />}
+                        icon={<Ionicons name="lock-closed-sharp" size={verticalScale(28)} color={theme.neutral100} weight="fill" />}
                     />
                 </View>
 
@@ -142,7 +146,7 @@ const accountsCreate01 = () => {
                     entering={FadeInDown.duration(1100).delay(210).springify().damping(12)}
                     style={styles.buttonContainer}>
                     <Button loading={isLoading} onPress={handleSubmit}>
-                        <Typo size={18} fontWeight={"500"} color={colors.white}>Create New Account</Typo>
+                        <Typo size={18} fontWeight={"500"} color={theme.text}>Create New Account</Typo>
                     </Button>
                 </Animated.View>
 
@@ -150,7 +154,7 @@ const accountsCreate01 = () => {
                     entering={FadeInDown.duration(1100).delay(210).springify().damping(12)}
                     style={styles.buttonContainer}>
                     <Button onPress={() => router.replace('/(auth)/login')}>
-                        <Typo size={18} fontWeight={"500"} color={colors.white}>Existing Account</Typo>
+                        <Typo size={18} fontWeight={"500"} color={theme.text}>Existing Account</Typo>
                     </Button>
                 </Animated.View>
 

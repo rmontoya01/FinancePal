@@ -5,6 +5,7 @@ import { CustomButtonProps } from "@/types";
 import { colors, radius } from "@/constants/themes";
 import { verticalScale } from "@/utils/styling";
 import Loading from "./Loading";
+import { useTheme } from '@/context/ThemeContext';
 
 const Button = ({
     style,
@@ -12,6 +13,9 @@ const Button = ({
     loading = false,
     children
 }: CustomButtonProps) => {
+
+    // Beginning of color themes. 
+    const { theme } = useTheme();
 
     if (loading) {
         return (
@@ -21,7 +25,7 @@ const Button = ({
         )
     }
     return (
-        <TouchableOpacity onPress={onPress} style={[styles.button, style]}>
+        <TouchableOpacity onPress={onPress} style={[styles.button, style, { backgroundColor: theme.primary }]}>
             {children}
         </TouchableOpacity>
     );
@@ -31,7 +35,6 @@ export default Button;
 
 const styles = StyleSheet.create({
     button: {
-        backgroundColor: colors.primary,
         borderRadius: 17,
         borderCurve: "continuous",
         height: verticalScale(50),

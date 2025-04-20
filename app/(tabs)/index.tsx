@@ -13,11 +13,15 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { verticalScale } from '@/utils/styling';
 import Button from "@/components/Button";
 import BudgetCard from '@/components/BudgetCard';
+import { useTheme } from '@/context/ThemeContext';
 
 
 const HomeScreen = () => {
 
   const router = useRouter();
+
+  // Beginning of color themes. 
+  const { theme } = useTheme();
 
   return (
     <ScreenWrapper>
@@ -27,12 +31,12 @@ const HomeScreen = () => {
         <View style={styles.header}>
 
           <View style={{ gap: 5, marginTop: spacingY._5, alignItems: 'center' }}>
-            <Typo size={30} color={colors.primaryLight} fontWeight={"500"}>Welcome</Typo>
+            <Typo size={30} color={theme.primaryLight} fontWeight={"500"}>Welcome</Typo>
             <Typo size={32} fontWeight={"600"}>User</Typo>
           </View>
 
           <TouchableOpacity style={styles.settingsIcon} onPress={() => router.push('/(auth)/settings')}>
-            <Ionicons name="settings-sharp" size={24} color={colors.neutral200} weight={"bold"} />
+            <Ionicons name="settings-sharp" size={24} color={theme.neutral200} weight={"bold"} />
           </TouchableOpacity>
         </View>
 

@@ -24,7 +24,7 @@ export const colors = {
 };
 
 export const lightTheme = {
-    primary: '#e8f0d5',
+    primary: '#42726a',
     primaryLight: '#f0ead5',
     primaryDark: '#d5dbf0',
     card: '#1f1f1f',
@@ -49,7 +49,7 @@ export const lightTheme = {
 }
 
 export const darkTheme = {
-    primary: '#0e2610',
+    primary: '#57877f',
     primaryLight: '#0e2426',
     primaryDark: '#0e1826',
     card: '#1f1f1f',

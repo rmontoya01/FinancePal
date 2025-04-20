@@ -13,10 +13,14 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { verticalScale } from '@/utils/styling';
 import Button from "@/components/Button";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTheme } from '@/context/ThemeContext';
 
 const Login = () => {
 
     const router = useRouter();
+
+    // Beginning of color themes. 
+    const { theme } = useTheme();
 
     const usernameRef = useRef("");
     const passwordRef = useRef("");
@@ -54,26 +58,27 @@ const Login = () => {
                 },
                 body: JSON.stringify({ username, password }),
             });
-    
+
             const data = await response.json();
-    
+
             if (response.status === 200) {
                 console.log('Login successful:', data.message);
-    
+
                 // Assuming the response contains a JWT token and user_id
                 if (data.token) {
                     // Store the JWT token in AsyncStorage
                     await AsyncStorage.setItem('user_token', data.token);
                     console.log('Received token:', data.token);
                 }
-    
+
                 if (data.user_id) {
                     // Store user_id in AsyncStorage
                     await AsyncStorage.setItem('user_id', data.user_id.toString());
                     console.log('Received user_id:', data.user_id);
                 } else {
-                    console.log('No user_id returned from server');}
-                
+                    console.log('No user_id returned from server');
+                }
+
                 return true;
             } else {
                 console.log('Login failed:', data.error);
@@ -92,7 +97,7 @@ const Login = () => {
         console.log('Token:', token);
         // You can return or use the user_id and token as needed
         return { user_id, token };
-};    
+    };
 
 
     return (
@@ -101,28 +106,28 @@ const Login = () => {
                 <PreviousButton iconSize={30} />
 
                 <View style={{ gap: 10, marginTop: spacingY._20, alignItems: 'center' }}>
-                    <Typo size={34} fontWeight={"700"}>
+                    <Typo size={34} fontWeight={"700"} color={theme.text}>
                         FinancePal
                     </Typo>
-                    <Typo size={30} fontWeight={"700"}>
+                    <Typo size={30} fontWeight={"700"} color={theme.text}>
                         Sign In
                     </Typo>
                 </View>
 
                 <View style={styles.formSubtitle}>
-                    <Typo size={14} color={colors.textLighters}>
+                    <Typo size={16} color={theme.textLight}>
                         Login here to continue:
                     </Typo>
                     <Input
                         placeholder='Enter your username here'
                         onChangeText={(value) => (usernameRef.current = value)}
-                        icon={<Ionicons name="people-sharp" size={verticalScale(28)} color={colors.neutral400} weight="fill" />}
+                        icon={<Ionicons name="people-sharp" size={verticalScale(28)} color={theme.neutral100} weight="fill" />}
                     />
                     <Input
                         placeholder='Enter your password here'
                         secureTextEntry
                         onChangeText={(value) => (passwordRef.current = value)}
-                        icon={<Ionicons name="lock-closed-sharp" size={verticalScale(28)} color={colors.neutral400} weight="fill" />}
+                        icon={<Ionicons name="lock-closed-sharp" size={verticalScale(28)} color={theme.neutral100} weight="fill" />}
                     />
                 </View>
                 {/* email and password box */}
@@ -130,7 +135,7 @@ const Login = () => {
                 {/* Forgot Password touchable text here */}
 
                 <TouchableOpacity>
-                    <Typo size={16} color={colors.text} style={{ alignSelf: "flex-end" }}>
+                    <Typo size={16} color={theme.textLight} style={{ alignSelf: "flex-end" }}>
                         Forgot Password?
                     </Typo>
                 </TouchableOpacity>
@@ -141,7 +146,7 @@ const Login = () => {
                     entering={FadeInDown.duration(1100).delay(210).springify().damping(12)}
                     style={styles.buttonContainer}>
                     <Button loading={isLoading} onPress={handleSubmit}>
-                        <Typo size={18} fontWeight={"500"} color={colors.white}>Sign In </Typo>
+                        <Typo size={18} fontWeight={"600"} color={theme.text}>Sign In </Typo>
                     </Button>
                 </Animated.View>
 
@@ -154,7 +159,7 @@ const Login = () => {
                     entering={FadeInDown.duration(1100).delay(210).springify().damping(12)}
                     style={styles.buttonContainer}>
                     <Button onPress={() => router.replace('/(auth)/accountsCreate01')}>
-                        <Typo size={18} fontWeight={"500"} color={colors.white}>Create an Account?</Typo>
+                        <Typo size={18} fontWeight={"600"} color={theme.text}>Create an Account?</Typo>
                     </Button>
                 </Animated.View>
 

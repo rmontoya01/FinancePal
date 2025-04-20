@@ -6,6 +6,7 @@ import { useRouter } from 'expo-router'
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { verticalScale } from '@/utils/styling';
 import { colors, radius } from '@/constants/themes';
+import { useTheme } from '@/context/ThemeContext';
 
 const PreviousButton = ({
   style,
@@ -14,9 +15,12 @@ const PreviousButton = ({
 
   const router = useRouter();
 
+  // Beginning of color themes. 
+  const { theme } = useTheme();
+
   return (
-    <TouchableOpacity onPress={() => router.back()} style={[styles.button, style]}>
-      <Ionicons name="caret-back-outline" size={verticalScale(iconSize)} color={colors.white} weight="bold" />
+    <TouchableOpacity onPress={() => router.back()} style={[styles.button, style, { backgroundColor: theme.neutral400 }]}>
+      <Ionicons name="caret-back-outline" size={verticalScale(iconSize)} color={theme.white} weight="bold" />
     </TouchableOpacity>
   )
 }
@@ -25,7 +29,6 @@ export default PreviousButton
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: colors.neutral700,
     alignSelf: "flex-start",
     borderRadius: 30,
     borderCurve: "continuous",

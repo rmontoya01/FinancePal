@@ -8,7 +8,8 @@ const { height } = Dimensions.get('window');
 
 const ScreenWrapper = ({ style, children }: ScreenWrapperProps) => {
 
-  const { theme } = useTheme()
+  // Beginning of color themes. 
+  const { theme } = useTheme();
 
   let paddingTop = Platform.OS == 'ios' ? height * 0.06 : 50;
 
