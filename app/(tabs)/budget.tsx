@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { StyleSheet, View, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 
@@ -13,30 +14,45 @@ import { spacingY, spacingX, colors } from '@/constants/themes';
 const Budget = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [budgetLimit, setBudgetLimit] = useState(0);
+  const [budgetData, setBudgetData] = useState({
+    budget_limit: 0,
+    total_spent: 0,
+    remaining: 0,
+    percentage: 0,
+  });
 
-  useEffect(() => {
-    const fetchBudget = async () => {
-      try {
-        const user_id = await AsyncStorage.getItem('user_id');
-        const res = await fetch(`http://18.226.82.202:3000/budget/${user_id}`);
-        const data = await res.json();
+  const fetchBudget = async () => {
+    try {
+      const user_id = await AsyncStorage.getItem('user_id');
+      const res = await fetch(`http://18.226.82.202:3000/user-budget/${user_id}`, {
+        headers: { 'Accept': 'application/json' }
+      });
   
-        if (res.status === 200 && data.monthly_budget) {
-          setBudgetLimit(Number(data.monthly_budget)); // ✅ Fix applied here
-        } else {
-          console.error('Error fetching budget:', data.error);
-        }
-      } catch (err) {
-        console.error('Fetch error:', err);
-      } finally {
-        setLoading(false);
+      const data = await res.json();
+  
+      if (res.ok && data.budget_limit !== undefined) {
+        setBudgetData({
+          budget_limit: parseFloat(data.budget_limit),
+          total_spent: parseFloat(data.total_spent),
+          remaining: parseFloat(data.remaining),
+          percentage: parseFloat(data.percentage),
+        });
+      } else {
+        console.error('Error fetching budget:', data);
       }
-    };
+    } catch (err) {
+      console.error('Fetch error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
   
-    fetchBudget();
-  }, []);
-  
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchBudget();
+    }, [])
+  );
 
   return (
     <LinearGradient
@@ -59,21 +75,22 @@ const Budget = () => {
                 <AnimatedCircularProgress
                   size={170}
                   width={15}
-                  fill={budgetLimit > 0 ? 100 : 0}
+                  fill={budgetData.percentage}
                   tintColor="#00e0ff"
                   backgroundColor="#3d5875"
                   rotation={0}
                 >
                   {() => (
                     <Typo size={20} fontWeight="600" color={colors.white}>
-                      ${budgetLimit.toFixed(2)}
+                      {budgetData.percentage.toFixed(0)}%
                     </Typo>
                   )}
                 </AnimatedCircularProgress>
 
                 <View style={styles.budgetDetails}>
-                  <Typo size={16} color={colors.white}>Monthly Limit: ${budgetLimit.toFixed(2)}</Typo>
-                  <Typo size={16} color={colors.textLighters}>More insights coming soon...</Typo>
+                  <Typo size={16} color={colors.white}>Monthly Limit: ${budgetData.budget_limit.toFixed(2)}</Typo>
+                  <Typo size={16} color={colors.red}>Spent: ${budgetData.total_spent.toFixed(2)}</Typo>
+                  <Typo size={16} color={colors.green}>Remaining: ${budgetData.remaining.toFixed(2)}</Typo>
                 </View>
               </View>
 

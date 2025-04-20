@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import Header from "@/components/Header";
 import { spacingY } from '@/constants/themes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
 
 interface Entry {
   id: number;
@@ -18,28 +19,30 @@ export default function History() {
   const [sortAscending, setSortAscending] = useState(false);
   const [balance, setBalance] = useState<number>(0);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const user_id = await AsyncStorage.getItem('user_id');
-      if (!user_id) return;
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        const user_id = await AsyncStorage.getItem('user_id');
+        if (!user_id) return;
 
-      try {
-        // Fetch entries
-        const entriesRes = await fetch(`http://18.226.82.202:3000/entries/${user_id}`);
-        const entriesData = await entriesRes.json();
-        setEntries(entriesData);
+        try {
+          // Fetch entries
+          const entriesRes = await fetch(`http://18.226.82.202:3000/entries/${user_id}`);
+          const entriesData = await entriesRes.json();
+          setEntries(entriesData);
 
-        // Fetch total balance
-        const balanceRes = await fetch(`http://18.226.82.202:3000/budget-summary/${user_id}`);
-        const balanceData = await balanceRes.json();
-        setBalance(balanceData.total_balance || 0);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
+          // Fetch total balance
+          const balanceRes = await fetch(`http://18.226.82.202:3000/budget-summary/${user_id}`);
+          const balanceData = await balanceRes.json();
+          setBalance(balanceData.total_balance || 0);
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+      };
 
-    fetchData();
-  }, []);
+      fetchData();
+    }, [])
+  );
 
   const toggleSortOrder = () => {
     setSortAscending(!sortAscending);
@@ -51,7 +54,6 @@ export default function History() {
     return sortAscending ? dateA.getTime() - dateB.getTime() : dateB.getTime() - dateA.getTime();
   });
 
-  // Calculate running balance from sorted entries
   const entriesWithBalance = sortedEntries.reduce((acc: any[], curr) => {
     const previousBalance = acc.length > 0 ? acc[acc.length - 1].balance : 0;
     const amount = Number(curr.amount);
@@ -76,13 +78,11 @@ export default function History() {
     <View style={styles.container}>
       <Header title="History" style={styles.headerSpacing} />
 
-      {/* Total Balance Display */}
       <View style={styles.totalBalanceCard}>
         <Text style={styles.totalBalanceLabel}>Total Balance</Text>
         <Text style={styles.totalBalanceValue}>${balance.toFixed(2)}</Text>
       </View>
 
-      {/* Sort Button */}
       <TouchableOpacity onPress={toggleSortOrder} style={styles.sortButton}>
         <Text style={styles.sortButtonText}>
           Sort by Date {sortAscending ? '▲' : '▼'}

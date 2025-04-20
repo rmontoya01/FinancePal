@@ -321,21 +321,37 @@ app.post('/set-budget', async (req, res) => {
 
 // GET BUDGET FUNCTIONALITY ENDPOINT
 // This endpoint retrieves the user's budget
-app.get('/budget/:user_id', async (req, res) => {
+// GET USER BUDGET FUNCTIONALITY ENDPOINT (returns limit, spent, remaining, percentage)
+app.get('/user-budget/:user_id', async (req, res) => {
   const { user_id } = req.params;
 
   const connection = await db.promise().getConnection();
   try {
-    const [budgetRows] = await connection.query(
+    const [[budgetRow]] = await connection.query(
       'SELECT * FROM UserBudget WHERE user_id = ?',
       [user_id]
     );
 
-    if (budgetRows.length === 0) {
+    if (!budgetRow) {
       return res.status(404).json({ error: 'No budget found for user' });
     }
 
-    res.status(200).json(budgetRows[0]);
+    const [[{ total_spent }]] = await connection.query(
+      'SELECT COALESCE(SUM(amount), 0) AS total_spent FROM Expenses WHERE user_id = ?',
+      [user_id]
+    );
+
+    const remaining = parseFloat(budgetRow.monthly_budget) - total_spent;
+    const percentage = parseFloat(budgetRow.monthly_budget) > 0
+      ? (total_spent / parseFloat(budgetRow.monthly_budget)) * 100
+      : 0;
+
+    res.status(200).json({
+      budget_limit: parseFloat(budgetRow.monthly_budget),
+      total_spent,
+      remaining,
+      percentage,
+    });
   } catch (error) {
     console.error('Error fetching budget:', error);
     res.status(500).json({ error: 'Internal Server Error' });

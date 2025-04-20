@@ -32,7 +32,7 @@ const SetBudgetModal = () => {
       const data = await res.json();
 
       if (data?.status === 'success') {
-        router.back();
+        router.push({ pathname: '/(tabs)/budget' }); // ✅ this triggers fetchBudget in Budget.tsx
       } else {
         Alert.alert('Error', 'Failed to save budget.');
       }
