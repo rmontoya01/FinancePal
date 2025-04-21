@@ -361,7 +361,7 @@ app.get('/user-budget/:user_id', async (req, res) => {
 });
 
 // GET budget stats for the latest available month/year for a user
-app.get('/expenses/stats/:user_id/latest', async (req, res) => {
+app.get('/expenses/stats/:user_id', async (req, res) => {
   const { user_id } = req.params;
 
   const connection = await db.promise().getConnection();
