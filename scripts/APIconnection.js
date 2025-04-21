@@ -360,27 +360,41 @@ app.get('/user-budget/:user_id', async (req, res) => {
   }
 });
 
-// Backend: /expenses/stats/:user_id
+// GET monthly stats: pie chart data, top 5 highest and lowest categories
 app.get('/expenses/stats/:user_id/:year/:month', async (req, res) => {
   const { user_id, year, month } = req.params;
 
   const connection = await db.promise().getConnection();
   try {
-    const [expenseStats] = await connection.query(
+    const [rows] = await connection.query(
       `
-      SELECT category, SUM(amount) AS total
+      SELECT category, SUM(amount) as total
       FROM Expenses
-      WHERE user_id = ?
-        AND YEAR(created_at) = ?
-        AND MONTH(created_at) = ?
+      WHERE user_id = ? AND YEAR(date) = ? AND MONTH(date) = ?
       GROUP BY category
       `,
       [user_id, year, month]
     );
 
-    res.status(200).json(expenseStats);
+    const totalSpent = rows.reduce((sum, row) => sum + parseFloat(row.total), 0);
+
+    const pieData = rows.map((row) => ({
+      category: row.category,
+      amount: parseFloat(row.total),
+      percentage: ((row.total / totalSpent) * 100).toFixed(2),
+    }));
+
+    const sorted = [...pieData].sort((a, b) => b.amount - a.amount);
+    const top5 = sorted.slice(0, 5);
+    const bottom5 = sorted.slice(-5);
+
+    res.status(200).json({
+      pieData,
+      top5,
+      bottom5,
+    });
   } catch (error) {
-    console.error('Error fetching stats:', error);
+    console.error('Error in /expenses/stats:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   } finally {
     connection.release();
