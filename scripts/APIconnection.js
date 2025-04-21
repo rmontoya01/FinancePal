@@ -371,7 +371,7 @@ app.get('/expenses/stats/:user_id/:year/:month', async (req, res) => {
     const [categories] = await connection.query(
       `SELECT category, SUM(amount) AS total
        FROM Expenses
-       WHERE user_id = ? AND YEAR(date) = ? AND MONTH(date) = ?
+       WHERE user_id = ? AND YEAR(created_at) = ? AND MONTH(created_at) = ?
        GROUP BY category`,
       [user_id, year, month]
     );
@@ -390,6 +390,7 @@ app.get('/expenses/stats/:user_id/:year/:month', async (req, res) => {
     connection.release();
   }
 });
+
 
 
 
