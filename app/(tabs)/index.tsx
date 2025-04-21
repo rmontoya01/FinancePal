@@ -31,7 +31,7 @@ const HomeScreen = () => {
         <View style={styles.header}>
 
           <View style={{ gap: 5, marginTop: spacingY._5, alignItems: 'center' }}>
-            <Typo size={30} color={theme.primaryLight} fontWeight={"500"}>Welcome</Typo>
+            <Typo size={30} color={theme.textLighters} fontWeight={"500"}>Welcome</Typo>
             <Typo size={32} fontWeight={"600"}>User</Typo>
           </View>
 

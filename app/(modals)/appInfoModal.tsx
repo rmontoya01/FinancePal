@@ -49,12 +49,10 @@ const appInfoModal = () => {
                             <Ionicons name="people-outline" size={24} color={colors.neutral400} />
                             <Typo style={styles.sectionTitle}>Created/Developed By: </Typo>
                         </View>
-                        <Typo color={colors.neutral300}>
-                            • Eduardo M.
-                            • Martiniano R.
-                            • Ayden M.
-                            • Ramon M.
-                        </Typo>
+                        <Typo color={colors.neutral300}>• Eduardo M.</Typo>
+                        <Typo color={colors.neutral300}>• Martiniano R.</Typo>
+                        <Typo color={colors.neutral300}>• Ayden M.</Typo>
+                        <Typo color={colors.neutral300}>• Ramon M.</Typo>
                     </View>
 
                     {/* Tech Stack Info */}
