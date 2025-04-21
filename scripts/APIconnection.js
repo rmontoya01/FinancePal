@@ -140,29 +140,29 @@ app.post('/income', async (req, res) => {
   }
 
   const connection = await db.promise().getConnection(); // get a connection from the pool
-  
+
   try {
-      // Check if user exists in the Users table
-      const [user] = await connection.query(
-          'SELECT * FROM Users WHERE user_id = ?',
-          [user_id]
-      );
+    // Check if user exists in the Users table
+    const [user] = await connection.query(
+      'SELECT * FROM Users WHERE user_id = ?',
+      [user_id]
+    );
 
-      if (user.length === 0) {
-          console.log('User not found', user_id); // Debugging line
-          return res.status(400).json({ error: 'User does not exist' });
-      }
+    if (user.length === 0) {
+      console.log('User not found', user_id); // Debugging line
+      return res.status(400).json({ error: 'User does not exist' });
+    }
 
-      // Insert income into the Income table
-      await connection.query(
-          'INSERT INTO Income (user_id, source, amount, month, year, created_at, updated_at) VALUES (?, ?, ?, ?, ?, NOW(), NOW())',
-          [user_id, source, amount, month, year]
-      );
-      console.log('Income added successfully'); // Debugging line
-      res.status(201).json({ status: 'success', message: 'Income added successfully' });
+    // Insert income into the Income table
+    await connection.query(
+      'INSERT INTO Income (user_id, source, amount, month, year, created_at, updated_at) VALUES (?, ?, ?, ?, ?, NOW(), NOW())',
+      [user_id, source, amount, month, year]
+    );
+    console.log('Income added successfully'); // Debugging line
+    res.status(201).json({ status: 'success', message: 'Income added successfully' });
   } catch (error) {
-      console.error('Error adding income:', error);
-      res.status(500).json({ error: 'Internal Server Error' });
+    console.error('Error adding income:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
@@ -359,6 +359,54 @@ app.get('/user-budget/:user_id', async (req, res) => {
     connection.release();
   }
 });
+
+// GET budget stats for the latest available month/year for a user
+app.get('/expenses/stats/:user_id/latest', async (req, res) => {
+  const { user_id } = req.params;
+
+  const connection = await db.promise().getConnection();
+  try {
+    // Find the latest year and month with expense data
+    const [latestDateRows] = await connection.query(
+      `SELECT YEAR(created_at) AS year, MONTH(created_at) AS month
+       FROM Expenses
+       WHERE user_id = ?
+       ORDER BY created_at DESC
+       LIMIT 1`,
+      [user_id]
+    );
+
+    if (latestDateRows.length === 0) {
+      return res.status(404).json({ error: 'No data found for this user.' });
+    }
+
+    const { year, month } = latestDateRows[0];
+
+    // Get budget vs spent amounts for each category for that month/year
+    const [statsRows] = await connection.query(
+      `SELECT 
+         b.category,
+         COALESCE(b.amount, 0) AS budgeted,
+         COALESCE(SUM(e.amount), 0) AS spent,
+         (COALESCE(b.amount, 0) - COALESCE(SUM(e.amount), 0)) AS difference
+       FROM Budgets b
+       LEFT JOIN Expenses e 
+         ON b.user_id = e.user_id AND b.category = e.category 
+         AND YEAR(e.created_at) = ? AND MONTH(e.created_at) = ?
+       WHERE b.user_id = ?
+       GROUP BY b.category, b.amount`,
+      [year, month, user_id]
+    );
+
+    res.status(200).json({ stats: statsRows, year, month });
+  } catch (error) {
+    console.error('Error fetching latest budget stats:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  } finally {
+    connection.release();
+  }
+});
+
 
 // Start server
 const port = 3000; // Update if port changes
