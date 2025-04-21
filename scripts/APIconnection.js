@@ -371,8 +371,8 @@ app.get('/expenses/stats/:user_id/:year/:month', async (req, res) => {
       SELECT category, SUM(amount) AS total
       FROM Expenses
       WHERE user_id = ?
-        AND YEAR(\`date\`) = ?
-        AND MONTH(\`date\`) = ?
+        AND YEAR(created_at) = ?
+        AND MONTH(created_at) = ?
       GROUP BY category
       `,
       [user_id, year, month]
