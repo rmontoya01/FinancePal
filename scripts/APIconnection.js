@@ -363,6 +363,7 @@ app.get('/user-budget/:user_id', async (req, res) => {
 // Backend: /expenses/stats/:user_id
 app.get('/expenses/stats/:user_id/:year/:month', async (req, res) => {
   const { user_id, year, month } = req.params;
+
   const connection = await db.promise().getConnection();
 
   try {
@@ -377,24 +378,23 @@ app.get('/expenses/stats/:user_id/:year/:month', async (req, res) => {
       return res.status(200).json({ categories: [], top: [], bottom: [] });
     }
 
-    // Group by category and total
-    const categoryTotals = {};
+    // Group by description and total
+    const descriptionTotals = {};
     let totalAmount = 0;
 
-    expenses.forEach(({ category, amount }) => {
+    expenses.forEach(({ description, amount }) => {
+      const desc = description?.trim() || 'Unlabeled';
       const amt = parseFloat(amount);
-      categoryTotals[category] = (categoryTotals[category] || 0) + amt;
+      descriptionTotals[desc] = (descriptionTotals[desc] || 0) + amt;
       totalAmount += amt;
     });
 
-    // Format data with $ amount and percentage
-    const categories = Object.entries(categoryTotals).map(([category, amount]) => ({
-      category,
+    const categories = Object.entries(descriptionTotals).map(([description, amount]) => ({
+      description,
       amount: parseFloat(amount.toFixed(2)),
       percentage: parseFloat(((amount / totalAmount) * 100).toFixed(2)),
     }));
 
-    // Top and Bottom 5 by amount
     const sorted = [...categories].sort((a, b) => b.amount - a.amount);
     const top = sorted.slice(0, 5);
     const bottom = sorted.slice(-5).reverse();
@@ -407,6 +407,7 @@ app.get('/expenses/stats/:user_id/:year/:month', async (req, res) => {
     connection.release();
   }
 });
+
 
 
 
