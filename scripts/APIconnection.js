@@ -366,16 +366,18 @@ app.get('/expenses/stats/:user_id/:year/:month', async (req, res) => {
   const connection = await db.promise().getConnection();
 
   try {
-    // Fetch expenses for given user and month using created_at
+    // Fetch expenses using created_at
     const [expenses] = await connection.query(
       `SELECT category, amount FROM Expenses 
        WHERE user_id = ? AND YEAR(created_at) = ? AND MONTH(created_at) = ?`,
       [user_id, year, month]
     );
 
-    if (!expenses.length) return res.status(200).json({ categories: [], top: [], bottom: [] });
+    if (!expenses.length) {
+      return res.status(200).json({ categories: [], top: [], bottom: [] });
+    }
 
-    // Group and total by category
+    // Group by category and total
     const categoryTotals = {};
     let totalAmount = 0;
 
@@ -385,14 +387,14 @@ app.get('/expenses/stats/:user_id/:year/:month', async (req, res) => {
       totalAmount += amt;
     });
 
-    // Format categories
+    // Format data with $ amount and percentage
     const categories = Object.entries(categoryTotals).map(([category, amount]) => ({
       category,
-      amount,
-      percentage: (amount / totalAmount) * 100,
+      amount: parseFloat(amount.toFixed(2)),
+      percentage: parseFloat(((amount / totalAmount) * 100).toFixed(2)),
     }));
 
-    // Sort and slice for top and bottom
+    // Top and Bottom 5 by amount
     const sorted = [...categories].sort((a, b) => b.amount - a.amount);
     const top = sorted.slice(0, 5);
     const bottom = sorted.slice(-5).reverse();
@@ -405,6 +407,7 @@ app.get('/expenses/stats/:user_id/:year/:month', async (req, res) => {
     connection.release();
   }
 });
+
 
 
 
