@@ -390,7 +390,6 @@ app.get('/expenses/stats/:user_id/:year/:month', async (req, res) => {
     // Format data with $ amount and percentage
     const categories = Object.entries(categoryTotals).map(([category, amount]) => ({
       category,
-      description,
       amount: parseFloat(amount.toFixed(2)),
       percentage: parseFloat(((amount / totalAmount) * 100).toFixed(2)),
     }));
