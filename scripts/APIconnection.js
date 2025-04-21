@@ -371,14 +371,11 @@ app.get('/expenses/stats/:user_id', async (req, res) => {
 
     // SQL query to get stats for the user, grouped by month and category
     const [results] = await connection.query(
-      `SELECT category, 
-              SUM(amount) AS total_spent, 
-              YEAR(date) AS year, 
-              MONTH(date) AS month
-       FROM Expenses
-       WHERE user_id = ?
-       GROUP BY category, year, month
-       ORDER BY month DESC, year DESC`,
+      `SELECT category, SUM(amount) AS total, MONTH(\`date\`) AS month, YEAR(\`date\`) AS year
+   FROM Expenses
+   WHERE user_id = ?
+   GROUP BY category, month, year
+   ORDER BY year DESC, month DESC`,
       [user_id]
     );
 
