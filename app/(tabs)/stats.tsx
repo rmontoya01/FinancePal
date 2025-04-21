@@ -47,14 +47,19 @@ export default function StatsScreen() {
         <View style={styles.container}>
             <Header title="Stats" />
 
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.monthSelector}>
+            <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={[styles.monthSelector, (statsData?.categories?.length ?? 0) === 0 && { height: 0 }]}
+            >
                 {months.map((m, index) => (
                     <TouchableOpacity
                         key={index}
                         onPress={() => setSelectedMonth(m)}
                         style={[
                             styles.monthButton,
-                            selectedMonth.month() === index && styles.selectedMonthButton
+                            selectedMonth.month() === index && styles.selectedMonthButton,
+                            (statsData?.categories?.length ?? 0) === 0 && { opacity: 0.5 }, // Optional: make it slightly disabled when no data
                         ]}
                     >
                         <Text style={styles.monthText}>{m.format('MMM')}</Text>
@@ -81,22 +86,22 @@ export default function StatsScreen() {
                     />
                     <Text style={styles.sectionTitle}>Top 5 Categories</Text>
                     <FlatList
-                        data={statsData.top5}
+                        data={statsData.top}
                         keyExtractor={(item, index) => `${item.category}-${index}`}
                         renderItem={({ item }) => (
                             <Text style={styles.itemText}>
-                                {item.category}: ${item.amount.toFixed(2)}
+                                {item.category}: ${item.amount.toFixed(2)} ({item.percentage.toFixed(1)}%)
                             </Text>
                         )}
                     />
 
                     <Text style={styles.sectionTitle}>Bottom 5 Categories</Text>
                     <FlatList
-                        data={statsData.bottom5}
+                        data={statsData.bottom}
                         keyExtractor={(item, index) => `${item.category}-${index}`}
                         renderItem={({ item }) => (
                             <Text style={styles.itemText}>
-                                {item.category}: ${item.amount.toFixed(2)}
+                                {item.category}: ${item.amount.toFixed(2)} ({item.percentage.toFixed(1)}%)
                             </Text>
                         )}
                     />
@@ -141,4 +146,5 @@ const styles = StyleSheet.create({
         fontSize: 15,
         marginVertical: 4,
     },
+
 });
