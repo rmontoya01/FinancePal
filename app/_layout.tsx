@@ -14,11 +14,11 @@ const _layout = () => {
         {/* MAKE SURE TO UNCOMMENT TO GET MODALS TO WORK */}
         {/* To confirm modals, edit it inline here */}
         {/* Income Modal */}
-        {/* <Stack.Screen name="(modals)/incomeModal" options={{ presentation: "modal", }} /> */}
+        <Stack.Screen name="(modals)/incomeModal" options={{ presentation: "modal", }} />
         {/* Spendings Modal */}
-        {/*<Stack.Screen name="(modals)/spendingsModal" options={{ presentation: "modal", }} /> */}
+        <Stack.Screen name="(modals)/spendingsModal" options={{ presentation: "modal", }} />
         {/* App Info Modal */}
-        {/* <Stack.Screen name="(modals)/appInfoModal" options={{ presentation: "modal", }} /> */}
+        <Stack.Screen name="(modals)/appInfoModal" options={{ presentation: "modal", }} />
 
 
       </Stack>
