@@ -363,35 +363,34 @@ app.get('/user-budget/:user_id', async (req, res) => {
 // GET stats for pie chart and top categories
 app.get('/expenses/stats/:user_id/:year/:month', async (req, res) => {
   const { user_id, year, month } = req.params;
-
   const connection = await db.promise().getConnection();
+
   try {
-    const [categoryTotals] = await connection.query(
-      `
-      SELECT category, SUM(amount) AS total
-      FROM Expenses
-      WHERE user_id = ? AND YEAR(date) = ? AND MONTH(date) = ?
-      GROUP BY category
-      ORDER BY total DESC
-      `,
+    console.log(`Fetching stats for user: ${user_id}, year: ${year}, month: ${month}`);
+
+    const [categories] = await connection.query(
+      `SELECT category, SUM(amount) AS total
+       FROM Expenses
+       WHERE user_id = ? AND YEAR(date) = ? AND MONTH(date) = ?
+       GROUP BY category`,
       [user_id, year, month]
     );
 
-    const top5Most = categoryTotals.slice(0, 5);
-    const top5Least = categoryTotals.slice(-5).reverse();
+    console.log('Categories fetched:', categories);
 
-    res.status(200).json({
-      categories: categoryTotals,
-      top5Most,
-      top5Least,
-    });
-  } catch (error) {
-    console.error('Error fetching stats:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    const sorted = [...categories].sort((a, b) => b.total - a.total);
+    const top5Most = sorted.slice(0, 5);
+    const top5Least = sorted.slice(-5).reverse();
+
+    res.status(200).json({ categories, top5Most, top5Least });
+  } catch (err) {
+    console.error('🔥 Error fetching stats:', err.message);
+    res.status(500).json({ error: 'Internal Server Error', details: err.message });
   } finally {
     connection.release();
   }
 });
+
 
 
 

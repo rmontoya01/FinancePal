@@ -1,111 +1,123 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Platform, Dimensions, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Header from '@/components/Header';
 
 const screenWidth = Dimensions.get('window').width;
 
+const chartColors = [
+    '#FF6384', '#36A2EB', '#FFCE56', '#66BB6A', '#BA68C8',
+    '#FFA726', '#4DD0E1', '#9575CD', '#F06292', '#7986CB',
+];
+
 export default function Stats() {
-    const [categoryData, setCategoryData] = useState([]);
-    const [top5Most, setTop5Most] = useState([]);
-    const [top5Least, setTop5Least] = useState([]);
-    const [month, setMonth] = useState(new Date().getMonth() + 1);
-    const [year, setYear] = useState(new Date().getFullYear());
+    const [categoryData, setCategoryData] = useState<{ category: string; total: number }[]>([]);
+    const [top5Most, setTop5Most] = useState<{ category: string; total: number }[]>([]);
+    const [top5Least, setTop5Least] = useState<{ category: string; total: number }[]>([]);
 
     useEffect(() => {
         const fetchStats = async () => {
             const user_id = await AsyncStorage.getItem('user_id');
             if (!user_id) return;
 
+            const currentDate = new Date();
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth() + 1;
+
             try {
                 const res = await fetch(`http://18.226.82.202:3000/expenses/stats/${user_id}/${year}/${month}`);
+
+                if (!res.ok) throw new Error('Network response was not ok');
                 const data = await res.json();
 
-                const chartData = data.categories.map((item: any, index: number) => ({
-                    name: item.category,
-                    amount: Number(item.total),
-                    color: chartColors[index % chartColors.length],
-                    legendFontColor: '#fff',
-                    legendFontSize: 14,
-                }));
+                console.log('Stats Data:', data); // Debug
 
-                setCategoryData(chartData);
-                setTop5Most(data.top5Most || []);
-                setTop5Least(data.top5Least || []);
+                setCategoryData(Array.isArray(data.categories) ? data.categories : []);
+                setTop5Most(Array.isArray(data.top5Most) ? data.top5Most : []);
+                setTop5Least(Array.isArray(data.top5Least) ? data.top5Least : []);
             } catch (error) {
                 console.error('Error fetching stats:', error);
+                setCategoryData([]);
+                setTop5Most([]);
+                setTop5Least([]);
             }
         };
 
         fetchStats();
-    }, [month, year]);
+    }, []);
+
+    const chartData = Array.isArray(categoryData)
+        ? categoryData.map((item, index) => ({
+            name: item.category,
+            amount: Number(item.total),
+            color: chartColors[index % chartColors.length],
+            legendFontColor: '#fff',
+            legendFontSize: 14,
+        }))
+        : [];
 
     return (
         <ScrollView style={styles.container}>
-            <Text style={styles.header}>Monthly Expense Breakdown</Text>
+            <Header title="Stats" style={styles.headerSpacing} />
 
-            {categoryData.length > 0 ? (
+            <Text style={styles.sectionTitle}>Expense Categories</Text>
+            {chartData.length > 0 ? (
                 <PieChart
-                    data={categoryData}
-                    width={screenWidth - 40}
+                    data={chartData}
+                    width={screenWidth - 30}
                     height={220}
                     chartConfig={{
-                        backgroundColor: '#1e1e1e',
+                        color: () => `rgba(255, 255, 255, 0.8)`,
+                        labelColor: () => '#fff',
                         backgroundGradientFrom: '#1e1e1e',
                         backgroundGradientTo: '#1e1e1e',
                         decimalPlaces: 2,
-                        color: () => '#fff',
-                        labelColor: () => '#fff',
                     }}
                     accessor="amount"
                     backgroundColor="transparent"
                     paddingLeft="15"
-                    center={[10, 0]}
+                    absolute
                 />
             ) : (
-                <Text style={styles.noDataText}>No expense data available for this month.</Text>
+                <Text style={styles.noDataText}>No data to display</Text>
             )}
 
             <Text style={styles.sectionTitle}>Top 5 Most Expensive Categories</Text>
-            {top5Most.map((item: any, index: number) => (
-                <Text key={index} style={styles.listItem}>
-                    • {item.category}: ${parseFloat(item.total).toFixed(2)}
+            {top5Most.map((item, index) => (
+                <Text key={index} style={styles.itemText}>
+                    {item.category}: ${Number(item.total).toFixed(2)}
                 </Text>
             ))}
 
             <Text style={styles.sectionTitle}>Top 5 Least Expensive Categories</Text>
-            {top5Least.map((item: any, index: number) => (
-                <Text key={index} style={styles.listItem}>
-                    • {item.category}: ${parseFloat(item.total).toFixed(2)}
+            {top5Least.map((item, index) => (
+                <Text key={index} style={styles.itemText}>
+                    {item.category}: ${Number(item.total).toFixed(2)}
                 </Text>
             ))}
         </ScrollView>
     );
 }
 
-const chartColors = ['#e74c3c', '#3498db', '#f1c40f', '#2ecc71', '#9b59b6', '#1abc9c'];
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#25292e',
-        padding: 20,
-        paddingTop: Platform.OS === 'ios' ? 60 : 40,
+        paddingHorizontal: 15,
+        paddingTop: 40,
     },
-    header: {
-        color: '#fff',
-        fontSize: 22,
-        fontWeight: 'bold',
-        marginBottom: 20,
+    headerSpacing: {
+        marginBottom: 10,
     },
     sectionTitle: {
-        color: '#fff',
         fontSize: 18,
+        fontWeight: '600',
+        color: '#fff',
         marginTop: 20,
         marginBottom: 10,
-        fontWeight: '600',
     },
-    listItem: {
+    itemText: {
         color: '#ccc',
         fontSize: 16,
         marginBottom: 5,
@@ -113,7 +125,7 @@ const styles = StyleSheet.create({
     noDataText: {
         color: '#888',
         fontSize: 16,
+        marginTop: 10,
         textAlign: 'center',
-        marginTop: 50,
     },
 });
