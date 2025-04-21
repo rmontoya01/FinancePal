@@ -360,46 +360,52 @@ app.get('/user-budget/:user_id', async (req, res) => {
   }
 });
 
-// GET monthly stats: pie chart data, top 5 highest and lowest categories
+// Backend: /expenses/stats/:user_id
 app.get('/expenses/stats/:user_id/:year/:month', async (req, res) => {
   const { user_id, year, month } = req.params;
-
   const connection = await db.promise().getConnection();
+
   try {
-    const [rows] = await connection.query(
-      `
-      SELECT category, SUM(amount) as total
-      FROM Expenses
-      WHERE user_id = ? AND YEAR(date) = ? AND MONTH(date) = ?
-      GROUP BY category
-      `,
+    // Fetch expenses for given user and month using created_at
+    const [expenses] = await connection.query(
+      `SELECT category, amount FROM Expenses 
+       WHERE user_id = ? AND YEAR(created_at) = ? AND MONTH(created_at) = ?`,
       [user_id, year, month]
     );
 
-    const totalSpent = rows.reduce((sum, row) => sum + parseFloat(row.total), 0);
+    if (!expenses.length) return res.status(200).json({ categories: [], top: [], bottom: [] });
 
-    const pieData = rows.map((row) => ({
-      category: row.category,
-      amount: parseFloat(row.total),
-      percentage: ((row.total / totalSpent) * 100).toFixed(2),
+    // Group and total by category
+    const categoryTotals = {};
+    let totalAmount = 0;
+
+    expenses.forEach(({ category, amount }) => {
+      const amt = parseFloat(amount);
+      categoryTotals[category] = (categoryTotals[category] || 0) + amt;
+      totalAmount += amt;
+    });
+
+    // Format categories
+    const categories = Object.entries(categoryTotals).map(([category, amount]) => ({
+      category,
+      amount,
+      percentage: (amount / totalAmount) * 100,
     }));
 
-    const sorted = [...pieData].sort((a, b) => b.amount - a.amount);
-    const top5 = sorted.slice(0, 5);
-    const bottom5 = sorted.slice(-5);
+    // Sort and slice for top and bottom
+    const sorted = [...categories].sort((a, b) => b.amount - a.amount);
+    const top = sorted.slice(0, 5);
+    const bottom = sorted.slice(-5).reverse();
 
-    res.status(200).json({
-      pieData,
-      top5,
-      bottom5,
-    });
+    res.status(200).json({ categories, top, bottom });
   } catch (error) {
-    console.error('Error in /expenses/stats:', error);
+    console.error('Error fetching expense stats:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   } finally {
     connection.release();
   }
 });
+
 
 
 
