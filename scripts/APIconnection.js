@@ -360,51 +360,30 @@ app.get('/user-budget/:user_id', async (req, res) => {
   }
 });
 
-// GET monthly stats with top over/under budget categories
-// GET /expenses/stats/:user_id/:year/:month
+// GET stats for pie chart and top categories
 app.get('/expenses/stats/:user_id/:year/:month', async (req, res) => {
   const { user_id, year, month } = req.params;
 
   const connection = await db.promise().getConnection();
   try {
-    // Get total spending
-    const [[{ total_spent }]] = await connection.query(
-      'SELECT COALESCE(SUM(amount), 0) AS total_spent FROM Expenses WHERE user_id = ? AND YEAR(date) = ? AND MONTH(date) = ?',
-      [user_id, year, month]
-    );
-
-    if (total_spent === 0) {
-      return res.status(200).json({
-        categories: [],
-        top5MostSpent: [],
-        top5LeastSpent: []
-      });
-    }
-
-    // Get category spending
-    const [categorySpending] = await connection.query(
+    const [categoryTotals] = await connection.query(
       `
-      SELECT 
-        category,
-        SUM(amount) AS spent
+      SELECT category, SUM(amount) AS total
       FROM Expenses
       WHERE user_id = ? AND YEAR(date) = ? AND MONTH(date) = ?
       GROUP BY category
-      ORDER BY spent DESC
+      ORDER BY total DESC
       `,
       [user_id, year, month]
     );
 
-    const categories = categorySpending.map(row => ({
-      category: row.category,
-      spent: row.spent,
-      percentage: parseFloat(((row.spent / total_spent) * 100).toFixed(2))
-    }));
+    const top5Most = categoryTotals.slice(0, 5);
+    const top5Least = categoryTotals.slice(-5).reverse();
 
     res.status(200).json({
-      categories,
-      top5MostSpent: categories.slice(0, 5),
-      top5LeastSpent: categories.slice(-5).reverse()
+      categories: categoryTotals,
+      top5Most,
+      top5Least,
     });
   } catch (error) {
     console.error('Error fetching stats:', error);
@@ -413,6 +392,7 @@ app.get('/expenses/stats/:user_id/:year/:month', async (req, res) => {
     connection.release();
   }
 });
+
 
 
 
