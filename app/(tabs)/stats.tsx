@@ -1,41 +1,46 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Dimensions, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Dimensions, Platform, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PieChart } from 'react-native-chart-kit';
 import Header from '@/components/Header';
-import { spacingX, spacingY } from '@/constants/themes';
 
 const screenWidth = Dimensions.get('window').width;
 
 const Stats = () => {
-    interface StatsItem {
-        category: string;
-        spent: number;
-        budgeted: number;
-        difference: number;
-    }
+    const currentDate = new Date();
+    const [selectedMonth, setSelectedMonth] = useState<number>(currentDate.getMonth());
+    const [selectedYear, setSelectedYear] = useState<number>(currentDate.getFullYear());
+    const [statsData, setStatsData] = useState<{ category: string; spent: number; percent: number }[]>([]);
+    const [topOver, setTopOver] = useState<{ category: string; spent: number }[]>([]);
+    const [topUnder, setTopUnder] = useState<{ category: string; spent: number }[]>([]);
+    const [totalSpent, setTotalSpent] = useState<number>(0);
 
-    const [statsData, setStatsData] = useState<StatsItem[]>([]);
-    const [userId, setUserId] = useState<string | null>(null);
+    const months = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+    ];
 
+    const fetchStats = async (year: number, month: number) => {
+        const user_id = await AsyncStorage.getItem('user_id');
+        if (!user_id) return;
 
+        try {
+            const res = await fetch(`http://18.226.82.202:3000/expenses/stats/${user_id}/${year}/${month + 1}`);
+            const text = await res.text(); // change to text for debugging
+            console.log('Raw response from backend:', text);
+            const json = await res.json();
+            setStatsData(json.categories);
+            setTopOver(json.topOverspent);
+            setTopUnder(json.topUnderspent);
+            setTotalSpent(json.totalSpent);
+        } catch (error) {
+            console.error('Error fetching stats:', error);
+        }
+    };
 
     useEffect(() => {
-        const fetchStats = async () => {
-            const userId = await AsyncStorage.getItem('user_id');
-            if (!userId) return;
-
-            try {
-                const res = await fetch(`http://18.191.240.219:3000/expenses/stats/${userId}`);
-                const json = await res.json();
-                setStatsData(json);
-            } catch (error) {
-                console.error('Error fetching stats:', error);
-            }
-        };
-
-        fetchStats();
-    }, []);
+        fetchStats(selectedYear, selectedMonth);
+    }, [selectedMonth]);
 
     const pieData = statsData.map((item, index) => ({
         name: item.category,
@@ -49,6 +54,18 @@ const Stats = () => {
         <View style={styles.container}>
             <Header title="Stats" style={styles.headerSpacing} />
 
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.monthScroll}>
+                {months.map((month, index) => (
+                    <TouchableOpacity
+                        key={month}
+                        style={[styles.monthButton, index === selectedMonth && styles.selectedMonthButton]}
+                        onPress={() => setSelectedMonth(index)}
+                    >
+                        <Text style={styles.monthText}>{month}</Text>
+                    </TouchableOpacity>
+                ))}
+            </ScrollView>
+
             <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
                 <View style={styles.chartSection}>
                     <Text style={styles.sectionTitle}>Spending by Category</Text>
@@ -61,7 +78,7 @@ const Stats = () => {
                                 backgroundColor: '#000',
                                 backgroundGradientFrom: '#1e1e1e',
                                 backgroundGradientTo: '#1e1e1e',
-                                color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                                color: () => `#fff`,
                                 labelColor: () => '#fff',
                                 decimalPlaces: 2,
                             }}
@@ -77,25 +94,30 @@ const Stats = () => {
                 </View>
 
                 <View style={styles.card}>
-                    <Text style={styles.cardTitle}>Budget vs Actual</Text>
+                    <Text style={styles.cardTitle}>Category % of Total</Text>
                     {statsData.map((item, idx) => (
                         <Text key={idx} style={styles.itemText}>
-                            {item.category}: Budget ${item.budgeted.toFixed(2)} / Spent ${item.spent.toFixed(2)} – {item.difference < 0 ? 'Over' : 'Under'} by ${Math.abs(item.difference).toFixed(2)}
+                            {item.category}: ${item.spent.toFixed(2)} ({item.percent.toFixed(1)}%)
                         </Text>
                     ))}
                 </View>
 
                 <View style={styles.card}>
-                    <Text style={styles.cardTitle}>Top Over-Budget Categories</Text>
-                    {statsData
-                        .filter(item => item.difference < 0)
-                        .sort((a, b) => a.difference - b.difference)
-                        .slice(0, 5)
-                        .map((item, idx) => (
-                            <Text key={idx} style={styles.itemText}>
-                                {item.category} – Overspent by ${Math.abs(item.difference).toFixed(2)}
-                            </Text>
-                        ))}
+                    <Text style={styles.cardTitle}>Top 5 Categories (Most Spent)</Text>
+                    {topOver.map((item, idx) => (
+                        <Text key={idx} style={styles.itemText}>
+                            {item.category} – ${item.spent.toFixed(2)}
+                        </Text>
+                    ))}
+                </View>
+
+                <View style={styles.card}>
+                    <Text style={styles.cardTitle}>Top 5 Categories (Least Spent)</Text>
+                    {topUnder.map((item, idx) => (
+                        <Text key={idx} style={styles.itemText}>
+                            {item.category} – ${item.spent.toFixed(2)}
+                        </Text>
+                    ))}
                 </View>
             </ScrollView>
         </View>
@@ -142,5 +164,23 @@ const styles = StyleSheet.create({
     itemText: {
         color: '#ccc',
         marginBottom: 8,
+    },
+    monthScroll: {
+        flexDirection: 'row',
+        marginBottom: 10,
+    },
+    monthButton: {
+        paddingVertical: 8,
+        paddingHorizontal: 15,
+        marginRight: 8,
+        backgroundColor: '#3b3b3b',
+        borderRadius: 20,
+    },
+    selectedMonthButton: {
+        backgroundColor: '#6c63ff',
+    },
+    monthText: {
+        color: '#fff',
+        fontSize: 14,
     },
 });

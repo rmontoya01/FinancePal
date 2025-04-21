@@ -360,52 +360,63 @@ app.get('/user-budget/:user_id', async (req, res) => {
   }
 });
 
-// GET budget stats for the latest available month/year for a user
-app.get('/expenses/stats/:user_id', async (req, res) => {
-  const { user_id } = req.params;
+// GET monthly stats with top over/under budget categories
+// GET /expenses/stats/:user_id/:year/:month
+app.get('/expenses/stats/:user_id/:year/:month', async (req, res) => {
+  const { user_id, year, month } = req.params;
 
   const connection = await db.promise().getConnection();
   try {
-    // Find the latest year and month with expense data
-    const [latestDateRows] = await connection.query(
-      `SELECT YEAR(created_at) AS year, MONTH(created_at) AS month
-       FROM Expenses
-       WHERE user_id = ?
-       ORDER BY created_at DESC
-       LIMIT 1`,
-      [user_id]
+    // Get total spending
+    const [[{ total_spent }]] = await connection.query(
+      'SELECT COALESCE(SUM(amount), 0) AS total_spent FROM Expenses WHERE user_id = ? AND YEAR(date) = ? AND MONTH(date) = ?',
+      [user_id, year, month]
     );
 
-    if (latestDateRows.length === 0) {
-      return res.status(404).json({ error: 'No data found for this user.' });
+    if (total_spent === 0) {
+      return res.status(200).json({
+        categories: [],
+        top5MostSpent: [],
+        top5LeastSpent: []
+      });
     }
 
-    const { year, month } = latestDateRows[0];
-
-    // Get budget vs spent amounts for each category for that month/year
-    const [statsRows] = await connection.query(
-      `SELECT 
-         b.category,
-         COALESCE(b.amount, 0) AS budgeted,
-         COALESCE(SUM(e.amount), 0) AS spent,
-         (COALESCE(b.amount, 0) - COALESCE(SUM(e.amount), 0)) AS difference
-       FROM Budgets b
-       LEFT JOIN Expenses e 
-         ON b.user_id = e.user_id AND b.category = e.category 
-         AND YEAR(e.created_at) = ? AND MONTH(e.created_at) = ?
-       WHERE b.user_id = ?
-       GROUP BY b.category, b.amount`,
-      [year, month, user_id]
+    // Get category spending
+    const [categorySpending] = await connection.query(
+      `
+      SELECT 
+        category,
+        SUM(amount) AS spent
+      FROM Expenses
+      WHERE user_id = ? AND YEAR(date) = ? AND MONTH(date) = ?
+      GROUP BY category
+      ORDER BY spent DESC
+      `,
+      [user_id, year, month]
     );
 
-    res.status(200).json({ stats: statsRows, year, month });
+    const categories = categorySpending.map(row => ({
+      category: row.category,
+      spent: row.spent,
+      percentage: parseFloat(((row.spent / total_spent) * 100).toFixed(2))
+    }));
+
+    res.status(200).json({
+      categories,
+      top5MostSpent: categories.slice(0, 5),
+      top5LeastSpent: categories.slice(-5).reverse()
+    });
   } catch (error) {
-    console.error('Error fetching latest budget stats:', error);
+    console.error('Error fetching stats:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   } finally {
     connection.release();
   }
 });
+
+
+
+
 
 
 // Start server
