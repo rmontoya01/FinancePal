@@ -26,8 +26,7 @@ const Stats = () => {
 
         try {
             const res = await fetch(`http://18.226.82.202:3000/expenses/stats/${user_id}/${year}/${month + 1}`);
-            const text = await res.text(); // change to text for debugging
-            console.log('Raw response from backend:', text);
+
             const json = await res.json();
             setStatsData(json.categories);
             setTopOver(json.topOverspent);
