@@ -368,7 +368,7 @@ app.get('/expenses/stats/:user_id/:year/:month', async (req, res) => {
   try {
     // Fetch expenses using created_at
     const [expenses] = await connection.query(
-      `SELECT category, amount FROM Expenses 
+      `SELECT description, amount FROM Expenses 
        WHERE user_id = ? AND YEAR(created_at) = ? AND MONTH(created_at) = ?`,
       [user_id, year, month]
     );
