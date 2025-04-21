@@ -7,11 +7,11 @@ import { TabBarCustomize } from '@/components/TabBarCustomize'
 const _layout = () => {
   return (
     <Tabs tabBar={TabBarCustomize} screenOptions={{ headerShown: false }}>
-      <Tabs.Screen name="budget" />
-      <Tabs.Screen name="history" />
-      <Tabs.Screen name="index" />
-      <Tabs.Screen name="stats" />
-      <Tabs.Screen name="converter" />
+    <Tabs.Screen name="budget" options={{ title: "Budget" }} />
+    <Tabs.Screen name="history" options={{ title: "History" }} />
+    <Tabs.Screen name="index" options={{ title: "Home" }} />
+    <Tabs.Screen name="stats" options={{ title: "Stats" }} />
+    <Tabs.Screen name="converter" options={{ title: "Converter" }} />
     </Tabs>
   )
 }

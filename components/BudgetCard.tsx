@@ -1,11 +1,11 @@
-import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
-import Typo from './Typo'
-import { scale, verticalScale } from '@/utils/styling'
-import { colors, spacingX, spacingY } from '@/constants/themes'
-import Ionicons from '@expo/vector-icons/Ionicons'
+import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React from 'react';
+import Typo from './Typo';
+import { scale, verticalScale } from '@/utils/styling';
+import { colors, spacingX, spacingY } from '@/constants/themes';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
-const BudgetCard = () => {
+const BudgetCard = ({ income = 0, expense = 0, balance = 0 }) => {
     return (
         <ImageBackground
             source={require('../assets/images/bluePatternTransperant.png')}
@@ -22,7 +22,7 @@ const BudgetCard = () => {
                         <Ionicons name="ellipsis-vertical-sharp" size={24} color={colors.white} weight="fill" />
                     </View>
                     <Typo color={colors.white} size={30} fontWeight={"700"}>
-                        $2,245.57
+                        ${balance.toFixed(2)}
                     </Typo>
                 </View>
 
@@ -40,7 +40,7 @@ const BudgetCard = () => {
                         </View>
                         <View style={{ alignSelf: "center" }}>
                             <Typo size={20} color={colors.green} fontWeight={"700"}>
-                                $1,712.25
+                                ${income.toFixed(2)}
                             </Typo>
                         </View>
                     </View>
@@ -56,7 +56,7 @@ const BudgetCard = () => {
                         </View>
                         <View style={{ alignSelf: "center" }}>
                             <Typo size={20} color={colors.red} fontWeight={"700"}>
-                                $1,109.25
+                                ${expense.toFixed(2)}
                             </Typo>
                         </View>
                     </View>
@@ -66,7 +66,7 @@ const BudgetCard = () => {
     );
 };
 
-export default BudgetCard
+export default BudgetCard;
 
 const styles = StyleSheet.create({
     cardImage: {
@@ -90,7 +90,6 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        // marginBottom: spacingY._7,
     },
     statsIcon: {
         backgroundColor: colors.neutral300,
@@ -99,7 +98,6 @@ const styles = StyleSheet.create({
     },
     incomesExpenses: {
         flexDirection: "row",
-        // justifyContent: "space-between",
         alignItems: "center",
         gap: spacingY._10,
     },
