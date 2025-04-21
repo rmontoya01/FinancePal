@@ -12,7 +12,7 @@ const Stats = () => {
     const [selectedMonth, setSelectedMonth] = useState<number>(currentDate.getMonth());
     const [selectedYear, setSelectedYear] = useState<number>(currentDate.getFullYear());
     const [userId, setUserId] = useState<string | null>(null);
-    const [statsData, setStatsData] = useState<any[]>([]); // Array of stats by category and month
+    const [statsData, setStatsData] = useState<any[]>([]); // Ensure it's initialized as an empty array
 
     const months = [
         'January', 'February', 'March', 'April', 'May', 'June',
@@ -27,6 +27,7 @@ const Stats = () => {
         try {
             const res = await fetch(`http://18.226.82.202:3000/expenses/stats/${user_id}`);
             const json = await res.json();
+            console.log('Stats Data:', json); // Log the fetched stats data for debugging
             setStatsData(json);
         } catch (error) {
             console.error('Error fetching stats:', error);
@@ -37,10 +38,13 @@ const Stats = () => {
         fetchStats();
     }, []);
 
-    // Filter stats by selected month and year
-    const filteredStats = statsData.filter(
-        (item) => item.year === selectedYear && item.month === selectedMonth + 1
-    );
+    // Check if statsData is an array and filter safely
+    const filteredStats = Array.isArray(statsData)
+        ? statsData.filter((item) => item.year === selectedYear && item.month === selectedMonth + 1)
+        : [];
+
+    // Log filtered stats for debugging
+    console.log('Filtered Stats:', filteredStats);
 
     // Calculate total spending for the selected month
     const totalSpent = filteredStats.reduce((total, item) => total + item.spent, 0);

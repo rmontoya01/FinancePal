@@ -360,36 +360,41 @@ app.get('/user-budget/:user_id', async (req, res) => {
   }
 });
 
-// GET stats for all months of a specific user
+// Backend: /expenses/stats/:user_id
 app.get('/expenses/stats/:user_id', async (req, res) => {
   const { user_id } = req.params;
 
   const connection = await db.promise().getConnection();
   try {
-    // Fetch stats for each month
+    // Log the user_id to confirm the incoming request
+    console.log('Fetching stats for user_id:', user_id);
+
+    // SQL query to get stats for the user, grouped by month and category
     const [results] = await connection.query(
-      `
-      SELECT 
-        category,
-        SUM(amount) AS spent,
-        MONTH(date) AS month,
-        YEAR(date) AS year
-      FROM expenses
-      WHERE user_id = ?
-      GROUP BY category, YEAR(date), MONTH(date)
-      ORDER BY year DESC, month DESC;
-      `,
+      `SELECT category, 
+              SUM(amount) AS total_spent, 
+              YEAR(date) AS year, 
+              MONTH(date) AS month
+       FROM Expenses
+       WHERE user_id = ?
+       GROUP BY category, year, month
+       ORDER BY month DESC, year DESC`,
       [user_id]
     );
 
+    // Log results to check the data
+    console.log('Fetched Stats:', results);
+
+    // Return the result as a JSON response
     res.status(200).json(results);
   } catch (error) {
-    console.error('Error fetching monthly stats:', error);
+    console.error('Error fetching stats:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   } finally {
     connection.release();
   }
 });
+
 
 
 
