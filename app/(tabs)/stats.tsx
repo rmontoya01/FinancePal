@@ -36,12 +36,13 @@ export default function StatsScreen() {
     };
 
     const pieData = statsData?.categories?.map((item: any, idx: number) => ({
-        name: item.description,
-        population: Number(item.percentage),
-        color: `hsl(${idx * 40}, 70%, 60%)`,
+        name: `% ${item.description} `, // Label shows category and % in legend
+        population: Number(item.percentage.toFixed(2)),             // Drives the size of the slice
+        color: `hsl(${idx * 40}, 70%, 60%)`,                         // Distinct color for each category
         legendFontColor: '#fff',
         legendFontSize: 12,
     })) || [];
+
 
     return (
         <View style={styles.container}>
@@ -84,7 +85,7 @@ export default function StatsScreen() {
                         }}
                         accessor="population"
                         backgroundColor="transparent"
-                        paddingLeft="15"
+                        paddingLeft="0"
                         absolute
                     />
                     <Text style={styles.sectionTitle}>Top 5 Categories</Text>
