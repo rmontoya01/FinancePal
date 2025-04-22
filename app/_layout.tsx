@@ -19,6 +19,8 @@ const _layout = () => {
         <Stack.Screen name="(modals)/spendingsModal" options={{ presentation: "modal", }} />
         {/* App Info Modal */}
         <Stack.Screen name="(modals)/appInfoModal" options={{ presentation: "modal", }} />
+        {/* Policies Info Modal */}
+        <Stack.Screen name="(modals)/policiesModal" options={{ presentation: "modal", }} />
 
 
       </Stack>

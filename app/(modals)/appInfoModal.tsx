@@ -32,6 +32,7 @@ const appInfoModal = () => {
 
                 {/* Scrollable Info Content */}
                 <ScrollView contentContainerStyle={styles.aboutContainer} showsVerticalScrollIndicator={false}>
+
                     {/* FinancePal Purpose */}
                     <View style={styles.aboutSection}>
                         <View style={styles.aboutRow}>
@@ -49,10 +50,10 @@ const appInfoModal = () => {
                             <Ionicons name="people-outline" size={24} color={colors.neutral400} />
                             <Typo style={styles.sectionTitle}>Created/Developed By: </Typo>
                         </View>
-                        <Typo color={colors.neutral300}>• Eduardo M.</Typo>
-                        <Typo color={colors.neutral300}>• Martiniano R.</Typo>
-                        <Typo color={colors.neutral300}>• Ayden M.</Typo>
-                        <Typo color={colors.neutral300}>• Ramon M.</Typo>
+                        <Typo color={colors.neutral300}>• Eduardo M. - CYB</Typo>
+                        <Typo color={colors.neutral300}>• Martiniano R. - CYB</Typo>
+                        <Typo color={colors.neutral300}>• Ayden M. - CYB and IT</Typo>
+                        <Typo color={colors.neutral300}>• Ramon M. - CSC</Typo>
                     </View>
 
                     {/* Tech Stack Info */}
@@ -63,10 +64,40 @@ const appInfoModal = () => {
                         </View>
                         <Typo color={colors.neutral300}>• React Native</Typo>
                         <Typo color={colors.neutral300}>• Expo Go</Typo>
+                        <Typo color={colors.neutral300}>• TypeScript</Typo>
                         <Typo color={colors.neutral300}>• AWS EC2</Typo>
                         <Typo color={colors.neutral300}>• SQL Workbench</Typo>
-                        <Typo color={colors.neutral300}>• TypeScript</Typo>
                     </View>
+
+                    {/* Privacy Summary */}
+                    <View style={styles.aboutSection}>
+                        <View style={styles.aboutRow}>
+                            <Ionicons name="shield-checkmark-outline" size={24} color={colors.neutral400} />
+                            <Typo style={styles.sectionTitle}>Privacy Summary</Typo>
+                        </View>
+                        <Typo color={colors.neutral300}>
+                            FinancePal values user privacy. No personal financial data is shared externally. Data is stored securely on our AWS database. For full details, please view our Privacy Policy.
+                        </Typo>
+                    </View>
+
+                    {/* App Version */}
+                    <View style={styles.aboutSection}>
+                        <View style={styles.aboutRow}>
+                            <Ionicons name="cellular-outline" size={24} color={colors.neutral400} />
+                            <Typo style={styles.sectionTitle}>Version</Typo>
+                        </View>
+                        <Typo color={colors.neutral300}>Version 1.0.0</Typo>
+                    </View>
+
+                    {/* Contact Info */}
+                    <View style={styles.aboutSection}>
+                        <View style={styles.aboutRow}>
+                            <Ionicons name="mail-outline" size={24} color={colors.neutral400} />
+                            <Typo style={styles.sectionTitle}>Contact</Typo>
+                        </View>
+                        <Typo color={colors.neutral300}>financepal.support@gmail.com</Typo>
+                    </View>
+
                 </ScrollView>
 
             </View>

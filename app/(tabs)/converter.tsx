@@ -1,4 +1,4 @@
-import { Keyboard, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native'
+import { Button, Keyboard, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import ScreenWrapper from '@/components/ScreenWrapper'
 import Header from '@/components/Header'
@@ -7,9 +7,12 @@ import Ionicons from '@expo/vector-icons/Ionicons'
 import { colors } from '@/constants/themes'
 import { Picker } from '@react-native-picker/picker'
 
+import Octicons from '@expo/vector-icons/Octicons';
+
 import Freecurrencyapi from '@everapi/freecurrencyapi-js'
 // API Key: keep it secret
 import Constants from 'expo-constants';
+import { scale } from '@/utils/styling'
 const API_KEY = Constants.expoConfig?.extra?.CURRENCY_API_KEY || process.env.CURRENCY_API_KEY;
 
 const Converter = () => {
@@ -79,12 +82,17 @@ const Converter = () => {
 
     return (
         <ScreenWrapper>
-            <Header title="Currency Converter Page" />
 
             <View style={styles.container}>
                 <View style={styles.containerContent}>
-                    <Ionicons style={styles.containerIcon} name="cash-sharp" size={40} color="black" />
-                    <Typo size={20} fontWeight={"600"}>Currency Converter</Typo>
+                    <View style={{ alignItems: 'center' }}>
+                        <Ionicons name="cash-sharp" size={38} color={colors.neutral900} />
+                        <Typo size={23} fontWeight="700">Currency Converter</Typo>
+                        <Typo size={13} fontWeight="400" color={colors.neutral200}>
+                            Exchange rates updated daily
+                        </Typo>
+                    </View>
+
 
                     {/* Amount Input */}
                     <TextInput
@@ -106,6 +114,17 @@ const Converter = () => {
                                 <Picker.Item key={index} label={currency} value={currency} />
                             ))}
                         </Picker>
+
+                        {/* Button that switches between currencies */}
+                        <View style={{ padding: 1, marginTop: 2, alignItems: 'center' }}>
+                            <Button
+                                title="Switch"
+                                onPress={() => {
+                                    setFromCurrency(toCurrency);
+                                    setToCurrency(fromCurrency);
+                                }}
+                            />
+                        </View>
 
                         <Picker
                             style={styles.picker}
@@ -138,41 +157,57 @@ const styles = StyleSheet.create({
         // flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: colors.neutral900,
+        // padding: 20,
     },
     containerContent: {
         backgroundColor: colors.neutral600,
-        padding: 25,
-        height: 666,
+        padding: 10,
+        height: 700,
         width: 350,
         borderRadius: 30,
         marginTop: 10,
     },
     input: {
         backgroundColor: colors.neutral200,
-        padding: 10,
-        margin: 10,
+        paddingVertical: 10,
+        paddingHorizontal: 16,
         borderRadius: 20,
+        fontSize: 16,
+        marginTop: 7,
+        marginBottom: 7,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        elevation: 3,
     },
     containerPicker: {
-        backgroundColor: colors.neutral200,
-        padding: 10,
-        margin: 5,
         borderRadius: 20,
-        paddingBlock: 10,
-        paddingInline: 10,
+        backgroundColor: colors.neutral300,
+        marginBottom: 15,
+        padding: 4,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 2,
     },
     picker: {
-        backgroundColor: colors.neutral200,
+        width: '100%',
+        marginVertical: 2,
+        padding: 2,
     },
     result: {
-        backgroundColor: colors.neutral900,
-        padding: 5,
-        margin: 5,
-        borderRadius: 5,
+        backgroundColor: colors.neutral800,
+        padding: 12,
+        marginTop: 2,
+        borderRadius: 15,
+        alignItems: 'center',
     },
     resultText: {
         color: colors.white,
-        fontSize: 18,
+        fontSize: scale(18),
         fontWeight: 'bold',
     },
     image: {

@@ -71,17 +71,17 @@ export default function Settings() {
           />
         </Animated.View>
 
-        {/* Other Settings */}
-        <View style={styles.buttonContainer}>
-          <Button>
-            <Typo size={18} fontWeight={"500"} color={colors.white}>Other Settings</Typo>
-          </Button>
-        </View>
-
         {/* App Info */}
         <View style={styles.buttonContainer}>
           <Button onPress={() => router.push('/(modals)/appInfoModal')}>
             <Typo size={18} fontWeight={"500"} color={colors.white}>App Info</Typo>
+          </Button>
+        </View>
+
+        {/* Other Settings or Policies */}
+        <View style={styles.buttonContainer}>
+          <Button onPress={() => router.push('/(modals)/policiesModal')}>
+            <Typo size={18} fontWeight={"500"} color={colors.white}>Privacy Policy</Typo>
           </Button>
         </View>
 
