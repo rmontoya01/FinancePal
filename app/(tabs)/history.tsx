@@ -104,20 +104,25 @@ export default function History() {
     return acc;
   }, []);
 
-  const renderItem = ({ item }: { item: Entry }) => (
-    <View style={styles.entryItem}>
-      <Text style={styles.entryType}>
-        {item.type.toUpperCase()}: {item.type === 'income' ? '+' : '-'}${item.amount.toFixed(2)}
-      </Text>
-      <Text style={styles.balanceText}>BALANCE: ${item.balance?.toFixed(2)}</Text>
-      <Text style={styles.entryDescription}>{item.description}</Text>
-      <Text style={styles.entryCategory}>{item.category}</Text>
-      <Text style={styles.entryDate}>{new Date(item.created_at).toLocaleDateString()}</Text>
-      <TouchableOpacity onPress={() => deleteEntry(item.id, item.type)}>
-        <Text style={{ color: '#ff4d4d', marginTop: 6 }}>Delete</Text>
-      </TouchableOpacity>
-    </View>
-  );
+  const renderItem = ({ item }: { item: Entry }) => {
+    const parsedAmount = Number(item.amount);
+    const safeAmount = isNaN(parsedAmount) ? 0 : parsedAmount;
+  
+    return (
+      <View style={styles.entryItem}>
+        <Text style={styles.entryType}>
+          {item.type.toUpperCase()}: {item.type === 'income' ? '+' : '-'}${safeAmount.toFixed(2)}
+        </Text>
+        <Text style={styles.balanceText}>BALANCE: ${item.balance?.toFixed(2)}</Text>
+        <Text style={styles.entryDescription}>{item.description}</Text>
+        <Text style={styles.entryCategory}>{item.category}</Text>
+        <Text style={styles.entryDate}>{new Date(item.created_at).toLocaleDateString()}</Text>
+        <TouchableOpacity onPress={() => deleteEntry(item.id, item.type)}>
+          <Text style={{ color: '#ff4d4d', marginTop: 6 }}>Delete</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
 
   return (
     <View style={styles.container}>
