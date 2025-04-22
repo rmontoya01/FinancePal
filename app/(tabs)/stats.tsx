@@ -4,150 +4,145 @@ import { PieChart } from 'react-native-chart-kit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Header from '@/components/Header';
 import dayjs from 'dayjs';
+import ScreenWrapper from '@/components/ScreenWrapper';
 
 const screenWidth = Dimensions.get('window').width;
 
 export default function StatsScreen() {
-    const [userId, setUserId] = useState('');
-    const [selectedMonth, setSelectedMonth] = useState(dayjs());
-    const [statsData, setStatsData] = useState<any>(null);
+  const [userId, setUserId] = useState('');
+  const [selectedMonth, setSelectedMonth] = useState(dayjs());
+  const [statsData, setStatsData] = useState<any>(null);
 
-    const months = Array.from({ length: 12 }, (_, i) => dayjs().month(i));
+  const months = Array.from({ length: 12 }, (_, i) => dayjs().month(i));
 
-    useEffect(() => {
-        const fetchUserAndData = async () => {
-            const id = await AsyncStorage.getItem('user_id');
-            if (!id) return;
-            setUserId(id);
-            fetchStats(id, selectedMonth.year(), selectedMonth.month() + 1);
-        };
-        fetchUserAndData();
-    }, [selectedMonth]);
-
-    const fetchStats = async (id: string, year: number, month: number) => {
-        try {
-            const res = await fetch(`http://18.226.82.202:3000/expenses/stats/${id}/${year}/${month}`);
-            if (!res.ok) throw new Error('Network response was not ok');
-            const data = await res.json();
-            setStatsData(data);
-        } catch (err) {
-            console.error('Error fetching stats:', err);
-        }
+  useEffect(() => {
+    const fetchUserAndData = async () => {
+      const id = await AsyncStorage.getItem('user_id');
+      if (!id) return;
+      setUserId(id);
+      fetchStats(id, selectedMonth.year(), selectedMonth.month() + 1);
     };
+    fetchUserAndData();
+  }, [selectedMonth]);
 
-    const pieData = statsData?.categories?.map((item: any, idx: number) => ({
-        name: `% ${item.description} `, // Label shows category and % in legend
-        population: Number(item.percentage.toFixed(2)),             // Drives the size of the slice
-        color: `hsl(${idx * 40}, 70%, 60%)`,                         // Distinct color for each category
-        legendFontColor: '#fff',
-        legendFontSize: 12,
-    })) || [];
+  const fetchStats = async (id: string, year: number, month: number) => {
+    try {
+      const res = await fetch(`http://18.226.82.202:3000/expenses/stats/${id}/${year}/${month}`);
+      if (!res.ok) throw new Error('Network response was not ok');
+      const data = await res.json();
+      setStatsData(data);
+    } catch (err) {
+      console.error('Error fetching stats:', err);
+    }
+  };
 
+  const pieData = statsData?.categories?.map((item: any, idx: number) => ({
+    name: `% ${item.description} `,
+    population: Number(item.percentage.toFixed(2)),
+    color: `hsl(${idx * 40}, 70%, 60%)`,
+    legendFontColor: '#fff',
+    legendFontSize: 12,
+  })) || [];
 
-    return (
-        <View style={styles.container}>
-            <Header title="Stats" />
+  return (
+    <ScreenWrapper>
+      <View style={styles.container}>
+        <Header title="Stats" />
 
-            <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-
-
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          {months.map((m, index) => (
+            <TouchableOpacity
+              key={index}
+              onPress={() => setSelectedMonth(m)}
+              style={[
+                styles.monthButton,
+                selectedMonth.month() === index && styles.selectedMonthButton,
+                (statsData?.categories?.length ?? 0) === 0 && { opacity: 0.5 },
+                { height: 50 },
+              ]}
             >
-                {months.map((m, index) => (
-                    <TouchableOpacity
+              <Text style={styles.monthText}>{m.format('MMM')}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
 
-                        key={index}
-                        onPress={() => setSelectedMonth(m)}
-                        style={[
-                            styles.monthButton,
-                            selectedMonth.month() === index && styles.selectedMonthButton,
-                            (statsData?.categories?.length ?? 0) === 0 && { opacity: 0.5 },
-                            { height: 50 },
-                        ]}
-                    >
-                        <Text style={styles.monthText}>{m.format('MMM')}</Text>
-                    </TouchableOpacity>
-                ))}
-            </ScrollView>
+        {pieData.length > 0 && (
+          <>
+            <PieChart
+              data={pieData}
+              width={screenWidth}
+              height={220}
+              chartConfig={{
+                backgroundColor: '#000',
+                backgroundGradientFrom: '#1e1e1e',
+                backgroundGradientTo: '#3b3b3b',
+                color: () => '#fff',
+              }}
+              accessor="population"
+              backgroundColor="transparent"
+              paddingLeft="0"
+              absolute
+            />
+            <Text style={styles.sectionTitle}>Top 5 Categories</Text>
+            <FlatList
+              data={statsData.top}
+              keyExtractor={(item, index) => `${item.description}-${index}`}
+              renderItem={({ item }) => (
+                <Text style={styles.itemText}>
+                  {item.description}: ${item.amount.toFixed(2)} ({item.percentage.toFixed(1)}%)
+                </Text>
+              )}
+            />
 
-            {pieData.length > 0 && (
-                <>
-                    <PieChart
-                        data={pieData}
-                        width={screenWidth}
-                        height={220}
-                        chartConfig={{
-                            backgroundColor: '#000',
-                            backgroundGradientFrom: '#1e1e1e',
-                            backgroundGradientTo: '#3b3b3b',
-                            color: () => '#fff',
-                        }}
-                        accessor="population"
-                        backgroundColor="transparent"
-                        paddingLeft="0"
-                        absolute
-                    />
-                    <Text style={styles.sectionTitle}>Top 5 Categories</Text>
-                    <FlatList
-                        data={statsData.top}
-                        keyExtractor={(item, index) => `${item.description}-${index}`}
-                        renderItem={({ item }) => (
-                            <Text style={styles.itemText}>
-                                {item.description}: ${item.amount.toFixed(2)} ({item.percentage.toFixed(1)}%)
-                            </Text>
-                        )}
-                    />
-
-                    <Text style={styles.sectionTitle}>Bottom 5 Categories</Text>
-                    <FlatList
-                        data={statsData.bottom}
-                        keyExtractor={(item, index) => `${item.description}-${index}`}
-                        renderItem={({ item }) => (
-                            <Text style={styles.itemText}>
-                                {item.description}: ${item.amount.toFixed(2)} ({item.percentage.toFixed(1)}%)
-                            </Text>
-                        )}
-                    />
-                </>
-            )}
-        </View>
-    );
+            <Text style={styles.sectionTitle}>Bottom 5 Categories</Text>
+            <FlatList
+              data={statsData.bottom}
+              keyExtractor={(item, index) => `${item.description}-${index}`}
+              renderItem={({ item }) => (
+                <Text style={styles.itemText}>
+                  {item.description}: ${item.amount.toFixed(2)} ({item.percentage.toFixed(1)}%)
+                </Text>
+              )}
+            />
+          </>
+        )}
+      </View>
+    </ScreenWrapper>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#25292e',
-        paddingTop: 40,
-        paddingHorizontal: 16,
-    },
-    monthSelector: {
-        marginVertical: 10,
-        flexDirection: 'row',
-    },
-    monthButton: {
-        padding: 10,
-        backgroundColor: '#444',
-        marginRight: 8,
-        borderRadius: 10,
-    },
-    selectedMonthButton: {
-        backgroundColor: '#6a0dad',
-    },
-    monthText: {
-        color: '#fff',
-        fontWeight: 'bold',
-    },
-    sectionTitle: {
-        marginTop: 20,
-        fontSize: 18,
-        color: '#fff',
-        fontWeight: 'bold',
-    },
-    itemText: {
-        color: '#ccc',
-        fontSize: 12,
-        marginVertical: 4,
-    },
+  container: {
+    flex: 1,
+    paddingTop: 40,
+    paddingHorizontal: 16,
+  },
+  monthSelector: {
+    marginVertical: 10,
+    flexDirection: 'row',
+  },
+  monthButton: {
+    padding: 10,
+    backgroundColor: '#444',
+    marginRight: 8,
+    borderRadius: 10,
+  },
+  selectedMonthButton: {
+    backgroundColor: '#6a0dad',
+  },
+  monthText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  sectionTitle: {
+    marginTop: 20,
+    fontSize: 18,
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  itemText: {
+    color: '#ccc',
+    fontSize: 12,
+    marginVertical: 4,
+  },
 });
