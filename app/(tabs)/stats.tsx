@@ -50,18 +50,19 @@ export default function StatsScreen() {
             <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                style={[styles.monthSelector, (statsData?.categories?.length ?? 0) === 0 && { height: 0 }]}
-                contentContainerStyle={{ height: '10%' }}
+
 
             >
                 {months.map((m, index) => (
                     <TouchableOpacity
+
                         key={index}
                         onPress={() => setSelectedMonth(m)}
                         style={[
                             styles.monthButton,
                             selectedMonth.month() === index && styles.selectedMonthButton,
                             (statsData?.categories?.length ?? 0) === 0 && { opacity: 0.5 },
+                            { height: 50 },
                         ]}
                     >
                         <Text style={styles.monthText}>{m.format('MMM')}</Text>
@@ -145,7 +146,7 @@ const styles = StyleSheet.create({
     },
     itemText: {
         color: '#ccc',
-        fontSize: 15,
+        fontSize: 12,
         marginVertical: 4,
     },
 });
