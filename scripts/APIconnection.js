@@ -408,6 +408,72 @@ app.get('/expenses/stats/:user_id/:year/:month', async (req, res) => {
   }
 });
 
+// DELETE /entries/month/:user_id/:year/:month
+app.delete('/entries/month/:user_id/:year/:month', async (req, res) => {
+  const { user_id, year, month } = req.params;
+
+  const connection = await db.promise().getConnection();
+  try {
+    await connection.beginTransaction();
+
+    // Delete income entries
+    await connection.query(
+      'DELETE FROM Income WHERE user_id = ? AND year = ? AND month = ?',
+      [user_id, year, month]
+    );
+
+    // Delete expense entries
+    await connection.query(
+      'DELETE FROM Expenses WHERE user_id = ? AND YEAR(created_at) = ? AND MONTH(created_at) = ?',
+      [user_id, year, month]
+    );
+
+    await connection.commit();
+    res.status(200).json({ message: 'Entries for the specified month deleted successfully' });
+  } catch (error) {
+    await connection.rollback();
+    console.error('Error deleting monthly entries:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  } finally {
+    connection.release();
+  }
+});
+
+// DELETE /entries/:type/:id
+app.delete('/entries/:type/:id', async (req, res) => {
+  const { type, id } = req.params;
+
+  const connection = await db.promise().getConnection();
+  try {
+    let table, idField;
+
+    if (type === 'income') {
+      table = 'Income';
+      idField = 'income_id';
+    } else if (type === 'expense') {
+      table = 'Expenses';
+      idField = 'expense_id';
+    } else {
+      return res.status(400).json({ error: 'Invalid entry type' });
+    }
+
+    const [result] = await connection.query(
+      `DELETE FROM ${table} WHERE ${idField} = ?`,
+      [id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Entry not found' });
+    }
+
+    res.status(200).json({ message: 'Entry deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting entry:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  } finally {
+    connection.release();
+  }
+});
 
 
 
