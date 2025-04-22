@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { StyleSheet, View, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, ActivityIndicator, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
@@ -14,6 +14,7 @@ import { spacingY, spacingX, colors } from '@/constants/themes';
 const Budget = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [hasShownAlert, setHasShownAlert] = useState(false);
   const [budgetData, setBudgetData] = useState({
     budget_limit: 0,
     total_spent: 0,
@@ -28,13 +29,19 @@ const Budget = () => {
       const data = await res.json();
 
       if (res.status === 200 && data.budget_limit !== undefined) {
-        setBudgetData({
-          ...data,
+        const parsedData = {
           budget_limit: parseFloat(data.budget_limit),
           total_spent: parseFloat(data.total_spent),
           remaining: parseFloat(data.remaining),
           percentage: parseFloat(data.percentage),
-        });
+        };
+
+        setBudgetData(parsedData);
+
+        if (parsedData.remaining < 0 && !hasShownAlert) {
+          setHasShownAlert(true);
+          Alert.alert('⚠ Over Budget', 'You have exceeded your monthly budget!');
+        }
       } else {
         console.error('Error fetching budget:', data);
       }
