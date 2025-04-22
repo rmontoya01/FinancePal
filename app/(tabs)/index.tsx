@@ -60,7 +60,7 @@ const HomeScreen = () => {
       <View style={styles.container}>
         <View style={styles.header}>
           <View style={{ gap: 5, marginTop: spacingY._5, alignItems: 'center' }}>
-            <Typo size={30} color={colors.primaryLight} fontWeight={"500"}>Welcoeme</Typo>
+            <Typo size={30} color={colors.primaryLight} fontWeight={"500"}>Welcome</Typo>
             <Typo size={32} fontWeight={"600"}>{username}</Typo>
           </View>
           <TouchableOpacity style={styles.settingsIcon} onPress={() => router.push('/(auth)/settings')}>

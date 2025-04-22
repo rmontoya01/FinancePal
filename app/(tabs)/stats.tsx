@@ -51,6 +51,8 @@ export default function StatsScreen() {
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 style={[styles.monthSelector, (statsData?.categories?.length ?? 0) === 0 && { height: 0 }]}
+                contentContainerStyle={{ height: '10%' }}
+
             >
                 {months.map((m, index) => (
                     <TouchableOpacity
