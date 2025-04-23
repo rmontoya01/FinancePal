@@ -259,13 +259,11 @@ app.delete('/users/:user_id', async (req, res) => {
 
     const connection = await db.promise().getConnection();
     try {
-      // Delete related Income records
+      // Delete dependent records first to avoid foreign key constraint error
       await connection.query('DELETE FROM Income WHERE user_id = ?', [user_id]);
-
-      // Delete related Expenses records
       await connection.query('DELETE FROM Expenses WHERE user_id = ?', [user_id]);
+      await connection.query('DELETE FROM UserBudget WHERE user_id = ?', [user_id]); 
 
-      // Delete User account
       const [result] = await connection.query('DELETE FROM Users WHERE user_id = ?', [user_id]);
 
       if (result.affectedRows === 0) {
@@ -281,6 +279,7 @@ app.delete('/users/:user_id', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 // ADDING BUDGET FUNCTIONALITY ENDPOINT
 // This endpoint allows users to set or update their monthly budget
@@ -474,12 +473,6 @@ app.delete('/entries/:type/:id', async (req, res) => {
     connection.release();
   }
 });
-
-
-
-
-
-
 
 
 
