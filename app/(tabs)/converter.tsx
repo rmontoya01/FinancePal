@@ -1,4 +1,4 @@
-import { Button, Keyboard, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native'
+import { Button, Keyboard, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import ScreenWrapper from '@/components/ScreenWrapper'
 import Header from '@/components/Header'
@@ -17,11 +17,11 @@ const Converter = () => {
     const [fromCurrency, setFromCurrency] = useState('USD');
     const [toCurrency, setToCurrency] = useState('EUR');
     const [exchangeRate, setExchangeRate] = useState(0);
-    const [amount, setAmount] = useState(1);
+    const [amountText, setAmountText] = useState('1');
     const [currencies, setCurrencies] = useState<string[]>([]);
 
     const currencyConverter = () => {
-        let result = (amount * exchangeRate).toFixed(2);
+        let result = (parseFloat(amountText || '0') * exchangeRate).toFixed(2);
         return result;
     };
 
@@ -71,9 +71,16 @@ const Converter = () => {
 
                 <TextInput
                     style={styles.input}
-                    onChangeText={(text) => setAmount(parseFloat(text) || 0)}
-                    value={amount.toString()}
-                    keyboardType='numeric'
+                    onChangeText={(text) => {
+                        const regex = /^\d*\.?\d{0,2}$/;
+                        if (regex.test(text)) {
+                            setAmountText(text);
+                        } else {
+                            Alert.alert("Invalid Amount", "Please enter a valid number (up to 2 decimal places).");
+                        }
+                    }}
+                    value={amountText}
+                    keyboardType='decimal-pad'
                     returnKeyType="done"
                     placeholder="Enter Amount"
                     placeholderTextColor="#ccc"
@@ -110,7 +117,7 @@ const Converter = () => {
 
                     <View style={styles.result}>
                         <Text style={styles.resultText}>
-                            {amount} {fromCurrency} = {currencyConverter()} {toCurrency}
+                            {amountText || '0'} {fromCurrency} = {currencyConverter()} {toCurrency}
                         </Text>
                     </View>
                 </View>
