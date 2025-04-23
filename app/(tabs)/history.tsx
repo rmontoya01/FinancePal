@@ -1,6 +1,17 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, Platform } from 'react-native';
-import Header from "@/components/Header";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  Alert,
+  TextInput,
+  Platform,
+  TouchableWithoutFeedback,
+  KeyboardAvoidingView,
+} from 'react-native';
+import Header from '@/components/Header';
 import { spacingY } from '@/constants/themes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
@@ -20,6 +31,8 @@ export default function History() {
   const [entries, setEntries] = useState<Entry[]>([]);
   const [sortAscending, setSortAscending] = useState(false);
   const [balance, setBalance] = useState<number>(0);
+  const [showVerifyModal, setShowVerifyModal] = useState(false);
+  const [inputUsername, setInputUsername] = useState('');
 
   const fetchData = async () => {
     const user_id = await AsyncStorage.getItem('user_id');
@@ -52,7 +65,7 @@ export default function History() {
     try {
       const res = await fetch(`http://18.226.82.202:3000/entries/${type}/${id}`, { method: 'DELETE' });
       if (res.ok) {
-        fetchData(); // refresh after delete
+        fetchData();
       } else {
         Alert.alert('Error', 'Failed to delete entry.');
       }
@@ -61,33 +74,26 @@ export default function History() {
     }
   };
 
-  const resetMonth = async () => {
+  const resetMonth = () => {
+    setShowVerifyModal(true);
+  };
+
+  const resetMonthConfirmed = async () => {
     const user_id = await AsyncStorage.getItem('user_id');
     if (!user_id) return;
 
     const month = dayjs().month() + 1;
     const year = dayjs().year();
 
-    Alert.alert('Reset All Entries', 'Are you sure you want to delete all income and expenses for this month?', [
-      {
-        text: 'Cancel',
-        style: 'cancel',
-      },
-      {
-        text: 'Yes',
-        onPress: async () => {
-          try {
-            const res = await fetch(`http://18.226.82.202:3000/entries/month/${user_id}/${year}/${month}`, {
-              method: 'DELETE',
-            });
-            if (res.ok) fetchData();
-            else Alert.alert('Error', 'Could not reset entries.');
-          } catch (err) {
-            console.error('Reset error:', err);
-          }
-        },
-      },
-    ]);
+    try {
+      const res = await fetch(`http://18.226.82.202:3000/entries/month/${user_id}/${year}/${month}`, {
+        method: 'DELETE',
+      });
+      if (res.ok) fetchData();
+      else Alert.alert('Error', 'Could not reset entries.');
+    } catch (err) {
+      console.error('Reset error:', err);
+    }
   };
 
   const sortedEntries = [...entries].sort((a, b) => {
@@ -107,7 +113,7 @@ export default function History() {
   const renderItem = ({ item }: { item: Entry }) => {
     const parsedAmount = Number(item.amount);
     const safeAmount = isNaN(parsedAmount) ? 0 : parsedAmount;
-  
+
     return (
       <View style={styles.entryItem}>
         <Text style={styles.entryType}>
@@ -149,6 +155,42 @@ export default function History() {
         keyExtractor={(item, index) => `${item.id}-${index}`}
         contentContainerStyle={styles.listContainer}
       />
+
+      {showVerifyModal && (
+        <TouchableWithoutFeedback onPress={() => setShowVerifyModal(false)}>
+          <View style={styles.modalOverlay}>
+            <TouchableWithoutFeedback onPress={() => {}}>
+              <KeyboardAvoidingView behavior="padding" style={styles.modalBox}>
+                <Text style={{ color: '#fff', fontSize: 16, marginBottom: 10 }}>
+                  Enter your username to confirm reset:
+                </Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Username"
+                  placeholderTextColor="#aaa"
+                  onChangeText={setInputUsername}
+                  value={inputUsername}
+                />
+                <TouchableOpacity
+                  onPress={async () => {
+                    const stored = await AsyncStorage.getItem('username');
+                    if (stored && inputUsername.trim().toLowerCase() === stored.toLowerCase()) {
+                      setShowVerifyModal(false);
+                      setInputUsername('');
+                      resetMonthConfirmed();
+                    } else {
+                      Alert.alert('Error', 'Username does not match');
+                    }
+                  }}
+                  style={styles.modalConfirmButton}
+                >
+                  <Text style={{ color: 'white', fontWeight: 'bold' }}>Confirm</Text>
+                </TouchableOpacity>
+              </KeyboardAvoidingView>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      )}
     </View>
   );
 }
@@ -231,5 +273,35 @@ const styles = StyleSheet.create({
     color: '#aaa',
     fontSize: 12,
     marginTop: 5,
+  },
+  modalOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  modalBox: {
+    backgroundColor: '#333',
+    padding: 20,
+    borderRadius: 10,
+    width: '80%',
+  },
+  input: {
+    backgroundColor: '#555',
+    color: '#fff',
+    padding: 10,
+    borderRadius: 6,
+    marginBottom: 10,
+  },
+  modalConfirmButton: {
+    backgroundColor: '#8B0000',
+    padding: 12,
+    borderRadius: 6,
+    alignItems: 'center',
   },
 });
