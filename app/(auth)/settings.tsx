@@ -6,6 +6,7 @@ import {
   Alert,
   TouchableOpacity,
   FlatList,
+  Switch,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
@@ -91,13 +92,18 @@ export default function Settings() {
           )}
         </View>
 
-        {/* Other Buttons */}
+        {/* App Info */}
         <View style={styles.buttonContainer}>
-          <Button><Typo size={18} fontWeight="500" color={colors.white}>Other Settings</Typo></Button>
+          <Button onPress={() => router.push('/(modals)/appInfoModal')}>
+            <Typo size={18} fontWeight="500" color={colors.white}>App Info</Typo>
+          </Button>
         </View>
 
+        {/* Policies */}
         <View style={styles.buttonContainer}>
-          <Button><Typo size={18} fontWeight="500" color={colors.white}>App Info</Typo></Button>
+          <Button onPress={() => router.push('/(modals)/policiesModal')}>
+            <Typo size={18} fontWeight="500" color={colors.white}>Privacy Policy</Typo>
+          </Button>
         </View>
 
         {/* Delete User */}
