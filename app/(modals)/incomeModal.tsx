@@ -32,28 +32,29 @@ const IncomeModal = () => {
         updated_at: new Date()
     });
 
+    const [incomeAmountText, setIncomeAmountText] = useState('');
     const [loading, setLoading] = useState(false);
     const router = useRouter();
 
     const onSubmit = async () => {
-        let { source, amount = 0 } = income;
-        if (!source.trim() || amount <= 0) {
+        let { source } = income;
+        const amount = parseFloat(incomeAmountText);
+
+        if (!source.trim() || amount <= 0 || isNaN(amount)) {
             Alert.alert("Income", "Please fill in all of the fields!");
             return;
         }
-    
-        // Get current date to add to the income record
+
         const calendarNow = new Date(Date.now());
 
         const user_id = await AsyncStorage.getItem("user_id");
         if (!user_id) {
             Alert.alert("Income", "User is not logged in.");
             return;
-        }    
-    
-        // Create the data object to send to the backend
+        }
+
         const data = {
-            user_id, //using user_id from AsyncStorage
+            user_id,
             source,
             amount,
             month: calendarNow.getMonth() + 1,
@@ -61,8 +62,7 @@ const IncomeModal = () => {
         };
 
         console.log("Submitting data: ", data);
-    
-        // Send the data to the backend API
+
         setLoading(true);
         try {
             const response = await fetch('http://18.226.82.202:3000/income', {
@@ -70,15 +70,15 @@ const IncomeModal = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(data),  // This includes the logged-in user's user_id
+                body: JSON.stringify(data),
             });
-    
+
             const result = await response.json();
-            console.log('API Response: ', result); //log to see API response
+            console.log('API Response: ', result);
 
             if (result?.status === 'success') {
-                updateUserData(user?.uid ?? "");  // Refresh user data
-                router.back();  // Navigate back to the previous screen
+                updateUserData(user?.uid ?? "");
+                router.back();
             } else {
                 Alert.alert("Income", "Failed to save income.");
             }
@@ -95,8 +95,6 @@ const IncomeModal = () => {
             <ScreenWrapper style={styles.container}>
                 <Header title="New Income" rightIcon={<PreviousButton />} style={{ marginBottom: spacingY._7, }} />
 
-                {/* Entry Input Slots */}
-                {/* Income Name Aka Source */}
                 <ScrollView contentContainerStyle={styles.form}>
                     <View style={styles.textContainer}>
                         <Typo color={colors.neutral200}>Income Name</Typo>
@@ -106,15 +104,21 @@ const IncomeModal = () => {
                             onChangeText={(value) => setIncome({ ...income, source: value })} />
                     </View>
 
-
-                    {/* Income Amount */}
                     <View style={styles.textContainer}>
                         <Typo color={colors.neutral200}>Income Amount</Typo>
                         <Input
                             placeholder='Salary Amount'
-                            value={(income.amount ?? 0).toString()}
-                            keyboardType="numeric"
-                            onChangeText={(value) => setIncome({ ...income, amount: parseFloat(value) || 0 })} />
+                            value={incomeAmountText}
+                            keyboardType="decimal-pad"
+                            onChangeText={(value) => {
+                                const regex = /^\d*\.?\d{0,2}$/;
+                                if (regex.test(value)) {
+                                    setIncomeAmountText(value);
+                                } else {
+                                    Alert.alert("Invalid Amount", "Please enter a valid amount (up to 2 decimal places).");
+                                }
+                            }}
+                        />
                     </View>
                 </ScrollView>
 
@@ -138,7 +142,6 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: colors.neutral900,
         flex: 1,
-        // borderRadius: "10%"
         paddingHorizontal: spacingX._20,
         gap: spacingY._25,
     },
@@ -162,13 +165,12 @@ const styles = StyleSheet.create({
 })
 
 function useAuth() {
-    const [user, setUser] = useState<{ uid: string } | null>(null); // Initially null
+    const [user, setUser] = useState<{ uid: string } | null>(null);
 
     const updateUserData = (user_id: string) => {
         console.log(`User data updated for user_id: ${user_id}`);
-        setUser({ uid: user_id }); // Set the actual logged-in user ID
+        setUser({ uid: user_id });
     };
 
     return { user, updateUserData };
 }
-

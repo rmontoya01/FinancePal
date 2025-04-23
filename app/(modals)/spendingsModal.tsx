@@ -23,7 +23,8 @@ const ExpensesModal = () => {
         description: "",
         created_at: new Date(),
     });
-    const [modalVisible, setModalVisible] = useState(false); // State to control the modal visibility
+    const [expenseAmountText, setExpenseAmountText] = useState('');
+    const [modalVisible, setModalVisible] = useState(false);
     const router = useRouter();
 
     const ExpenseTypes = [
@@ -40,19 +41,21 @@ const ExpensesModal = () => {
     ];
 
     const onSubmit = async () => {
-        let { amount, category, description } = Expenses;
+        let { category, description } = Expenses;
+        const amount = parseFloat(expenseAmountText);
+
         if (!amount || !category?.trim() || !description?.trim()) {
             Alert.alert("Expenses", "Please fill in all of the fields!");
             return;
         }
-    
+
         try {
             const user_id = await AsyncStorage.getItem('user_id');
             if (!user_id) {
                 Alert.alert("Expenses", "User not logged in.");
                 return;
             }
-    
+
             const data: ExpenseType = {
                 user_id: parseInt(user_id),
                 amount,
@@ -60,44 +63,41 @@ const ExpensesModal = () => {
                 description,
                 created_at: new Date(),
             };
-    
-            // Sending the POST request
-            const response = await fetch('http://18.226.82.202:3000/expenses', {  // Fixed endpoint to lowercase 'e'
+
+            const response = await fetch('http://18.226.82.202:3000/expenses', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(data),
             });
-    
-            const responseText = await response.text(); // Get the raw response as text
-            console.log('Response Text:', responseText);  // Log the raw response
-    
-            // Try to parse the raw response as JSON
+
+            const responseText = await response.text();
+            console.log('Response Text:', responseText);
+
             try {
-                const result = JSON.parse(responseText); // Parse the raw response into JSON
+                const result = JSON.parse(responseText);
                 console.log('result: ', result);
-    
+
                 if (result?.status === 'success') {
                     router.back();
                 } else {
                     Alert.alert("Expenses", "Failed to save expenses.");
                 }
             } catch (error) {
-                console.error('Error parsing JSON:', error);  // Handle any JSON parsing errors
+                console.error('Error parsing JSON:', error);
                 Alert.alert("Expenses", "Failed to parse server response.");
             }
-    
+
         } catch (error) {
             console.error("Submit Error:", error);
             Alert.alert("Expenses", "Something went wrong.");
         }
     };
-    
 
     const handleCategorySelect = (category: string) => {
         setExpenses({ ...Expenses, description: category });
-        setModalVisible(false); // Close the modal after selection
+        setModalVisible(false);
     };
 
     return (
@@ -105,9 +105,7 @@ const ExpensesModal = () => {
             <ScreenWrapper style={styles.container}>
                 <Header title="New Expenses" rightIcon={<PreviousButton />} style={{ marginBottom: spacingY._7 }} />
 
-                {/* Entry Input Slots */}
                 <ScrollView contentContainerStyle={styles.form}>
-                    {/* Expense Name */}
                     <View style={styles.textContainer}>
                         <Typo color={colors.neutral200}>Expense Description</Typo>
                         <Input
@@ -116,21 +114,28 @@ const ExpensesModal = () => {
                             onChangeText={(value) => setExpenses({ ...Expenses, category: value })} />
                     </View>
 
-                    {/* Expense Cost */}
                     <View style={styles.textContainer}>
                         <Typo color={colors.neutral200}>Expense Cost</Typo>
                         <Input
                             placeholder='Expense Cost'
-                            value={String(Expenses.amount)}
-                            onChangeText={(value) => setExpenses({ ...Expenses, amount: parseFloat(value) || 0 })} />
+                            value={expenseAmountText}
+                            keyboardType="decimal-pad"
+                            onChangeText={(value) => {
+                                const regex = /^\d*\.?\d{0,2}$/;
+                                if (regex.test(value)) {
+                                    setExpenseAmountText(value);
+                                } else {
+                                    Alert.alert("Invalid Amount", "Please enter a valid amount (up to 2 decimal places).");
+                                }
+                            }}
+                        />
                     </View>
 
-                    {/* Expense Type Selection */}
                     <View style={styles.textContainer}>
                         <Typo color={colors.neutral200}>Expense Type</Typo>
                         <TouchableOpacity
                             style={styles.dropdownButton}
-                            onPress={() => setModalVisible(true)} // Open the modal when clicked
+                            onPress={() => setModalVisible(true)}
                         >
                             <Ionicons name="chevron-down" size={20} color={colors.neutral200} style={styles.icon} />
                             <Text style={styles.dropdownText}>{Expenses.description || 'Select a Type'}</Text>
@@ -138,12 +143,11 @@ const ExpensesModal = () => {
                     </View>
                 </ScrollView>
 
-                {/* Modal for selecting Expense type */}
                 <Modal
                     visible={modalVisible}
                     animationType="slide"
                     transparent={true}
-                    onRequestClose={() => setModalVisible(false)} // Close modal when back button is pressed
+                    onRequestClose={() => setModalVisible(false)}
                 >
                     <View style={styles.modalBackground}>
                         <View style={styles.modalContainer}>
@@ -151,7 +155,7 @@ const ExpensesModal = () => {
                                 <TouchableOpacity
                                     key={type}
                                     style={styles.modalItem}
-                                    onPress={() => handleCategorySelect(type)} // Set the selected type
+                                    onPress={() => handleCategorySelect(type)}
                                 >
                                     <Text style={styles.modalItemText}>{type}</Text>
                                 </TouchableOpacity>
@@ -198,7 +202,6 @@ const styles = StyleSheet.create({
         marginBottom: spacingY._40,
         borderTopWidth: 1,
     },
-    // Styled dropdown button
     dropdownButton: {
         paddingVertical: 14,
         paddingHorizontal: 12,
@@ -220,12 +223,11 @@ const styles = StyleSheet.create({
         color: colors.neutral200,
         fontSize: 16,
     },
-    // Modal styles
     modalBackground: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Transparent background
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     modalContainer: {
         width: '80%',
